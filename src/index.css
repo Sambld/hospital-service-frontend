@@ -1,0 +1,24 @@
+@font-face {
+    font-family: "Light";
+    src: local("Hai Duong"), url("./fonts/Rubik-Medium.ttf") format("truetype");
+}
+
+* {
+    font-family: 'Light', sans-serif;
+}
+
+body {
+    background-color: #f8f8fb !important;
+}
+
+.active>div {
+    background-color: #f8f8fb !important;
+    border: 2px solid #e2e8f0 !important;
+    border-right: 0px !important;
+    /* border-top: 0px !important; */
+}
+
+.active p,
+.active svg {
+    color: #374083 !important;
+}
