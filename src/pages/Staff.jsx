@@ -4,6 +4,7 @@ import { Box, Icon, Button, Editable, EditableInput, EditablePreview, HStack, Im
 
 
 const Staff = () => {
+
     return (
         <Box>
             <HStack>
@@ -11,8 +12,8 @@ const Staff = () => {
                 <Spacer />
                 <Button colorScheme='blue' variant='outline' fontWeight='normal'>IMPORT DATA</Button>
             </HStack>
-
-            <Box bg='white' w='100%' m='10px' p='20px' border='2px' borderColor='gray.200' borderRadius='2xl'>
+            <Box bg='white' w='100%' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
+                <Text fontSize='sm' color='gray.500' p='10px' align='right'>10,000 Patients</Text>
                 <TableContainer>
                     <Table variant='simple'>
                         <Thead>
