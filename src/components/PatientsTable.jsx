@@ -1,13 +1,15 @@
-import { Table, Thead, Tbody, Tr, Th, Td, InputGroup, InputLeftElement, Input, Image, Spinner, Center, Box, Spacer, Text } from '@chakra-ui/react';
+import { Table, Thead, Tbody, Tr, Th, Td, InputGroup, InputLeftElement, Input, Image, Spinner, Center, Box, Icon, Text, IconButton, Button } from '@chakra-ui/react';
 import { FiExternalLink } from 'react-icons/fi';
 import { NavLink } from 'react-router-dom';
 import { SearchIcon } from '@chakra-ui/icons';
+import { BsGenderFemale, BsGenderMale } from 'react-icons/bs';
+import {AiFillFolderOpen} from 'react-icons/ai'
 
-const PatientsTable = () => {
+const PatientsTable = ({ patients }) => {
     return (
         <>
             <Text fontSize='sm' color='gray.500' p='10px' align='right'>10,000 Patients</Text>
-            <Table variant='simple'>
+            <Table variant='simple' colorScheme='blackAlpha'>
                 <Thead>
                     <Tr bg='#fafafa'>
                         <Th w='50px' p='5'>#</Th>
@@ -22,28 +24,35 @@ const PatientsTable = () => {
                         </Th>
                         <Th>birth place</Th>
                         <Th>birth Date</Th>
-                        <Th w='50px'><FiExternalLink size={20} /></Th>
+                        <Th w='200px'><Text textAlign='center'>Open</Text></Th>
                     </Tr>
                 </Thead>
                 <Tbody>
-                    <Tr>
-                        <Td p='1'><Image border='2px' borderColor='gray.200' boxSize='40px' src='https://bit.ly/dan-abramov' alt='Dan Abramov' /></Td>
-                        <Td>Youcef Hemadou</Td>
-                        <Td>Setif</Td>
-                        <Td>22-11-2000</Td>
-                        <Td><NavLink to='50'><FiExternalLink size={20} color='blue' /></NavLink></Td>
-                    </Tr>
-                    <Tr>
-                        <Td p='1'><Image border='2px' borderColor='gray.200' boxSize='40px' src='https://bit.ly/dan-abramov' alt='Dan Abramov' /></Td>
-                        <Td>Bouloudnine Sami</Td>
-                        <Td>Jijle</Td>
-                        <Td>22-11-2000</Td>
-                        <Td><NavLink to='50'><FiExternalLink size={20} color='blue' /></NavLink></Td>
-                    </Tr>
-
+                    {patients && patients.map((patient, index) => (
+                        <Tr key={index}>
+                            <Td p='1'>
+                                <IconButton
+                                    colorScheme={(patient.gender == 'Male') ? 'blue' : 'pink'}
+                                    aria-label='Call Segun'
+                                    size='md'
+                                    icon={(patient.gender == 'Male') ? <BsGenderMale size={25} /> : <BsGenderFemale size={25} />}
+                                />
+                            </Td>
+                            <Td><Text fontWeight='normal' fontSize={20}>{patient.first_name + " " + patient.last_name}</Text></Td>
+                            <Td>{patient.place_of_birth}</Td>
+                            <Td>{patient.birth_date}</Td>
+                            <Td><NavLink to={patient.id.toString()}><Button colorScheme='green' w='100%'><AiFillFolderOpen size={30}/></Button></NavLink></Td>
+                        </Tr>
+                    ))}
                 </Tbody>
             </Table>
-            {/* <Center p='10px'><Spinner /></Center> */}
+            {!patients && <Center p='10px'>
+                <Spinner thickness='4px'
+                    speed='0.65s'
+                    emptyColor='gray.200'
+                    color='blue.500'
+                    size='xl' />
+            </Center>}
         </>
     );
 }

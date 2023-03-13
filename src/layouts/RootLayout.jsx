@@ -1,5 +1,5 @@
 import { Box, Grid, GridItem } from '@chakra-ui/react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLoaderData, useNavigate } from 'react-router-dom';
 
 import SideBar from '../components/SideBar';
 import NavBar from '../components/NavBar';
@@ -19,6 +19,7 @@ const RootLayout = () => {
     if (!user) {
         return <Login setUser={setUser} />
     }
+
     return (
         <Grid
             templateAreas={`"nav nav"
@@ -35,7 +36,7 @@ const RootLayout = () => {
                 <SideBar user={user}/>
             </GridItem>}
             <GridItem pl='2' maxH='calc(100vh - 75px)' p={5} overflow='auto' area={'main'}>
-                <Outlet user={user} />
+                <Outlet context={user} />
             </GridItem>
         </Grid>
 

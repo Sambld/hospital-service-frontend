@@ -30,16 +30,18 @@ import { GiMedicines } from "react-icons/gi";
 
 const UserRoleItem = (user) => {
     let items = [];
-    if (user.role === 's') {
-        items = [<RiAdminLine fontSize='1.5rem' />, <RiAdminLine fontSize='4rem' />, 'black']
-    } else if (user.role === 'd') {
-        items = [<FaUserMd fontSize='1.5rem' />, <FaUserMd fontSize='4rem' />, 'red.500']
-    } else if (user.role === 'n') {
-        items = [<FaUserNurse fontSize='1.5rem' />, <FaUserNurse fontSize='4rem' />, 'blue.500']
-    } else if (user.role === 'p') {
-        items = [<GiMedicines fontSize='1.5rem' />, <GiMedicines fontSize='4rem' />,'green.500']
-    } else return null;
-    return items;
+    try {
+        if (user.role === 'administrator') {
+            items = [<RiAdminLine fontSize='1.5rem' />, <RiAdminLine fontSize='4rem' />, 'black']
+        } else if (user.role === 'doctor') {
+            items = [<FaUserMd fontSize='1.5rem' />, <FaUserMd fontSize='4rem' />, 'red.500']
+        } else if (user.role === 'nurse') {
+            items = [<FaUserNurse fontSize='1.5rem' />, <FaUserNurse fontSize='4rem' />, 'blue.500']
+        } else if (user.role === 'p') {
+            items = [<GiMedicines fontSize='1.5rem' />, <GiMedicines fontSize='4rem' />, 'green.500']
+        }
+        return items;
+    } catch { return items; }
 }
 
 const NavBar = ({ logout, user }) => {
@@ -102,12 +104,21 @@ const NavBar = ({ logout, user }) => {
                                 <Text>settings</Text>
                             </MenuItem>
                         </NavLink>
-                        <Flex justifyContent='flex-end'>
+                        <Divider mt='10px'/>
+                        <MenuItem  onClick={onOpen}>
+                            <Text color='red.500' fontWeight='normal'>Sign out</Text>
+                            <Spacer />
+                            <Icon as={RiShutDownLine} boxSize={5} color='red.500' />
+                            {/* <Button color='red.500' fontWeight='normal' variant='ghost' size='sm'>
+                                <RiShutDownLine />
+                            </Button> */}
+                        </MenuItem>
+                        {/* <Flex justifyContent='flex-end'>
                             <Button onClick={onOpen} colorScheme='red' variant='outline' mt='10px' p='10px'>
-                                <Text mr='5px' color='red.500' fontSize={12} fontWeight='normal'>Sign out</Text>
+                                <Text mr='5px' color='red.500' fontSize={15} fontWeight='normal'>Sign out</Text>
                                 <Icon as={RiShutDownLine} boxSize={4} color='red.500' />
                             </Button>
-                        </Flex>
+                        </Flex> */}
 
 
                     </MenuList>

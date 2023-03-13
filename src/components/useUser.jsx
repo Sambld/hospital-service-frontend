@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import axios from './axios'
+import useFetch from './useFetch';
+import axios from './axios';
+
 
 export default function useUser() {
 
@@ -7,9 +9,7 @@ export default function useUser() {
         const userString = localStorage.getItem('user');
         try {
             const userInfo = JSON.parse(userString);
-            const token = "Bearer " + userInfo?.access_token;
-            axios.defaults.headers.common['Authorization'] = token;
-            return userInfo?.user
+            return userInfo
         } catch {
             return null
         }
@@ -20,22 +20,28 @@ export default function useUser() {
 
 
     const saveUser = userInfo => {
-        localStorage.setItem('user', JSON.stringify(userInfo));
-        setUser(userInfo.user);
+        localStorage.setItem('user', JSON.stringify(userInfo.user));
+        localStorage.setItem('token', userInfo.access_token);
+
         const token = "Bearer " + userInfo.access_token;
         axios.defaults.headers.common['Authorization'] = token;
+
+        setUser(userInfo.user);
     };
 
     const deleteUser = () => {
-        try{
-            axios.post('/api/logout')
-        }catch{
+        try {
+            axios.post('/logout')
+        } catch {
             console.log("Error logging out")
         }
-        
+
         localStorage.removeItem('user');
-        setUser(null);
+        localStorage.removeItem('token');
+
         axios.defaults.headers.common['Authorization'] = null;
+
+        setUser(null);
     };
 
     return {

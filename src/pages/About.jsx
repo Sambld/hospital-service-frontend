@@ -1,4 +1,9 @@
+import { useEffect } from "react";
+
 const About = () => {
+    useEffect(() => {
+        console.log('about is me')
+    }, [])
     return ( 
         <div>
             <h1>About</h1>

@@ -8,18 +8,19 @@ const SideBarItems = (user) => {
   let items = [
     { name: 'Dashboard', icon: <RiDashboardLine size={23} />, link: '/' },
   ];
-  if (user.role === 's') {
-    items.push({ name: 'Staff', icon: <FaUserFriends size={23} />, link: '/staff' });
-    items.push({ name: 'Patients', icon: <RiFolderOpenLine size={23} />, link: '/patients' });
-  } else if (user.role === 'd') {
-    items.push({ name: 'Patients', icon: <RiFolderOpenLine size={23} />, link: '/patients' });
-  } else if (user.role === 'n') {
-    items.push({ name: 'Patients', icon: <RiFolderOpenLine size={23} />, link: '/patients' });
-  } else if (user.role === 'p') {
-    items.push({ name: 'Patients', icon: <RiFolderOpenLine size={23} />, link: '/patients' });
-  }else return null;
-  return items;
-
+  try {
+    if (user.role === 'administrator') {
+      items.push({ name: 'Staff', icon: <FaUserFriends size={23} />, link: '/staff' });
+      items.push({ name: 'Patients', icon: <RiFolderOpenLine size={23} />, link: '/patients' });
+    } else if (user.role === 'doctor') {
+      items.push({ name: 'Patients', icon: <RiFolderOpenLine size={23} />, link: '/patients' });
+    } else if (user.role === 'nurse') {
+      items.push({ name: 'Patients', icon: <RiFolderOpenLine size={23} />, link: '/patients' });
+    } else if (user.role === 'p') {
+      items.push({ name: 'Patients', icon: <RiFolderOpenLine size={23} />, link: '/patients' });
+    }
+      return items;
+  } catch { return items; }
 }
 
 const SideBar = ({ user }) => {

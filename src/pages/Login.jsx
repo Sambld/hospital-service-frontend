@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "../components/axios";
 
 import {
@@ -28,7 +28,7 @@ async function loginUser(data) {
     username: data['username'],
     password: data['password'],
   }
-  return axios.post('/api/login', user)
+  return axios.post('/login', user)
     .then(res => res.data)
  }
 

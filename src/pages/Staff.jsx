@@ -4,7 +4,6 @@ import { Box, Icon, Button, Editable, EditableInput, EditablePreview, HStack, Im
 
 
 const Staff = () => {
-
     return (
         <Box>
             <HStack>
