@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import useFetch from './useFetch';
-import axios from './axios';
+// import useFetch from './useFetch';
+import axios from '../components/axios';
 
 
 export default function useUser() {

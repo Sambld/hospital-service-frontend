@@ -1,14 +1,35 @@
-import { Container, Text, Icon, Center } from "@chakra-ui/react";
-import {HiEmojiSad} from 'react-icons/hi'
+import { Box, Heading, Text, Button } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 
 const NotFound = () => {
-    return ( 
-        <Container fontWeight='bold'>
-            <Center><Icon as={HiEmojiSad} boxSize={20} color='yellow.500' /></Center>
-            <Text textAlign='center' fontSize='3xl' color='#2e3149'>404</Text>
-            <Text textAlign='center' fontSize='3xl' color='#2e3149'>Page not found</Text>
-        </Container>
-     );
+    return (
+        <Box textAlign="center" py={10} px={6}>
+            <Heading
+                display="inline-block"
+                as="h2"
+                size="2xl"
+                bg='blue.700'
+                backgroundClip="text">
+                404
+            </Heading>
+            <Text fontSize="18px" mt={3} mb={2}>
+                Page Not Found
+            </Text>
+            <Text color={'gray.500'} mb={6}>
+                The page you're looking for does not seem to exist
+            </Text>
+            <Link to='/'>
+                <Button
+                    colorScheme="teal"
+                    bg="blue.700"
+                    color="white"
+                    variant="solid">
+                    Go to Home
+                </Button>
+            </Link>
+
+        </Box>
+    );
 }
- 
+
 export default NotFound;

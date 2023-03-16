@@ -5,7 +5,7 @@ import SideBar from '../components/SideBar';
 import NavBar from '../components/NavBar';
 import Login from "../pages/Login";
 
-import useUser from "../components/useUser";
+import useUser from "../hooks/useUser";
 
 const RootLayout = () => {
     const { user, setUser, deleteUser } = useUser();

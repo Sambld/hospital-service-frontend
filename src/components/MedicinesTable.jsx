@@ -1,11 +1,10 @@
 import { Table, Thead, Tbody, Tr, Th, Td, InputGroup, InputLeftElement, Input, Image, Spinner, Center, Box, Icon, Text, IconButton, Button } from '@chakra-ui/react';
-import { FiExternalLink } from 'react-icons/fi';
 import { NavLink } from 'react-router-dom';
 import { SearchIcon } from '@chakra-ui/icons';
-import { BsGenderFemale, BsGenderMale } from 'react-icons/bs';
+import { TbMedicineSyrup } from 'react-icons/tb';
 import {AiFillFolderOpen} from 'react-icons/ai'
 
-const PatientsTable = ({ initValue, patients, search }) => {
+const MedicinesTable = ({ medicines }) => {
     return (
         <>
             {/* <Text fontSize='sm' color='gray.500' p='10px' align='right'>10,000 Patients</Text> */}
@@ -19,35 +18,34 @@ const PatientsTable = ({ initValue, patients, search }) => {
                                     pointerEvents='none'
                                     children={<SearchIcon color='gray.300' />}
                                 />
-                                <Input value={initValue} variant='flushed' type='text' placeholder='Search by Name' onChange={({target})=>{search(target.value)}}/>
+                                <Input variant='flushed' type='text' placeholder='Search by Name' />
                             </InputGroup>
                         </Th>
-                        <Th>birth place</Th>
-                        <Th>birth Date</Th>
-                        <Th w='200px'><Text textAlign='center'>Open</Text></Th>
+                        <Th>quantity</Th>
+                        <Th>expiration Date</Th>
+                        <Th w='200px'><Text textAlign='center'>Detail</Text></Th>
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {patients && patients.map((patient, index) => (
+                    {medicines && medicines.map((medicine, index) => (
                         <Tr key={index}>
                             <Td p='1'>
                                 <IconButton
-                                    colorScheme={(patient.gender == 'Male') ? 'blue' : 'pink'}
-                                    aria-label='Gender'
+                                    colorScheme={(medicine.gender == 'Male') ? 'blue' : 'pink'}
+                                    aria-label='icon'
                                     size='md'
-                                    icon={(patient.gender == 'Male') ? <BsGenderMale size={25} /> : <BsGenderFemale size={25} />}
+                                    icon={<TbMedicineSyrup size={25} />}
                                 />
                             </Td>
-                            <Td><Text fontWeight='normal' fontSize={20}>{patient.first_name + " " + patient.last_name}</Text></Td>
-                            <Td>{patient.place_of_birth}</Td>
-                            <Td>{patient.birth_date}</Td>
-                            <Td p={1}><NavLink to={patient.id.toString()} borderRadius='md' p={0}><Button colorScheme='green' w='100%' p={0}><AiFillFolderOpen size={30}/></Button></NavLink></Td>
+                            <Td><Text fontWeight='normal' fontSize={20}>{medicine.name}</Text></Td>
+                            <Td>{medicine.quantity}</Td>
+                            <Td>{medicine.expiration_date}</Td>
+                            <Td><NavLink to={medicine.id.toString()}><Button colorScheme='green' w='100%'><AiFillFolderOpen size={30}/></Button></NavLink></Td>
                         </Tr>
                     ))}
-                    {patients && patients.length == 0 && <Tr><Td colSpan='5'><Text textAlign='center' fontWeight='bold' fontSize='xl'>No Data</Text></Td></Tr>}
                 </Tbody>
             </Table>
-            {!patients && <Center p='10px'>
+            {!medicines && <Center p='10px'>
                 <Spinner thickness='4px'
                     speed='0.65s'
                     emptyColor='gray.200'
@@ -58,4 +56,4 @@ const PatientsTable = ({ initValue, patients, search }) => {
     );
 }
 
-export default PatientsTable;
+export default MedicinesTable;

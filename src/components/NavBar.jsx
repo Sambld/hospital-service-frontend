@@ -37,7 +37,7 @@ const UserRoleItem = (user) => {
             items = [<FaUserMd fontSize='1.5rem' />, <FaUserMd fontSize='4rem' />, 'red.500']
         } else if (user.role === 'nurse') {
             items = [<FaUserNurse fontSize='1.5rem' />, <FaUserNurse fontSize='4rem' />, 'blue.500']
-        } else if (user.role === 'p') {
+        } else if (user.role === 'pharmacist') {
             items = [<GiMedicines fontSize='1.5rem' />, <GiMedicines fontSize='4rem' />, 'green.500']
         }
         return items;
