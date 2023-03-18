@@ -17,6 +17,7 @@ import Patients from "./pages/Patients";
 import Patient from "./pages/Patient";
 import NotFound from "./pages/NotFound";
 import Medicines from "./pages/Medicines";
+import Prescriptions from "./pages/Prescriptions";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -27,6 +28,7 @@ const router = createBrowserRouter(
       <Route path='Patients' element={<Patients />}>
         <Route path=':id' element={<Patient />} />
       </Route>
+      <Route path='prescriptions' element={<Prescriptions />} />
       <Route path='medicines' element={<Medicines />} />
       <Route path='*' element={<NotFound />} />
     </Route>

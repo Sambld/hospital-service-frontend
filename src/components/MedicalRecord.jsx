@@ -21,12 +21,29 @@ import {
   Image,
   HStack,
   Wrap,
-  WrapItem
+  WrapItem,
+  IconButton,
+  Spacer,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  Button,
+  Input,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { AddIcon } from '@chakra-ui/icons'
+import { Form } from "react-router-dom";
 
 const MedicalRecord = ({ medical_record, user }) => {
   const [Examination, setExamination] = useState([]);
+  const { isOpen: isOpenExamination, onOpen: onOpenExamination, onClose: onCloseExamination } = useDisclosure()
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString();
   };
@@ -82,16 +99,30 @@ const MedicalRecord = ({ medical_record, user }) => {
           <Tabs isFitted variant='unstyled' color='blue.900' mb={5}>
             <TabList mb='1em' bg='gray.300' borderRadius={10}>
               <Tab borderLeftRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}>Examination</Tab>
-              <Tab borderRightRadius={10} _selected={{ color: 'white', bg: 'red.500' }}>Observation</Tab>
+              <Tab _selected={{ color: 'white', bg: 'red.500' }}>Observation</Tab>
+              <Tab borderRightRadius={10} _selected={{ color: 'white', bg: 'green.500' }}>Monitoring Sheet</Tab>
             </TabList>
             <TabPanels>
               <TabPanel p={0}>
                 <Table variant='simple' colorScheme='blackAlpha'>
                   <Thead>
-                    <Tr bg='#fafafa'>
-                      <Th>examination Date</Th>
-                      <Th>treatment type</Th>
-                      <Th>Result</Th>
+                    <Tr bg='gray.200'>
+                      <Th><Text>examination Date</Text></Th>
+                      <Th><Text>treatment type</Text></Th>
+                      <Th pr={3}>
+                        <HStack>
+                          <Text>Result</Text>
+                          <Spacer />
+                          <IconButton
+                            borderRadius='100%'
+                            size='md'
+                            color='gray.500'
+                            bg='white'
+                            onClick={onOpenExamination}
+                            icon={<AddIcon />} />
+                        </HStack>
+
+                      </Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -226,10 +257,47 @@ const MedicalRecord = ({ medical_record, user }) => {
                   </Flex>
                 </Box>
               </TabPanel>
+              <TabPanel>
+                <Box>
+                  Monitoring Sheet
+                </Box>
+              </TabPanel>
             </TabPanels>
           </Tabs>
         </>
       )}
+      <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenExamination} onClose={onCloseExamination}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>ADD EXAMINATION</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Form>
+              <FormControl id='ExamDate'>
+                <FormLabel>Examination Date</FormLabel>
+                <Input type='date' />
+              </FormControl>
+              <br/>
+              <FormControl id='ExamType'>
+                <FormLabel>Examination Type</FormLabel>
+                <Input type='text' />
+              </FormControl>
+              <br/>
+              <FormControl id='ExamResult'>
+                <FormLabel>Examination Result</FormLabel>
+                <Input type='text' />
+              </FormControl>
+            </Form>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme='blue' mr={3} onClick={onCloseExamination}>
+              Close
+            </Button>
+            <Button variant='ghost'>Add</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

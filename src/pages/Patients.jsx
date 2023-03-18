@@ -17,12 +17,10 @@ import {
     useDisclosure,
     Breadcrumb,
     BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbSeparator,
     Spinner,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { NavLink, Outlet, useOutlet, useSearchParams, useNavigate   } from "react-router-dom";
+import { NavLink, Outlet, useOutlet, useSearchParams, useNavigate } from "react-router-dom";
 import PatientsTable from "../components/PatientsTable";
 import Pagination from '../components/Pagination'
 import useLoader from "../hooks/useLoader";
@@ -33,6 +31,7 @@ const Patients = () => {
     const [patient, setPatient] = useState(null)
     const navigate = useNavigate()
     const [searchParams, setSearchParams] = useSearchParams()
+    const [searchTimeout, setSearchTimeout] = useState(null)
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [id, setId] = useState(0)
@@ -77,19 +76,28 @@ const Patients = () => {
     const handlePagination = (e) => {
         setData(null)
         if (searchParams.get('q')) {
-            useLoader('/patients?q=' + searchParams.get('q') + '&page=' + e).then(res => setData(res))
             navigate('/patients?q=' + searchParams.get('q') + '&page=' + e)
-        }else{
-            useLoader('/patients?page=' + e).then(res => setData(res))
+        } else {
             navigate('/patients?page=' + e)
         }
     }
 
     const handleSearch = (e) => {
-        setData(null)
-        useLoader('/patients?q=' + e).then(res => setData(res))
-        navigate('/patients?q=' + e)
+        if (searchTimeout) {
+            clearTimeout(searchTimeout)
+        }
+        setSearchTimeout(setTimeout(() => {
+            setData(null)
+            if (!e) {
+                useLoader('/patients').then(res => setData(res))
+                navigate('/patients')
+            } else {
+                navigate('/patients?q=' + e)
+            }
+        }, 500))
     }
+
+
     return (
         <Box>
             <HStack>
@@ -117,7 +125,15 @@ const Patients = () => {
             </HStack>
 
             <Box bg='white' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
-                {outlet ? <Outlet context={setPatient} /> : (<><PatientsTable initValue={searchParams.get('q')} patients={data?.data} search={handleSearch} />{data && data.last_page > 1 && <Pagination pagination={data} action={handlePagination} />}</>)}
+                {outlet ? <Outlet context={setPatient} /> : (
+                    <>
+                        <PatientsTable initValue={searchParams.get('q') || ''} patients={data?.data} search={handleSearch} count={data?.total}/>
+                        {
+                            data && data.last_page > 1 &&
+                            <Pagination pagination={data} action={handlePagination} />
+                        }
+                    </>
+                )}
             </Box>
             <Modal isOpen={isOpen} onClose={onClose} initialFocusRef={NavigateButton}>
                 <ModalOverlay />
