@@ -36,27 +36,90 @@ import {
   Input,
   FormControl,
   FormLabel,
+  useToast,
+  Spinner,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AddIcon } from '@chakra-ui/icons'
 import { Form } from "react-router-dom";
 
+// Hooks
+import useLoader from "../hooks/useLoader";
+// Components
+import ExaminationForm from "./ExaminationForm";
+import ObservationForm from "./ObservationForm";
+
 const MedicalRecord = ({ medical_record, user }) => {
+  const toast = useToast()
   const [Examination, setExamination] = useState([]);
+  const [Observation, setObservation] = useState([]);
+  const [loadingExamination, setLoadingExamination] = useState(false)
   const { isOpen: isOpenExamination, onOpen: onOpenExamination, onClose: onCloseExamination } = useDisclosure()
+  const { isOpen: isOpenObservation, onOpen: onOpenObservation, onClose: onCloseObservation } = useDisclosure()
+  const { isOpen: isOpenPrescription, onOpen: onOpenPrescription, onClose: onClosePrescription } = useDisclosure()
+  const { isOpen: isOpenMonitoring, onOpen: onOpenMonitoring, onClose: onCloseMonitoring } = useDisclosure()
+
+  useEffect(() => {
+    handleExamination(medical_record.id)
+    handleObservation(medical_record.id)
+  }, [])
+
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString();
   };
+  const changeFormat = (date) => {
+    let date_ = new Date(date)
+    return date_.getUTCDate() + '-' + (date_.getUTCMonth() + 1) + '-' + date_.getUTCFullYear() + '/' + date_.getUTCHours() + ':' + date_.getUTCMinutes()
+  }
+
+  const handleExamination = () => {
+    setExamination([])
+    setLoadingExamination(true)
+    useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/examinations')
+      .then((data) => {
+        setLoadingExamination(false)
+        setExamination(data || [])
+      })
+  }
+  const handleExaminationAdd = (message) => {
+    onCloseExamination()
+    toast({
+      title: message.title,
+      status: message.status,
+      duration: 9000,
+      isClosable: true,
+    })
+    handleExamination()
+  }
+
+  const handleObservation = () => {
+    setObservation([])
+    setLoadingExamination(true)
+    useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/observations')
+      .then((data) => {
+        setLoadingExamination(false)
+        setObservation(data || [])
+      })
+  }
+  const handleObservationAdd = (message) => {
+    onCloseObservation()
+    toast({
+      title: message.title,
+      status: message.status,
+      duration: 9000,
+      isClosable: true,
+    })
+    handleObservation()
+  }
 
   return (
     <Box
-
       borderRadius="lg"
       overflow="hidden"
-
     >
       {medical_record && (
         <>
+          {/* Medical Record main information */}
           <Box mb={3} p="6" color='blue.900' borderWidth="2px" borderColor='gray.300' borderRadius={10}>
             <Heading> Medical Record #{medical_record.id}</Heading>
 
@@ -95,7 +158,10 @@ const MedicalRecord = ({ medical_record, user }) => {
               </Flex>
             </Stack>
           </Box>
+
           <Divider />
+
+          {/* Medical Record Examination, Observation, Monitoring Sheet */}
           <Tabs isFitted variant='unstyled' color='blue.900' mb={5}>
             <TabList mb='1em' bg='gray.300' borderRadius={10}>
               <Tab borderLeftRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}>Examination</Tab>
@@ -103,6 +169,7 @@ const MedicalRecord = ({ medical_record, user }) => {
               <Tab borderRightRadius={10} _selected={{ color: 'white', bg: 'green.500' }}>Monitoring Sheet</Tab>
             </TabList>
             <TabPanels>
+              {/*  Examination Tab */}
               <TabPanel p={0}>
                 <Box >
                   <Table variant='simple' colorScheme='blackAlpha' >
@@ -114,13 +181,15 @@ const MedicalRecord = ({ medical_record, user }) => {
                           <HStack>
                             <Text>Result</Text>
                             <Spacer />
-                            <IconButton
-                              borderRadius='100%'
-                              size='md'
-                              color='white'
-                              bg='gray.400'
-                              onClick={onOpenExamination}
-                              icon={<AddIcon />} />
+                            {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
+                              <IconButton
+                                borderRadius='100%'
+                                size='sm'
+                                color='white'
+                                bg='gray.400'
+                                onClick={onOpenExamination}
+                                icon={<AddIcon />} />
+                            )}
                           </HStack>
 
                         </Th>
@@ -129,35 +198,51 @@ const MedicalRecord = ({ medical_record, user }) => {
                     <Tbody>
                       {Examination && Examination.map((Exam, index) => (
                         <Tr key={index}>
-                          <Td>{Exam.created_at}</Td>
+                          <Td>{changeFormat(Exam.created_at)}</Td>
                           <Td>{Exam.type}</Td>
                           <Td>{Exam.result}</Td>
                         </Tr>
                       ))}
-                      {Examination.length === 0 && (
+                      {!loadingExamination &&  Examination.length === 0 && (
                         <Tr><Td colSpan={3}><Text textAlign='center' fontWeight='bold' fontSize='xl'>No Examination</Text></Td></Tr>
                       )}
                     </Tbody>
                   </Table>
+                  {loadingExamination && (
+                    <Center p='10px'>
+                      <Spinner thickness='4px'
+                        speed='0.65s'
+                        emptyColor='gray.200'
+                        color='blue.500'
+                        size='xl' />
+                    </Center>
+                  )}
                 </Box>
 
 
               </TabPanel>
+              {/*  Observation Tab */}
               <TabPanel>
-                <Box>
-                  <Flex justify='flex-start' mb='15px'>
-                    <Flex pos="relative" alignItems="center" p={10}>
-                      <Box
-                        position="absolute"
-                        left="50%"
-                        height="calc(100% + 15px)"
-                        border="1px solid"
-                        borderColor={'gray.300'}
-                        top="0px"
-
-                      ></Box>
-                      <Box pos="relative" p="10px">
+                <Flex justify='flex-end' mb='15px'>
+                  <Button colorScheme='red' onClick={onOpenObservation} mr={3}>
+                    <Text>Add Observation</Text>
+                  </Button>
+                </Flex>
+                {Observation && Observation.map((obs, index) => (
+                  <Box>
+                    <Flex justify='flex-start' mb='15px'>
+                      <Flex pos="relative" alignItems="center" p={10}>
                         <Box
+                          position="absolute"
+                          left="50%"
+                          height="calc(100% + 15px)"
+                          border="1px solid"
+                          borderColor={'gray.300'}
+                          top="0px"
+
+                        ></Box>
+                        <Box pos="relative" p="10px">
+                          {/* <Box
                           pos="absolute"
                           width="100%"
                           height="100%"
@@ -165,100 +250,129 @@ const MedicalRecord = ({ medical_record, user }) => {
                           right="0"
                           top="0"
                           left="0"
+                          fontSize="lg"
                           backgroundSize="cover"
                           backgroundRepeat="no-repeat"
                           backgroundPosition="center center"
                           backgroundColor="rgb(255, 255, 255)"
-                          borderRadius="100px"
-                          border="3px solid rgb(4, 180, 180)"
+                          // borderRadius="100px"
+                          // border="3px solid rgb(4, 180, 180)"
                           backgroundImage="none"
                           opacity={1}
-                        ></Box>
-                      </Box>
-                    </Flex>
-                    <Center>
-                      <Box
-                        bg='gray.300'
-                        pos="relative"
-                        p={2}
-                        _before={{
-                          content: `""`,
-                          w: '0',
-                          h: '0',
-                          borderColor: `transparent #cbd5e0 transparent transparent`,
-                          borderStyle: 'solid',
-                          borderWidth: '15px 15px 15px 0',
-                          position: 'absolute',
-                          left: '-15px',
-                          top: 'calc(50% - 15px)',
-                          display: 'block'
-                        }}>
-                        <Wrap>
-                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => (
-                            <WrapItem key={index}>
-                              <Image src='https://scontent.xx.fbcdn.net/v/t1.15752-9/332093841_738616110992091_7103711267090570183_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=aee45a&_nc_eui2=AeET-OrdJjxqAaY1ywMriXvcKDChV5jsspooMKFXmOyymnMkSv9lFZR-eGGjbe6ojfV-Y9OcFOAou9inZQY12CSX&_nc_ohc=IM2xF8xvLe8AX8YHrZo&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdRUveQFqkYfVBQFHa6kK6L1IByaqJcMkDF8no8XJvIh2Q&oe=64281F3D' boxSize='150px' />
-                            </WrapItem>
-                          ))}
-                        </Wrap>
-                      </Box>
-                    </Center>
-                  </Flex>
-                  <Flex justify='flex-start'>
-                    <Flex pos="relative" alignItems="center" p={10}>
-                      <Box
-                        position="absolute"
-                        left="50%"
-                        height="calc(100% + 15px)"
-                        border="1px solid"
-                        borderColor={'gray.300'}
-                        top="0px"
+                        ></Box> */}
+                          <Text
+                            pos="absolute"
+                            width="70px"
+                            height="35px"
+                            bottom="0"
+                            right="0"
+                            top="0"
+                            left="-20px"
+                            fontSize="2xl"
+                            backgroundSize="cover"
+                            backgroundRepeat="no-repeat"
+                            backgroundPosition="center center"
+                            backgroundColor="rgb(255, 255, 255)"
+                            // borderRadius="100px"
+                            // border="3px solid rgb(4, 180, 180)"  
+                            backgroundImage="none"
+                            opacity={1}
+                          >
+                            12Th
+                          </Text>
 
-                      ></Box>
-                      <Box pos="relative" p="10px">
+                        </Box>
+                      </Flex>
+                      <Center>
                         <Box
-                          pos="absolute"
-                          width="100%"
-                          height="100%"
-                          bottom="0"
-                          right="0"
-                          top="0"
-                          left="0"
-                          backgroundSize="cover"
-                          backgroundRepeat="no-repeat"
-                          backgroundPosition="center center"
-                          backgroundColor="rgb(255, 255, 255)"
-                          borderRadius="100px"
-                          border="3px solid rgb(4, 180, 180)"
-                          backgroundImage="none"
-                          opacity={1}
-                        ></Box>
-                      </Box>
+                          gap={0}
+                          pos="relative"
+
+                          _before={{
+                            content: `""`,
+                            w: '0',
+                            h: '0',
+                            borderColor: `transparent #cbd5e0 transparent transparent`,
+                            borderStyle: 'solid',
+                            borderWidth: '15px 15px 15px 0',
+                            position: 'absolute',
+                            left: '-15px',
+                            top: 'calc(50% - 15px)',
+                            display: 'block'
+                          }}>
+                          <Wrap spacing={0}>
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => (
+                              <WrapItem key={index} bg='gray.300' p={2}>
+                                <Image src='https://scontent.xx.fbcdn.net/v/t1.15752-9/332093841_738616110992091_7103711267090570183_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=aee45a&_nc_eui2=AeET-OrdJjxqAaY1ywMriXvcKDChV5jsspooMKFXmOyymnMkSv9lFZR-eGGjbe6ojfV-Y9OcFOAou9inZQY12CSX&_nc_ohc=IM2xF8xvLe8AX8YHrZo&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdRUveQFqkYfVBQFHa6kK6L1IByaqJcMkDF8no8XJvIh2Q&oe=64281F3D' boxSize='150px' />
+                              </WrapItem>
+                            ))}
+                          </Wrap>
+                        </Box>
+                      </Center>
                     </Flex>
-                    <Center>
-                      <Box
-                        bg='gray.300'
-                        pos="relative"
-                        p={2}
-                        _before={{
-                          content: `""`,
-                          w: '0',
-                          h: '0',
-                          borderColor: `transparent #cbd5e0 transparent transparent`,
-                          borderStyle: 'solid',
-                          borderWidth: '15px 15px 15px 0',
-                          position: 'absolute',
-                          left: '-15px',
-                          top: 'calc(50% - 15px)',
-                          display: 'block'
-                        }}>
-                        <HStack>
-                          <Image src='https://scontent.xx.fbcdn.net/v/t1.15752-9/334534753_600766361536668_4647587475183316471_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=aee45a&_nc_eui2=AeHmZXNouRavSwn4GVDD2hmI4j0xZwgUZK3iPTFnCBRkrdgHnquzHCgL0FH27LyT6aa-sJ7rmIOoxl9UERFOPpo3&_nc_ohc=LWL2DkO5nOYAX-OziSa&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdRFYXsW7idPXeqNEdjUui7uANPRd4zOoPXoTy7GSC5a3w&oe=6427FA22' boxSize='150px' />
-                        </HStack>
-                      </Box>
-                    </Center>
-                  </Flex>
-                </Box>
+                    <Flex justify='flex-start'>
+                      <Flex pos="relative" alignItems="center" p={10}>
+                        <Box
+                          position="absolute"
+                          left="50%"
+                          height="calc(100% + 15px)"
+                          border="1px solid"
+                          borderColor={'gray.300'}
+                          top="0px"
+
+                        ></Box>
+                        <Box pos="relative" p="10px">
+                          <Box
+                            pos="absolute"
+                            width="100%"
+                            height="100%"
+                            bottom="0"
+                            right="0"
+                            top="0"
+                            left="0"
+                            backgroundSize="cover"
+                            backgroundRepeat="no-repeat"
+                            backgroundPosition="center center"
+                            backgroundColor="rgb(255, 255, 255)"
+                            borderRadius="100px"
+                            border="3px solid rgb(4, 180, 180)"
+                            backgroundImage="none"
+                            opacity={1}
+                          ></Box>
+                        </Box>
+                      </Flex>
+                      <Center>
+                        <Box
+                          bg='gray.300'
+                          pos="relative"
+                          p={2}
+                          _before={{
+                            content: `""`,
+                            w: '0',
+                            h: '0',
+                            borderColor: `transparent #cbd5e0 transparent transparent`,
+                            borderStyle: 'solid',
+                            borderWidth: '15px 15px 15px 0',
+                            position: 'absolute',
+                            left: '-15px',
+                            top: 'calc(50% - 15px)',
+                            display: 'block'
+                          }}>
+                          <HStack>
+                            <Image src='https://scontent.xx.fbcdn.net/v/t1.15752-9/334534753_600766361536668_4647587475183316471_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=aee45a&_nc_eui2=AeHmZXNouRavSwn4GVDD2hmI4j0xZwgUZK3iPTFnCBRkrdgHnquzHCgL0FH27LyT6aa-sJ7rmIOoxl9UERFOPpo3&_nc_ohc=LWL2DkO5nOYAX-OziSa&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdRFYXsW7idPXeqNEdjUui7uANPRd4zOoPXoTy7GSC5a3w&oe=6427FA22' boxSize='150px' />
+                          </HStack>
+                        </Box>
+                      </Center>
+                    </Flex>
+                  </Box>
+                ))}
+                {Observation.length === 0 && (
+                  <Box>
+                    <Text textAlign='center'>No Observation</Text>
+                  </Box>
+                )}
               </TabPanel>
+              {/* monitoring sheet tab */}
               <TabPanel>
                 <Box>
                   Monitoring Sheet
@@ -268,38 +382,37 @@ const MedicalRecord = ({ medical_record, user }) => {
           </Tabs>
         </>
       )}
-      <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenExamination} onClose={onCloseExamination}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>ADD EXAMINATION</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Form>
-              <FormControl id='ExamDate'>
-                <FormLabel>Examination Date</FormLabel>
-                <Input type='date' />
-              </FormControl>
-              <br />
-              <FormControl id='ExamType'>
-                <FormLabel>Examination Type</FormLabel>
-                <Input type='text' />
-              </FormControl>
-              <br />
-              <FormControl id='ExamResult'>
-                <FormLabel>Examination Result</FormLabel>
-                <Input type='text' />
-              </FormControl>
-            </Form>
-          </ModalBody>
 
-          <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={onCloseExamination}>
-              Close
-            </Button>
-            <Button variant='ghost'>Add</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      {/* Medical Record Modal */}
+      <Box>
+        {/* examination modal */}
+        <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenExamination} onClose={onCloseExamination}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>ADD EXAMINATION</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={5} pt={0}>
+              <ExaminationForm medical_record={medical_record} closeModal={onCloseExamination} closeAndRefresh={handleExaminationAdd} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+
+        {/* observation modal */}
+        <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenObservation} onClose={onCloseObservation}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>ADD OBSERVATION</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={5} pt={0}>
+              <ObservationForm medical_record={medical_record} closeModal={onCloseObservation} closeAndRefresh={handleObservationAdd} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+
+
+      </Box>
+
+
     </Box>
   );
 };

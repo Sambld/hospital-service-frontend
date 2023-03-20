@@ -26,8 +26,7 @@ const RootLayout = () => {
                 axios.get('/user')
                     .then(res => {
                         if (res.data === null) {
-                            deleteUser()
-                            return null
+                            throw Error('User not found')
                         } else {
                             setUser({
                                 "user": res.data,
@@ -36,8 +35,10 @@ const RootLayout = () => {
                         }
                     })
                     .catch(err => {
-                        console.log('LOGOUT')
-                        deleteUser()
+                        if (err.response.status === 401) {
+                            console.log('LOGOUT')
+                            deleteUser()
+                        }
                     })
             }
         } catch (err) {

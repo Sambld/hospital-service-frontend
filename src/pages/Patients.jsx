@@ -27,9 +27,10 @@ import {
     MenuOptionGroup,
     MenuDivider,
     Flex,
+    useToast,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { NavLink, Outlet, useOutlet, useSearchParams, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useOutlet, useSearchParams, useNavigate, useOutletContext } from "react-router-dom";
 import PatientsTable from "../components/PatientsTable";
 import Pagination from '../components/Pagination'
 import useLoader from "../hooks/useLoader";
@@ -40,8 +41,12 @@ import PatientForm from "../components/PatientForm";
 
 const Patients = () => {
     const outlet = useOutlet()
+    const user = useOutletContext()
     const [data, setData] = useState(null)
     const [patient, setPatient] = useState(null)
+
+    const toast = useToast()
+
     const navigate = useNavigate()
     const [searchParams, setSearchParams] = useSearchParams()
     const [searchTimeout, setSearchTimeout] = useState(null)
@@ -52,7 +57,7 @@ const Patients = () => {
     const { isOpen: isPatientOpen, onOpen: onPatientOpen, onClose: onPatientClose } = useDisclosure()
     // Record modal
     const { isOpen: isRecordOpen, onOpen: onRecordOpen, onClose: onRecordClose } = useDisclosure()
-    
+
     const [id, setId] = useState(0)
     const NavigateButton = useRef()
     const EditableSpanValue = useRef('ALL')
@@ -117,10 +122,21 @@ const Patients = () => {
         }, 500))
     }
 
-
+    const handlePatientAdd = (message) => {
+        onPatientClose()
+        toast({
+            title: message.title,
+            status: message.status,
+            duration: 9000,
+            isClosable: true,
+        })
+        setData(null)
+        navigate('/patients')
+        useLoader('/patients').then(res => setData(res))
+    }
     return (
         <Box>
-            
+
             <Flex mr={3}>
                 <Breadcrumb fontSize={{ base: "md", lg: '3xl' }}>
                     <BreadcrumbItem>
@@ -142,8 +158,9 @@ const Patients = () => {
                     </BreadcrumbItem>
                 </Breadcrumb>
                 <Spacer />
+                { user.role == 'doctor' && (
                 <Menu>
-                    <MenuButton colorScheme='blue' as={Button} rightIcon={<ChevronDownIcon />}>
+                    <MenuButton colorScheme='blue' as={Button} rightIcon={<ChevronDownIcon />} >
                         ADD
                     </MenuButton>
                     <MenuList>
@@ -161,11 +178,12 @@ const Patients = () => {
                         </MenuItem>
                     </MenuList>
                 </Menu>
+                )}
                 {/* <Button colorScheme='blue' variant='outline' fontWeight='normal'>CREATE NEW RECORD</Button> */}
             </Flex>
 
             <Box bg='white' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
-                {outlet ? <Outlet context={setPatient} /> : (
+                {outlet ? <Outlet context={{setPatient,user}} /> : (
                     <>
                         <PatientsTable initValue={searchParams.get('q') || ''} patients={data?.data} search={handleSearch} count={data?.total} />
                         {
@@ -175,6 +193,8 @@ const Patients = () => {
                     </>
                 )}
             </Box>
+
+
             <Modal isOpen={isNavigateOpen} onClose={onNavigateClose} initialFocusRef={NavigateButton}>
                 <ModalOverlay />
                 <ModalContent>
@@ -190,16 +210,16 @@ const Patients = () => {
 
             <Modal closeOnOverlayClick={false} isOpen={isPatientOpen} onClose={onPatientClose}>
                 <ModalOverlay />
-                <ModalContent  maxW="56rem">
+                <ModalContent maxW="56rem">
                     <ModalHeader>Add Patient</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <PatientForm closeModal={onPatientClose} />
+                        <PatientForm closeModal={onPatientClose} closeAndRefresh={handlePatientAdd} />
                     </ModalBody>
                 </ModalContent>
             </Modal>
 
-            
+
         </Box>
     );
 }

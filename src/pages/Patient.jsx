@@ -44,12 +44,11 @@ const SummaryItem = ({ label, children }) => (
 );
 
 const Patient = () => {
-    const { user } = useOutletContext()
     const { id } = useParams()
     const [searchParams, setSearchParams] = useSearchParams()
 
     const [patient, setpatient] = useState(null)
-    const setPatientInfo = useOutletContext()
+    const {setPatient:setPatientInfo,user} = useOutletContext()
     const [RecordList, setRecordList] = useState(null)
     const [NotFound, setNotFound] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -59,7 +58,6 @@ const Patient = () => {
     const [tabIndex, setTabIndex] = useState(med['ok'] ? 1 : 0)
 
     useEffect(() => {
-
         if (searchParams.get('med')) {
             setTabIndex(1)
             handleMedChange(searchParams.get('med'))
