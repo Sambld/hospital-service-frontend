@@ -170,6 +170,7 @@ const Patient = () => {
                                                 <Heading p='10px' bg='blue.700' size='md' color='gray.200' textTransform='uppercase' w='100%' borderTopRadius={8}>
                                                     Medical Records
                                                 </Heading>
+                                                {/* only doctor  */}
                                                 <Accordion p={0} bg='gray.100' width='100%' allowToggle>
                                                     {/* if there is no record */}
                                                     {RecordList && RecordList.length === 0 && <Text bg='gray.100' textAlign='center' p={2} mt='0' fontSize={20}>NO MEDICAL RECORDS FOUND</Text>}
@@ -178,7 +179,10 @@ const Patient = () => {
                                                             <h2>
                                                                 <AccordionButton _expanded={{ bg: record.patient_leaving_date ? 'green.500' : 'red.500', color: 'white' }}>
                                                                     <Box fontSize='lg' as="span" flex='1' textAlign='left'>
-                                                                        <Text>Medical Record #{record.id}  {record.patient_leaving_date ? ' - Discharged' : ' - In Hospital'}</Text>
+                                                                        <Text>Medical Record #{record.id} 
+                                                                         {record.patient_leaving_date ? ' - Discharged ' : ' - In Hospital '}
+                                                                          {record.user_id == user.id ? '(owned)' : ''} 
+                                                                         </Text>
                                                                     </Box>
                                                                     <AccordionIcon />
                                                                 </AccordionButton>
