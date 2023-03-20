@@ -1,4 +1,22 @@
-import { Table, Thead, Tbody, Tr, Th, Td, InputGroup, InputLeftElement, Input, Image, Spinner, Center, Box, Icon, Text, IconButton, Button } from '@chakra-ui/react';
+import {
+    Table,
+    Thead,
+    Tbody,
+    Tr,
+    Th,
+    Td,
+    InputGroup,
+    InputLeftElement,
+    Input,
+    Image,
+    Spinner,
+    Center,
+    Box,
+    Icon,
+    Text,
+    IconButton,
+    Button
+} from '@chakra-ui/react';
 import { FiExternalLink } from 'react-icons/fi';
 import { NavLink } from 'react-router-dom';
 import { SearchIcon } from '@chakra-ui/icons';
@@ -13,7 +31,7 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                 <Thead>
                     <Tr bg='#fafafa'>
                         <Th w='50px' p='5'><Text fontSize='sm' p='0px'>#</Text></Th>
-                        <Th maxW='100px'>
+                        <Th maxW='172px'>
                             <InputGroup>
                                 <InputLeftElement
                                     pointerEvents='none'
@@ -38,13 +56,14 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                                     icon={(patient.gender == 'Male') ? <BsGenderMale size={25} /> : <BsGenderFemale size={25} />}
                                 />
                             </Td>
-                            <Td><Text fontWeight='normal' fontSize={20}>{patient.first_name + " " + patient.last_name}</Text></Td>
-                            <Td>{patient.place_of_birth}</Td>
-                            <Td>{patient.birth_date}</Td>
+                            <Td><Text fontWeight='normal' fontSize={{base:'sm',lg:'lg'}}>{patient.first_name + " " + patient.last_name}</Text></Td>
+                            <Td fontSize={{base:'sm',lg:'lg'}}>{patient.place_of_birth}</Td>
+                            <Td fontSize={{base:'sm',lg:'lg'}}>{patient.birth_date}</Td>
                             <Td p={1}>
                                 <NavLink to={patient.id.toString()} style={{'display':'block','borderRadius':'5px'}}>
                                     <Button colorScheme='green' w='100%' p={0}>
-                                        <AiFillFolderOpen size={30} />
+                                        <AiFillFolderOpen size={20} />
+                                        <Text ml={1}>Open</Text>
                                     </Button>
                                 </NavLink>
                             </Td>

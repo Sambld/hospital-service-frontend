@@ -32,13 +32,13 @@ const UserRoleItem = (user) => {
     let items = [];
     try {
         if (user.role === 'administrator') {
-            items = [<RiAdminLine fontSize='1.5rem' />, <RiAdminLine fontSize='4rem' />, 'black']
+            items = [<RiAdminLine fontSize={{ base: '1rem', md: '1.5rem' }} />, <RiAdminLine fontSize='4rem' />, 'black']
         } else if (user.role === 'doctor') {
-            items = [<FaUserMd fontSize='1.5rem' />, <FaUserMd fontSize='4rem' />, 'red.500']
+            items = [<FaUserMd fontSize={{ base: '1rem', md: '1.5rem' }} />, <FaUserMd fontSize='4rem' />, 'red.500']
         } else if (user.role === 'nurse') {
-            items = [<FaUserNurse fontSize='1.5rem' />, <FaUserNurse fontSize='4rem' />, 'blue.500']
+            items = [<FaUserNurse fontSize={{ base: '1rem', md: '1.5rem' }} />, <FaUserNurse fontSize='4rem' />, 'blue.500']
         } else if (user.role === 'pharmacist') {
-            items = [<GiMedicines fontSize='1.5rem' />, <GiMedicines fontSize='4rem' />, 'green.500']
+            items = [<GiMedicines fontSize={{ base: '1rem', md: '1.5rem' }} />, <GiMedicines fontSize='4rem' />, 'green.500']
         }
         return items;
     } catch { return items; }
@@ -58,23 +58,24 @@ const NavBar = ({ logout, user }) => {
         }, 1000);
     }
     return (
-        <Flex justifyContent={'space-between'} p='10px'>
+        <Flex justifyContent={'space-between'} p={{ base: '5px', lg: '10px' }}>
             <HStack color="#374083">
-                <FaShieldVirus size={40} />
-                <Text fontSize='3xl'>Infectious diseases</Text>
+                <FaShieldVirus fontSize='40px'/>
+                <Text fontSize={{ base: 'md', lg: '3xl' }}>Infectious diseases</Text>
             </HStack>
             <Spacer />
-            <Avatar
-                bg={UserRoleIcon && UserRoleIcon[2]}
-                size='md'
-                icon={UserRoleIcon && UserRoleIcon[0]}
-            />
+
             <Center pl='5px' alignItems={'center'}>
+                <Avatar
+                    bg={UserRoleIcon && UserRoleIcon[2]}
+                    size={{ base: 'sm', lg: 'md' }}
+                    icon={UserRoleIcon && UserRoleIcon[0]}
+                />
                 <Menu isLazy>
                     <MenuButton>
                         <Box p='5px'>
                             <HStack>
-                                <Text>{user.first_name + " " + user.last_name}</Text>
+                                <Text fontSize={{ base: 'sm', lg: 'md' }}>{user.first_name + " " + user.last_name}</Text>
                                 <Icon as={ChevronDownIcon} boxSize={8} color='black' />
                             </HStack>
                         </Box>
@@ -104,8 +105,8 @@ const NavBar = ({ logout, user }) => {
                                 <Text>settings</Text>
                             </MenuItem>
                         </NavLink>
-                        <Divider mt='10px'/>
-                        <MenuItem  onClick={onOpen}>
+                        <Divider mt='10px' />
+                        <MenuItem onClick={onOpen}>
                             <Text color='red.500' fontWeight='normal'>Sign out</Text>
                             <Spacer />
                             <Icon as={RiShutDownLine} boxSize={5} color='red.500' />

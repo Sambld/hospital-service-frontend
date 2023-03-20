@@ -104,40 +104,43 @@ const MedicalRecord = ({ medical_record, user }) => {
             </TabList>
             <TabPanels>
               <TabPanel p={0}>
-                <Table variant='simple' colorScheme='blackAlpha'>
-                  <Thead>
-                    <Tr bg='gray.200'>
-                      <Th><Text>examination Date</Text></Th>
-                      <Th><Text>treatment type</Text></Th>
-                      <Th pr={3}>
-                        <HStack>
-                          <Text>Result</Text>
-                          <Spacer />
-                          <IconButton
-                            borderRadius='100%'
-                            size='md'
-                            color='gray.500'
-                            bg='white'
-                            onClick={onOpenExamination}
-                            icon={<AddIcon />} />
-                        </HStack>
+                <Box >
+                  <Table variant='simple' colorScheme='blackAlpha' >
+                    <Thead>
+                      <Tr bg='gray.200'>
+                        <Th><Text>examination Date</Text></Th>
+                        <Th><Text>treatment type</Text></Th>
+                        <Th pr={3}>
+                          <HStack>
+                            <Text>Result</Text>
+                            <Spacer />
+                            <IconButton
+                              borderRadius='100%'
+                              size='md'
+                              color='white'
+                              bg='gray.400'
+                              onClick={onOpenExamination}
+                              icon={<AddIcon />} />
+                          </HStack>
 
-                      </Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {Examination && Examination.map((Exam, index) => (
-                      <Tr key={index}>
-                        <Td>{Exam.created_at}</Td>
-                        <Td>{Exam.type}</Td>
-                        <Td>{Exam.result}</Td>
+                        </Th>
                       </Tr>
-                    ))}
-                    {Examination.length === 0 && (
-                      <Tr><Td colSpan={3}><Text textAlign='center' fontWeight='bold' fontSize='xl'>No Examination</Text></Td></Tr>
-                    )}
-                  </Tbody>
-                </Table>
+                    </Thead>
+                    <Tbody>
+                      {Examination && Examination.map((Exam, index) => (
+                        <Tr key={index}>
+                          <Td>{Exam.created_at}</Td>
+                          <Td>{Exam.type}</Td>
+                          <Td>{Exam.result}</Td>
+                        </Tr>
+                      ))}
+                      {Examination.length === 0 && (
+                        <Tr><Td colSpan={3}><Text textAlign='center' fontWeight='bold' fontSize='xl'>No Examination</Text></Td></Tr>
+                      )}
+                    </Tbody>
+                  </Table>
+                </Box>
+
 
               </TabPanel>
               <TabPanel>
@@ -191,12 +194,11 @@ const MedicalRecord = ({ medical_record, user }) => {
                           display: 'block'
                         }}>
                         <Wrap>
-                          <WrapItem>
-                            <Image src='https://scontent.xx.fbcdn.net/v/t1.15752-9/332093841_738616110992091_7103711267090570183_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=aee45a&_nc_eui2=AeET-OrdJjxqAaY1ywMriXvcKDChV5jsspooMKFXmOyymnMkSv9lFZR-eGGjbe6ojfV-Y9OcFOAou9inZQY12CSX&_nc_ohc=IM2xF8xvLe8AX8YHrZo&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdRUveQFqkYfVBQFHa6kK6L1IByaqJcMkDF8no8XJvIh2Q&oe=64281F3D' boxSize='150px' />
-                          </WrapItem>
-                          <WrapItem>
-                            <Image src='https://scontent.xx.fbcdn.net/v/t1.15752-9/332093841_738616110992091_7103711267090570183_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=aee45a&_nc_eui2=AeET-OrdJjxqAaY1ywMriXvcKDChV5jsspooMKFXmOyymnMkSv9lFZR-eGGjbe6ojfV-Y9OcFOAou9inZQY12CSX&_nc_ohc=IM2xF8xvLe8AX8YHrZo&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdRUveQFqkYfVBQFHa6kK6L1IByaqJcMkDF8no8XJvIh2Q&oe=64281F3D' boxSize='150px' />
-                          </WrapItem>
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => (
+                            <WrapItem key={index}>
+                              <Image src='https://scontent.xx.fbcdn.net/v/t1.15752-9/332093841_738616110992091_7103711267090570183_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=aee45a&_nc_eui2=AeET-OrdJjxqAaY1ywMriXvcKDChV5jsspooMKFXmOyymnMkSv9lFZR-eGGjbe6ojfV-Y9OcFOAou9inZQY12CSX&_nc_ohc=IM2xF8xvLe8AX8YHrZo&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdRUveQFqkYfVBQFHa6kK6L1IByaqJcMkDF8no8XJvIh2Q&oe=64281F3D' boxSize='150px' />
+                            </WrapItem>
+                          ))}
                         </Wrap>
                       </Box>
                     </Center>
@@ -277,12 +279,12 @@ const MedicalRecord = ({ medical_record, user }) => {
                 <FormLabel>Examination Date</FormLabel>
                 <Input type='date' />
               </FormControl>
-              <br/>
+              <br />
               <FormControl id='ExamType'>
                 <FormLabel>Examination Type</FormLabel>
                 <Input type='text' />
               </FormControl>
-              <br/>
+              <br />
               <FormControl id='ExamResult'>
                 <FormLabel>Examination Result</FormLabel>
                 <Input type='text' />

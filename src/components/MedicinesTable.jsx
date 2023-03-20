@@ -4,43 +4,34 @@ import { SearchIcon } from '@chakra-ui/icons';
 import { TbMedicineSyrup } from 'react-icons/tb';
 import {AiFillFolderOpen} from 'react-icons/ai'
 
-const MedicinesTable = ({ medicines }) => {
+const MedicinesTable = ({ initValue, medicines, count, search }) => {
     return (
         <>
-            {/* <Text fontSize='sm' color='gray.500' p='10px' align='right'>10,000 Patients</Text> */}
+            <Text fontSize='sm' color='gray.500' p='10px' align='right'>{count ? count  : medicines ? '0' : '-' } Medicines</Text>
             <Table variant='simple' colorScheme='blackAlpha'>
                 <Thead>
                     <Tr bg='#fafafa'>
-                        <Th w='50px' p='5'>#</Th>
-                        <Th maxW='100px'>
+                        <Th maxW='154px'>
                             <InputGroup>
                                 <InputLeftElement
                                     pointerEvents='none'
                                     children={<SearchIcon color='gray.300' />}
                                 />
-                                <Input variant='flushed' type='text' placeholder='Search by Name' />
+                                <Input defaultValue={initValue} variant='flushed' type='text' placeholder='Search by Name' onChange={({ target }) => { search(target.value) }} />
                             </InputGroup>
                         </Th>
                         <Th>quantity</Th>
                         <Th>expiration Date</Th>
-                        <Th w='200px'><Text textAlign='center'>Detail</Text></Th>
+                        <Th><Text textAlign='center'>Detail</Text></Th>
                     </Tr>
                 </Thead>
                 <Tbody>
                     {medicines && medicines.map((medicine, index) => (
                         <Tr key={index}>
-                            <Td p='1'>
-                                <IconButton
-                                    colorScheme={(medicine.gender == 'Male') ? 'blue' : 'pink'}
-                                    aria-label='icon'
-                                    size='md'
-                                    icon={<TbMedicineSyrup size={25} />}
-                                />
-                            </Td>
                             <Td><Text fontWeight='normal' fontSize={20}>{medicine.name}</Text></Td>
                             <Td>{medicine.quantity}</Td>
                             <Td>{medicine.expiration_date}</Td>
-                            <Td><NavLink to={medicine.id.toString()}><Button colorScheme='green' w='100%'><AiFillFolderOpen size={30}/></Button></NavLink></Td>
+                            <Td><NavLink to={medicine.id.toString()}><Button colorScheme='blue' w='100%'>Detail</Button></NavLink></Td>
                         </Tr>
                     ))}
                 </Tbody>

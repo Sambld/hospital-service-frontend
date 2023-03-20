@@ -31,7 +31,7 @@ const SideBar = ({ user }) => {
   const [SidebarItem, setSidebarItem] = useState(SideBarItems(user));
 
   return (
-    <List pl='10px' pt='10px' fontSize="1.2em" spacing={0}>
+    <List pl={{base:'0px',lg:'10px'}} pt='10px' fontSize="1.2em" spacing={0}>
       {SidebarItem && SidebarItem.map((item, index) => (
         <ListItem color="#3a3e54" key={index}>
           <NavLink to={item.link} >
@@ -39,7 +39,8 @@ const SideBar = ({ user }) => {
               color: "#374083",
             }}>
               {item.icon}
-              <Text>{item.name}</Text>
+              {/* if is below lg then don't show text */}
+              <Text display={{ base: 'none', lg: 'block' }}>{item.name}</Text>
             </HStack>
           </NavLink>
         </ListItem>

@@ -18,12 +18,25 @@ import {
     Breadcrumb,
     BreadcrumbItem,
     Spinner,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+    MenuItemOption,
+    MenuGroup,
+    MenuOptionGroup,
+    MenuDivider,
+    Flex,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useOutlet, useSearchParams, useNavigate } from "react-router-dom";
 import PatientsTable from "../components/PatientsTable";
 import Pagination from '../components/Pagination'
 import useLoader from "../hooks/useLoader";
+import { ChevronDownIcon } from "@chakra-ui/icons";
+import { FaUserMd } from "react-icons/fa";
+import { AiFillFolderOpen } from "react-icons/ai";
+import PatientForm from "../components/PatientForm";
 
 const Patients = () => {
     const outlet = useOutlet()
@@ -33,7 +46,13 @@ const Patients = () => {
     const [searchParams, setSearchParams] = useSearchParams()
     const [searchTimeout, setSearchTimeout] = useState(null)
 
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    // Navigate modal
+    const { isOpen: isNavigateOpen, onOpen: onNavigateOpen, onClose: onNavigateClose } = useDisclosure()
+    // Patient modal
+    const { isOpen: isPatientOpen, onOpen: onPatientOpen, onClose: onPatientClose } = useDisclosure()
+    // Record modal
+    const { isOpen: isRecordOpen, onOpen: onRecordOpen, onClose: onRecordClose } = useDisclosure()
+    
     const [id, setId] = useState(0)
     const NavigateButton = useRef()
     const EditableSpanValue = useRef('ALL')
@@ -66,9 +85,10 @@ const Patients = () => {
     }
 
     const handleSubmit = (e) => {
+        // Modal Open
         if (!isNaN(e) && e) {
             setId(parseInt(e))
-            onOpen()
+            onNavigateOpen()
         }
         EditableSpanValue.current.textContent = 'ALL'
     }
@@ -100,7 +120,8 @@ const Patients = () => {
 
     return (
         <Box>
-            <HStack>
+            
+            <Flex mr={3}>
                 <Breadcrumb fontSize={{ base: "md", lg: '3xl' }}>
                     <BreadcrumbItem>
                         <NavLink to='/patients' color='blue.500'>
@@ -113,7 +134,7 @@ const Patients = () => {
                             patient ? <Text fontSize={{ base: "md", lg: '3xl' }} color='#2e3149' >{patient.first_name + " " + patient.last_name}</Text> : <Spinner thickness='4px' />)
                         }
                         {!outlet &&
-                            <Editable fontSize={30} color='#2e3149' onSubmit={handleSubmit} placeholder='ALL'>
+                            <Editable fontSize={{ base: 'md', lg: '3xl' }} color='#2e3149' onSubmit={handleSubmit} placeholder='ALL'>
                                 <EditablePreview ref={EditableSpanValue} />
                                 <EditableInput />
                             </Editable>
@@ -121,13 +142,32 @@ const Patients = () => {
                     </BreadcrumbItem>
                 </Breadcrumb>
                 <Spacer />
-                <Button colorScheme='blue' variant='outline' fontWeight='normal'>CREATE NEW RECORD</Button>
-            </HStack>
+                <Menu>
+                    <MenuButton colorScheme='blue' as={Button} rightIcon={<ChevronDownIcon />}>
+                        ADD
+                    </MenuButton>
+                    <MenuList>
+                        <MenuItem onClick={onPatientOpen}>
+                            <FaUserMd />
+                            <Text ml={3}>
+                                NEW PATIENT
+                            </Text>
+                        </MenuItem>
+                        <MenuItem>
+                            <AiFillFolderOpen />
+                            <Text ml={3}>
+                                NEW RECORD
+                            </Text>
+                        </MenuItem>
+                    </MenuList>
+                </Menu>
+                {/* <Button colorScheme='blue' variant='outline' fontWeight='normal'>CREATE NEW RECORD</Button> */}
+            </Flex>
 
             <Box bg='white' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
                 {outlet ? <Outlet context={setPatient} /> : (
                     <>
-                        <PatientsTable initValue={searchParams.get('q') || ''} patients={data?.data} search={handleSearch} count={data?.total}/>
+                        <PatientsTable initValue={searchParams.get('q') || ''} patients={data?.data} search={handleSearch} count={data?.total} />
                         {
                             data && data.last_page > 1 &&
                             <Pagination pagination={data} action={handlePagination} />
@@ -135,18 +175,31 @@ const Patients = () => {
                     </>
                 )}
             </Box>
-            <Modal isOpen={isOpen} onClose={onClose} initialFocusRef={NavigateButton}>
+            <Modal isOpen={isNavigateOpen} onClose={onNavigateClose} initialFocusRef={NavigateButton}>
                 <ModalOverlay />
                 <ModalContent>
                     <ModalHeader>Navigation to Patient#{id}</ModalHeader>
                     <ModalCloseButton />
                     <ModalFooter>
-                        <NavLink to={`/patients/${id}`} onClick={onClose} onKeyDown={onClose}>
-                            <Button ref={NavigateButton} colorScheme='green' onClick={onClose} >Navigate</Button>
+                        <NavLink to={`/patients/${id}`} onClick={onNavigateClose} onKeyDown={onNavigateClose}>
+                            <Button ref={NavigateButton} colorScheme='green' onClick={onNavigateClose} >Navigate</Button>
                         </NavLink>
                     </ModalFooter>
                 </ModalContent>
             </Modal>
+
+            <Modal closeOnOverlayClick={false} isOpen={isPatientOpen} onClose={onPatientClose}>
+                <ModalOverlay />
+                <ModalContent  maxW="56rem">
+                    <ModalHeader>Add Patient</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <PatientForm closeModal={onPatientClose} />
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+
+            
         </Box>
     );
 }

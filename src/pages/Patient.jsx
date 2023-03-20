@@ -29,6 +29,7 @@ import {
     AccordionButton,
     AccordionPanel,
     AccordionIcon,
+    Divider,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { NavLink, useOutletContext, useParams, useSearchParams } from "react-router-dom";
@@ -43,7 +44,7 @@ const SummaryItem = ({ label, children }) => (
 );
 
 const Patient = () => {
-    const {user} = useOutletContext()
+    const { user } = useOutletContext()
     const { id } = useParams()
     const [searchParams, setSearchParams] = useSearchParams()
 
@@ -58,7 +59,7 @@ const Patient = () => {
     const [tabIndex, setTabIndex] = useState(med['ok'] ? 1 : 0)
 
     useEffect(() => {
-        
+
         if (searchParams.get('med')) {
             setTabIndex(1)
             handleMedChange(searchParams.get('med'))
@@ -76,7 +77,7 @@ const Patient = () => {
             setPatientInfo(res.patient)
             // SET MEDICAL RECORDS
             useLoader("/patients/" + id + "/medical-records").then(res => {
-                setRecordList(res.reverse())
+                setRecordList(res)
             })
         })
     }, [])
@@ -89,7 +90,7 @@ const Patient = () => {
         if (searchParams.get('med')) {
             setTabIndex(1)
             handleMedChange(searchParams.get('med'))
-        }else{
+        } else {
             setTabIndex(0)
         }
     }, [searchParams])
@@ -132,28 +133,35 @@ const Patient = () => {
                                             <Stack spacing={4} divider={<StackDivider borderColor='gray.200' />}>
                                                 <Box>
                                                     <Stack spacing={4}>
-                                                        <Box bg='gray.700' p='0px' borderRadius={5} border='4px' borderColor='gray.700'>
-                                                            <Heading p='10px' bg='gray.700' borderTopRadius={5} size='md' color='gray.200' textTransform='uppercase' w='100%'>
+                                                        <Box p='0px' borderRadius={8}>
+                                                            <Heading bg='blue.700' p='10px' borderTopRadius={8} size='sm' color='gray.100' textTransform='uppercase' w='100%'>
                                                                 Patient information
                                                             </Heading>
-                                                            <VStack bg='gray.100' p='20px' spacing={2} align="start" pl='3'>
+                                                            <VStack bg='gray.50' color='blue.900' p='20px' spacing={2} align="start" pl='3' borderBottomRadius={8}>
                                                                 <SummaryItem label="Name ">{patient.first_name + " " + patient.last_name}</SummaryItem>
                                                                 <SummaryItem label="Birth date">{patient.birth_date}</SummaryItem>
                                                                 <SummaryItem label="Place of birth">{patient.place_of_birth}</SummaryItem>
                                                                 <SummaryItem label="Gender">{patient.gender}</SummaryItem>
                                                                 <SummaryItem label="Nationality">{patient.nationality}</SummaryItem>
                                                                 <SummaryItem label="Address">{patient.address}</SummaryItem>
+                                                                <Divider/>
+                                                                <Box color="red">
+                                                                    {/* Emergency Contact */}
+                                                                    <SummaryItem label="Emergency Contact Name">{patient.emergency_contact_name}</SummaryItem>
+                                                                    <SummaryItem label="Emergency Contact Phone">{patient.emergency_contact_number}</SummaryItem>
+                                                                </Box>
+
                                                             </VStack>
                                                         </Box>
-                                                        <Box bg='red' p='0px' borderRadius={5} border='4px' borderColor='red'>
+                                                        {/* <Box bg='red' p='0px' borderRadius={20}>
                                                             <Heading p='10px' bg='red' borderTopRadius={5} size='md' color='gray.100' textTransform='uppercase'>
                                                                 Emergency Contact
                                                             </Heading>
-                                                            <VStack bg='red.50' p='20px' spacing={2} align="start" pl='3' fontSize={30}>
+                                                            <VStack bg='red.50' p='20px' spacing={2} align="start" pl='3' fontSize={30} borderRadius={20} borderTopRadius={0}>
                                                                 <SummaryItem label="Name">{patient.emergency_contact_name}</SummaryItem>
                                                                 <SummaryItem label="Phone">{patient.emergency_contact_number}</SummaryItem>
                                                             </VStack>
-                                                        </Box>
+                                                        </Box> */}
                                                     </Stack>
                                                 </Box>
 
@@ -161,7 +169,7 @@ const Patient = () => {
                                         </GridItem>
                                         <GridItem>
                                             <Box p={0}>
-                                                <Heading p='10px' bg='gray.700' size='md' color='gray.200' textTransform='uppercase' w='100%'>
+                                                <Heading p='10px' bg='blue.700' size='md' color='gray.200' textTransform='uppercase' w='100%' borderTopRadius={8}>
                                                     Medical Records
                                                 </Heading>
                                                 <Accordion p={0} bg='gray.100' width='100%' allowToggle>
@@ -170,14 +178,14 @@ const Patient = () => {
                                                     {RecordList && RecordList.map((record, index) => (
                                                         <AccordionItem bg='white' key={index}>
                                                             <h2>
-                                                                <AccordionButton _expanded={{ bg: record.patient_leaving_date ? 'green' : 'red', color: 'white' }}>
+                                                                <AccordionButton _expanded={{ bg: record.patient_leaving_date ? 'green.500' : 'red.500', color: 'white' }}>
                                                                     <Box fontSize='lg' as="span" flex='1' textAlign='left'>
                                                                         <Text>Medical Record #{record.id}  {record.patient_leaving_date ? ' - Discharged' : ' - In Hospital'}</Text>
                                                                     </Box>
                                                                     <AccordionIcon />
                                                                 </AccordionButton>
                                                             </h2>
-                                                            <AccordionPanel border='4px' borderTop={0} borderColor={record.patient_leaving_date ? 'green' : 'red'} pb={4} color='gray.900'>
+                                                            <AccordionPanel border='4px' borderTop={0} borderColor={record.patient_leaving_date ? 'green.500' : 'red.500'} pb={4} color='gray.900'>
                                                                 <Text pt='2' fontSize='md'>
                                                                     Entry day: {record.patient_entry_date}
                                                                 </Text>
