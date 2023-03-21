@@ -3,7 +3,9 @@ import axios from '../components/axios'
 const useLoader = async(link, abortCont = null) => {
     if (abortCont === null) abortCont = new AbortController();
     const { data } = await axios.get(link, { signal: abortCont.signal })
-        .then(res => res.data)
+        .then(res => {
+            return res
+        })
         .catch(err => () => abortCont.abort())
     return data
 }

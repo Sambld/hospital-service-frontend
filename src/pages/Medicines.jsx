@@ -19,7 +19,7 @@ const Medicines = () => {
     const [searchTimeout, setSearchTimeout] = useState(null)
 
     useEffect(() => {
-        if (!data && !outlet) useLoader('/medicines').then(res => setData(res))
+        if (!data && !outlet) useLoader('/medicines').then(res => setData(res.data))
         // if (!outlet) setPatient(null)
     }, [outlet])
 
@@ -27,7 +27,7 @@ const Medicines = () => {
         if (!data && !outlet) {
             // setPatient(null)
             const request_url = requestUrl()
-            useLoader(request_url).then(res => setData(res))
+            useLoader(request_url).then(res => setData(res.data))
         }
         if (outlet) {
             setData(null)
@@ -38,7 +38,7 @@ const Medicines = () => {
         if (searchParams.get('q') || searchParams.get('page')) {
             setData(null)
             const request_url = requestUrl()
-            useLoader(request_url).then(res => setData(res))
+            useLoader(request_url).then(res => setData(res.data))
         }
     }, [searchParams])
 
@@ -74,7 +74,7 @@ const Medicines = () => {
         setSearchTimeout(setTimeout(() => {
             setData(null)
             if (!e) {
-                useLoader('/medicines').then(res => setData(res))
+                useLoader('/medicines').then(res => setData(res.data))
                 navigate('/medicines')
             } else {
                 navigate('/medicines?q=' + e)

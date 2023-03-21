@@ -41,6 +41,7 @@ const PatientForm = ({ closeModal,closeAndRefresh }) => {
                     {
                         title: 'Patient created successfully.',
                         status: 'success',
+                        redirect: '/patients/' + res.patient.id,
                     }
                 )
             }else{

@@ -48,15 +48,15 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId , patientId }) => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (patientId != '') {
+        if (patientId != null) {
             setLoadingPatient(true);
             useLoader('/patients/' + patientId).then((res) => {
                 setLoadingPatient(false);
-                if (res == undefined) {
+                if (res?.data == undefined) {
                     setPatient(null);
                     return;
                 }
-                setPatient(res.patient);
+                setPatient(res.data.patient);
             });
         }
     }, []);
@@ -71,7 +71,7 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId , patientId }) => {
                     {
                         title: 'Medical Record created successfully.',
                         status: 'success',
-                        redirect: '/patients/' + formData.patient_id ,
+                        redirect: '/patients/' + formData.patient_id + '?med=' + res.data.id,
                     }
                 )
             } else {
@@ -130,7 +130,7 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId , patientId }) => {
                         onChange={handlePatientChange}
                         defaultValue={formData.patient_id}
                         w='100%'
-                        isDisabled={patientId != ''}
+                        isDisabled={patientId != null}
                     >
                         <NumberInputField borderLeftRadius={0} />
                         <NumberInputStepper>

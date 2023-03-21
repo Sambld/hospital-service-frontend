@@ -74,18 +74,18 @@ const Patient = () => {
         if (!patient) {
             useLoader('/patients/' + id).then(res => {
                 // CHECK IF PATIENT EXISTS
-                if (!res) {
+                if (!res.data) {
                     console.log('not found')
                     setPatientInfo({ first_name: "Patient", last_name: "Not Found" })
                     setNotFound(true)
                     return null
                 }
                 // SET PATIENT INFO
-                setpatient(res.patient)
-                setPatientInfo(res.patient)
+                setpatient(res.data.patient)
+                setPatientInfo(res.data.patient)
                 // SET MEDICAL RECORDS
                 useLoader("/patients/" + id + "/medical-records").then(res => {
-                    setRecordList(res)
+                    setRecordList(res.data)
                 })
             })
         }
@@ -107,12 +107,12 @@ const Patient = () => {
         useLoader("/patients/" + id + "/medical-records/" + med).then(res => {
             setLoadingRecord(false)
             setLoading(false)
-            if (res == undefined) {
+            if (res?.data == undefined) {
                 throw Error('Error loading medical record')
             }
             const medical_record = {
                 'ok': true,
-                'data': res,
+                'data': res.data,
             }
             setMed(medical_record)
         })

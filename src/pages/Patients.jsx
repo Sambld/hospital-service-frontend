@@ -67,7 +67,7 @@ const Patients = () => {
         if (!data && !outlet) {
             setPatient(null)
             const request_url = requestUrl()
-            useLoader(request_url).then(res => setData(res))
+            useLoader(request_url).then(res => setData(res.data))
         }
         if (outlet) {
             setData(null)
@@ -78,7 +78,7 @@ const Patients = () => {
         if (searchParams.get('q') || searchParams.get('page')) {
             setData(null)
             const request_url = requestUrl()
-            useLoader(request_url).then(res => setData(res))
+            useLoader(request_url).then(res => setData(res.data))
         }
     }, [searchParams])
 
@@ -115,7 +115,7 @@ const Patients = () => {
         setSearchTimeout(setTimeout(() => {
             setData(null)
             if (!e) {
-                useLoader('/patients').then(res => setData(res))
+                useLoader('/patients').then(res => setData(res.data))
                 navigate('/patients')
             } else {
                 navigate('/patients?q=' + e)
@@ -131,9 +131,11 @@ const Patients = () => {
             duration: 9000,
             isClosable: true,
         })
-        setData(null)
-        navigate('/patients')
-        useLoader('/patients').then(res => setData(res))
+        if (message?.redirect) {
+            setData(null)
+            navigate(message.redirect)
+            useLoader(message.redirect).then(res => setData(res.data))
+        }
     }
 
     const handleRecordAdd = (message) => {
@@ -144,9 +146,11 @@ const Patients = () => {
             duration: 9000,
             isClosable: true,
         })
-        setData(null)
-        navigate(message.redirect)
-        useLoader(message.redirect).then(res => setData(res))
+        if (message?.redirect) {
+            setData(null)
+            navigate(message.redirect)
+            useLoader(message.redirect).then(res => setData(res.data))
+        }
     }
 
     return (
@@ -173,32 +177,32 @@ const Patients = () => {
                     </BreadcrumbItem>
                 </Breadcrumb>
                 <Spacer />
-                { user.role == 'doctor' && (
-                <Menu>
-                    <MenuButton colorScheme='blue' as={Button} rightIcon={<ChevronDownIcon />} >
-                        ADD
-                    </MenuButton>
-                    <MenuList>
-                        <MenuItem onClick={onPatientOpen}>
-                            <FaUserMd />
-                            <Text ml={3}>
-                                NEW PATIENT
-                            </Text>
-                        </MenuItem>
-                        <MenuItem onClick={onRecordOpen}>
-                            <AiFillFolderOpen />
-                            <Text ml={3}>
-                                NEW RECORD
-                            </Text>
-                        </MenuItem>
-                    </MenuList>
-                </Menu>
+                {user.role == 'doctor' && (
+                    <Menu>
+                        <MenuButton colorScheme='blue' as={Button} rightIcon={<ChevronDownIcon />} >
+                            ADD
+                        </MenuButton>
+                        <MenuList>
+                            <MenuItem onClick={onPatientOpen}>
+                                <FaUserMd />
+                                <Text ml={3}>
+                                    NEW PATIENT
+                                </Text>
+                            </MenuItem>
+                            <MenuItem onClick={onRecordOpen}>
+                                <AiFillFolderOpen />
+                                <Text ml={3}>
+                                    NEW RECORD
+                                </Text>
+                            </MenuItem>
+                        </MenuList>
+                    </Menu>
                 )}
                 {/* <Button colorScheme='blue' variant='outline' fontWeight='normal'>CREATE NEW RECORD</Button> */}
             </Flex>
 
             <Box bg='white' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
-                {outlet ? <Outlet context={{setPatient,user}} /> : (
+                {outlet ? <Outlet context={{ setPatient, user }} /> : (
                     <>
                         <PatientsTable initValue={searchParams.get('q') || ''} patients={data?.data} search={handleSearch} count={data?.total} />
                         {

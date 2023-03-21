@@ -48,10 +48,12 @@ import useLoader from "../hooks/useLoader";
 // Components
 import ExaminationForm from "./ExaminationForm";
 import ObservationForm from "./ObservationForm";
+import OBservationImages from "./ObservationImages";
 
 const MedicalRecord = ({ medical_record, user }) => {
   const toast = useToast()
   const [Examination, setExamination] = useState([]);
+  const [Observations, setObservations] = useState([]);
   const [Observation, setObservation] = useState([]);
   const [loadingExamination, setLoadingExamination] = useState(false)
   const [loadingObservation, setLoadingObservation] = useState(false)
@@ -59,6 +61,7 @@ const MedicalRecord = ({ medical_record, user }) => {
   const { isOpen: isOpenObservation, onOpen: onOpenObservation, onClose: onCloseObservation } = useDisclosure()
   const { isOpen: isOpenPrescription, onOpen: onOpenPrescription, onClose: onClosePrescription } = useDisclosure()
   const { isOpen: isOpenMonitoring, onOpen: onOpenMonitoring, onClose: onCloseMonitoring } = useDisclosure()
+  const { isOpen: isOpenObservationImages, onOpen: onOpenObservationImages, onClose: onCloseObservationImages } = useDisclosure()
 
   useEffect(() => {
     handleExamination(medical_record.id)
@@ -96,7 +99,7 @@ const MedicalRecord = ({ medical_record, user }) => {
     useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/examinations')
       .then((data) => {
         setLoadingExamination(false)
-        setExamination(data || [])
+        setExamination(data.data || [])
       })
   }
   const handleExaminationAdd = (message) => {
@@ -111,16 +114,17 @@ const MedicalRecord = ({ medical_record, user }) => {
   }
 
   const handleObservation = () => {
-    setObservation([])
+    setObservations([])
     setLoadingObservation(true)
     useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/observations')
       .then((data) => {
         setLoadingObservation(false)
-        setObservation(data || [])
+        setObservations(data.data || [])
       })
   }
   const handleObservationAdd = (message) => {
     onCloseObservation()
+    onCloseObservationImages()
     toast({
       title: message.title,
       status: message.status,
@@ -249,7 +253,7 @@ const MedicalRecord = ({ medical_record, user }) => {
                     </Button>
                   </Flex>
                 )}
-                {Observation && Observation.map((obs, index) => (
+                {Observations && Observations.map((obs, index) => (
                   <Box key={index}>
                     <Flex justify='flex-start' mb='15px'>
                       <Flex pos="relative" alignItems="center" p={10}>
@@ -286,7 +290,10 @@ const MedicalRecord = ({ medical_record, user }) => {
 
                         </Box>
                       </Flex>
-                      <Center>
+                      <Center onClick={()=>{
+                        setObservation(obs)
+                        onOpenObservationImages()
+                      }} cursor='pointer'>
                         <Box
                           gap={0}
                           pos="relative"
@@ -315,7 +322,7 @@ const MedicalRecord = ({ medical_record, user }) => {
                     </Flex>
                   </Box>
                 ))}
-                {!loadingObservation &&Observation.length === 0 && (
+                {!loadingObservation && Observations.length === 0 && (
                   <Box>
                     <Text textAlign='center'>No Observation</Text>
                   </Box>
@@ -371,7 +378,18 @@ const MedicalRecord = ({ medical_record, user }) => {
             </ModalBody>
           </ModalContent>
         </Modal>
-
+        
+        {/* observation images modal */}
+        <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenObservationImages} onClose={onCloseObservationImages}>
+          <ModalOverlay />
+          <ModalContent maxW='1000px'>
+            <ModalHeader>Observation Information</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={5} pt={0}>
+              <OBservationImages Observation={Observation}  closeAndRefresh={handleObservationAdd}  patientId={medical_record.patient_id} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
 
       </Box>
 

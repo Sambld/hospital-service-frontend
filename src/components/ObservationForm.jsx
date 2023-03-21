@@ -35,44 +35,49 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
             { name: formData.name }
         )
             .then((res) => {
-                for (const property in formData.images.imageBase64) {
-                    
-                    usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/observations/' + res.data.id + '/images',
-                        { image: formData.images.imageBase64[property] },
-                        { 'Content-Type': 'multipart/form-data' }
-                    )
-                }
-                setLoading(false);
-                if (res.data) {
-                    closeAndRefresh(
-                        {
-                            title: 'Observation created successfully.',
-                            status: 'success',
-                        }
-                    )
-                }
-                else {
-                    closeAndRefresh(
-                        {
-                            title: 'Error',
-                            description: res.message,
-                            status: 'error',
-                        }
-                    )
-                }
+                const uploadImages = uploadImage(res).then((upload) => {
+
+                    console.log('after upload')
+                    setLoading(false);
+                    if (res.data) {
+                        closeAndRefresh(
+                            {
+                                title: 'Observation created successfully.',
+                                status: 'success',
+                            }
+                        )
+                    }
+                    else {
+                        closeAndRefresh(
+                            {
+                                title: 'Error',
+                                description: res.message,
+                                status: 'error',
+                            }
+                        )
+                    }
+                })
             });
     };
-    // const uploadImage = async (patientId, medicalRecordId, observationId, imageFile) => {
-    //     // Create a FormData object to hold the image file
-    //     const formData = new FormData();
-    //     formData.append('image', imageFile);
+    const uploadImage = async (res) => {
+        try {
+            const promises = [];
+            for (const property in formData.images.imageBase64) {
+                const promise = usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/observations/' + res.data.id + '/images',
+                    { image: formData.images.imageBase64[property] },
+                    { 'Content-Type': 'multipart/form-data' }
+                ).then((res) => {
+                    console.log('upload image')
+                })
+                promises.push(promise);
+            }
+            await Promise.all(promises);
+            return true
+        } catch (err) {
+            console.log(err)
+        }
 
-    //     // Send a POST request to the server with the image data
-    //     const response = await axios.post(`/patients/${patientId}/medical-records/${medicalRecordId}/observations/${observationId}/images`, formData);
-
-    //     // Return the uploaded image data
-    //     return response.data.data.image;
-    // }
+    }
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData((prevFormData) => ({
