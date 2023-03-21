@@ -38,6 +38,7 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import { FaUserMd } from "react-icons/fa";
 import { AiFillFolderOpen } from "react-icons/ai";
 import PatientForm from "../components/PatientForm";
+import RecordForm from "../components/RecordForm";
 
 const Patients = () => {
     const outlet = useOutlet()
@@ -134,6 +135,20 @@ const Patients = () => {
         navigate('/patients')
         useLoader('/patients').then(res => setData(res))
     }
+
+    const handleRecordAdd = (message) => {
+        onRecordClose()
+        toast({
+            title: message.title,
+            status: message.status,
+            duration: 9000,
+            isClosable: true,
+        })
+        setData(null)
+        navigate(message.redirect)
+        useLoader(message.redirect).then(res => setData(res))
+    }
+
     return (
         <Box>
 
@@ -170,7 +185,7 @@ const Patients = () => {
                                 NEW PATIENT
                             </Text>
                         </MenuItem>
-                        <MenuItem>
+                        <MenuItem onClick={onRecordOpen}>
                             <AiFillFolderOpen />
                             <Text ml={3}>
                                 NEW RECORD
@@ -215,6 +230,17 @@ const Patients = () => {
                     <ModalCloseButton />
                     <ModalBody>
                         <PatientForm closeModal={onPatientClose} closeAndRefresh={handlePatientAdd} />
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+
+            <Modal closeOnOverlayClick={false} isOpen={isRecordOpen} onClose={onRecordClose}>
+                <ModalOverlay />
+                <ModalContent maxW="56rem">
+                    <ModalHeader>Add Record</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <RecordForm closeModal={onRecordClose} closeAndRefresh={handleRecordAdd} userId={user.id} patientId={patient?.id || null} />
                     </ModalBody>
                 </ModalContent>
             </Modal>

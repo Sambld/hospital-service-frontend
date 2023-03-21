@@ -54,6 +54,7 @@ const MedicalRecord = ({ medical_record, user }) => {
   const [Examination, setExamination] = useState([]);
   const [Observation, setObservation] = useState([]);
   const [loadingExamination, setLoadingExamination] = useState(false)
+  const [loadingObservation, setLoadingObservation] = useState(false)
   const { isOpen: isOpenExamination, onOpen: onOpenExamination, onClose: onCloseExamination } = useDisclosure()
   const { isOpen: isOpenObservation, onOpen: onOpenObservation, onClose: onCloseObservation } = useDisclosure()
   const { isOpen: isOpenPrescription, onOpen: onOpenPrescription, onClose: onClosePrescription } = useDisclosure()
@@ -111,10 +112,10 @@ const MedicalRecord = ({ medical_record, user }) => {
 
   const handleObservation = () => {
     setObservation([])
-    setLoadingExamination(true)
+    setLoadingObservation(true)
     useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/observations')
       .then((data) => {
-        setLoadingExamination(false)
+        setLoadingObservation(false)
         setObservation(data || [])
       })
   }
@@ -314,10 +315,19 @@ const MedicalRecord = ({ medical_record, user }) => {
                     </Flex>
                   </Box>
                 ))}
-                {Observation.length === 0 && (
+                {!loadingObservation &&Observation.length === 0 && (
                   <Box>
                     <Text textAlign='center'>No Observation</Text>
                   </Box>
+                )}
+                {loadingObservation && (
+                  <Center p='10px'>
+                    <Spinner thickness='4px'
+                      speed='0.65s'
+                      emptyColor='gray.200'
+                      color='blue.500'
+                      size='xl' />
+                  </Center>
                 )}
               </TabPanel>
               {/* monitoring sheet tab */}

@@ -30,6 +30,7 @@ import {
     AccordionPanel,
     AccordionIcon,
     Divider,
+    useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { NavLink, useOutletContext, useParams, useSearchParams } from "react-router-dom";
@@ -46,62 +47,68 @@ const SummaryItem = ({ label, children }) => (
 const Patient = () => {
     const { id } = useParams()
     const [searchParams, setSearchParams] = useSearchParams()
+    const toast = useToast()
 
     const [patient, setpatient] = useState(null)
-    const {setPatient:setPatientInfo,user} = useOutletContext()
+    const { setPatient: setPatientInfo, user } = useOutletContext()
     const [RecordList, setRecordList] = useState(null)
     const [NotFound, setNotFound] = useState(false)
+
     const [loading, setLoading] = useState(false)
+    const [loadingRecord, setLoadingRecord] = useState(false)
 
     const [med, setMed] = useState({ 'ok': false })
 
     const [tabIndex, setTabIndex] = useState(med['ok'] ? 1 : 0)
 
+
     useEffect(() => {
         if (searchParams.get('med')) {
             setTabIndex(1)
-            handleMedChange(searchParams.get('med'))
+            console.log('first useEffect')
+            if (!loadingRecord) handleMedChange(searchParams.get('med'))
+        } else {
+            setTabIndex(0)
         }
-        useLoader('/patients/' + id).then(res => {
-            // CHECK IF PATIENT EXISTS
-            if (res.error != undefined) res = []
-            if (!res) {
-                setPatientInfo({ first_name: "Patient", last_name: "Not Found" })
-                setNotFound(true)
-                return null
-            }
-            // SET PATIENT INFO
-            setpatient(res.patient)
-            setPatientInfo(res.patient)
-            // SET MEDICAL RECORDS
-            useLoader("/patients/" + id + "/medical-records").then(res => {
-                setRecordList(res)
+
+        if (!patient) {
+            useLoader('/patients/' + id).then(res => {
+                // CHECK IF PATIENT EXISTS
+                if (!res) {
+                    console.log('not found')
+                    setPatientInfo({ first_name: "Patient", last_name: "Not Found" })
+                    setNotFound(true)
+                    return null
+                }
+                // SET PATIENT INFO
+                setpatient(res.patient)
+                setPatientInfo(res.patient)
+                // SET MEDICAL RECORDS
+                useLoader("/patients/" + id + "/medical-records").then(res => {
+                    setRecordList(res)
+                })
             })
-        })
-    }, [])
+        }
+
+    }, [searchParams])
 
     useEffect(() => {
         if (med['ok']) setTabIndex(1)
     }, [med])
 
-    useEffect(() => {
-        if (searchParams.get('med')) {
-            setTabIndex(1)
-            handleMedChange(searchParams.get('med'))
-        } else {
-            setTabIndex(0)
-        }
-    }, [searchParams])
+
 
     const handleTabsChange = (index) => {
         setTabIndex(index)
     }
     const handleMedChange = (med) => {
+        setLoadingRecord(true)
         setLoading(true)
         useLoader("/patients/" + id + "/medical-records/" + med).then(res => {
+            setLoadingRecord(false)
             setLoading(false)
             if (res == undefined) {
-                setMed({ 'ok': false })
+                throw Error('Error loading medical record')
             }
             const medical_record = {
                 'ok': true,
@@ -109,6 +116,20 @@ const Patient = () => {
             }
             setMed(medical_record)
         })
+            .catch(err => {
+                toast({
+                    title: "Error",
+                    description: err.message,
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
+                })
+                setLoadingRecord(false)
+                setLoading(false)
+                setMed({ 'ok': false })
+                setTabIndex(0)
+            })
+
     }
 
 
@@ -142,7 +163,7 @@ const Patient = () => {
                                                                 <SummaryItem label="Gender">{patient.gender}</SummaryItem>
                                                                 <SummaryItem label="Nationality">{patient.nationality}</SummaryItem>
                                                                 <SummaryItem label="Address">{patient.address}</SummaryItem>
-                                                                <Divider/>
+                                                                <Divider />
                                                                 <Box color="red">
                                                                     {/* Emergency Contact */}
                                                                     <SummaryItem label="Emergency Contact Name">{patient.emergency_contact_name}</SummaryItem>
@@ -179,10 +200,10 @@ const Patient = () => {
                                                             <h2>
                                                                 <AccordionButton _expanded={{ bg: record.patient_leaving_date ? 'green.500' : 'red.500', color: 'white' }}>
                                                                     <Box fontSize='lg' as="span" flex='1' textAlign='left'>
-                                                                        <Text>Medical Record #{record.id} 
-                                                                         {record.patient_leaving_date ? ' - Discharged ' : ' - In Hospital '}
-                                                                          {record.user_id == user.id ? '(owned)' : ''} 
-                                                                         </Text>
+                                                                        <Text>Medical Record #{record.id}
+                                                                            {record.patient_leaving_date ? ' - Discharged ' : ' - In Hospital '}
+                                                                            {record.user_id == user.id ? '(owned)' : ''}
+                                                                        </Text>
                                                                     </Box>
                                                                     <AccordionIcon />
                                                                 </AccordionButton>
@@ -221,6 +242,7 @@ const Patient = () => {
                 </TabPanel>
                 <TabPanel>
                     {med['ok'] && <MedicalRecord medical_record={med['data']} user={user} />}
+                    {loadingRecord && <Center p='10px'><Spinner thickness='4px' /></Center>}
                 </TabPanel>
             </TabPanels>
         </Tabs>
