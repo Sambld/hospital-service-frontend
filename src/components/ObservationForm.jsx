@@ -274,11 +274,11 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
         if (e.dataTransfer.files) {
             for (const file in e.dataTransfer.files) {
                 if (['length', 'item'].includes(file)) continue
-                console.log('start ' + ImageNumber.toString())
+                // console.log('start ' + ImageNumber.toString())
 
                 await setImageNumber((prevImageNumber) => prevImageNumber + 1);
                 await setImageSorted((prevImageSorted) => [...prevImageSorted, ImageNumber - 1]);
-                console.log('stop ' + ImageNumber.toString())
+                // console.log('stop ' + ImageNumber.toString())
                 setFormData((prevFormData) => ({
                     ...prevFormData,
                     images: {

@@ -1,5 +1,5 @@
-import { Box, Grid, GridItem } from '@chakra-ui/react';
-import { Outlet, useLoaderData, useNavigate } from 'react-router-dom';
+import { Box, Grid, GridItem, useToast } from '@chakra-ui/react';
+import { Outlet, useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 
 import SideBar from '../components/SideBar';
 import NavBar from '../components/NavBar';
@@ -12,6 +12,8 @@ import { useEffect } from 'react';
 const RootLayout = () => {
     const { user, setUser, deleteUser } = useUser();
     const navigate = useNavigate();
+    const location = useLocation();
+    const toast = useToast();
     const goHomePage = () => navigate('/');
 
     const logout = () => {
@@ -19,6 +21,20 @@ const RootLayout = () => {
         goHomePage();
     }
 
+    useEffect(() => {
+        if (location.pathname.includes('prescription') || location.pathname.includes('medicines')) {
+            if (!user || user?.role != 'pharmacist') {
+                goHomePage();
+                toast({
+                    title: "You don't have permission to access this page",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                })
+
+            }
+        }
+    }, [location.pathname])
     useEffect(() => {
         // CHECK IF USER EXISTS
         try {
@@ -44,6 +60,7 @@ const RootLayout = () => {
         } catch (err) {
             console.log(err)
         }
+        // 
 
     }, [])
 

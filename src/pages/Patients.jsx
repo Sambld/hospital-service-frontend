@@ -66,8 +66,15 @@ const Patients = () => {
     useEffect(() => {
         if (!data && !outlet) {
             setPatient(null)
-            const request_url = requestUrl()
-            useLoader(request_url).then(res => setData(res.data))
+            if (!searchParams.get('q') && !searchParams.get('page')) {
+                const request_url = requestUrl()
+                useLoader(request_url).then(res => setData(res.data))
+                    .catch(err => {
+                        setData({
+                            data: []
+                        })
+                    })
+            }
         }
         if (outlet) {
             setData(null)
@@ -79,6 +86,11 @@ const Patients = () => {
             setData(null)
             const request_url = requestUrl()
             useLoader(request_url).then(res => setData(res.data))
+                .catch(err => {
+                    setData({
+                        data: []
+                    })
+                })
         }
     }, [searchParams])
 
@@ -116,6 +128,11 @@ const Patients = () => {
             setData(null)
             if (!e) {
                 useLoader('/patients').then(res => setData(res.data))
+                    .catch(err => {
+                        setData({
+                            data: []
+                        })
+                    })
                 navigate('/patients')
             } else {
                 navigate('/patients?q=' + e)

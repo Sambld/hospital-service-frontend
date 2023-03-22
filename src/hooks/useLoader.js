@@ -7,6 +7,7 @@ const useLoader = async(link, abortCont = null) => {
             return res
         })
         .catch(err => () => abortCont.abort())
+    if (data === undefined) return Promise.reject();
     return data
 }
 export default useLoader;
