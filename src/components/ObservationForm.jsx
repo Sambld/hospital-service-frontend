@@ -15,18 +15,21 @@ import {
     Center,
     Icon,
     Progress,
+    useToast,
 } from '@chakra-ui/react';
 import { Form } from 'react-router-dom';
 import usePost from '../hooks/usePost';
 import { useDropzone } from 'react-dropzone'
 import { useDrag, useDrop } from 'react-dnd'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 
 import { CloseIcon } from '@chakra-ui/icons';
 import { FaSort } from 'react-icons/fa';
 import { GiEmptyChessboard } from 'react-icons/gi';
 import { AiOutlinePlus } from 'react-icons/ai';
 
-const ObservationImageDraggable = ({ image, index,value, moveListItem }) => {
+const ObservationImageDraggable = ({ image, index, value, moveListItem }) => {
     // useDrag - the list item is draggable
     const [{ isDragging }, dragRef] = useDrag({
         type: 'image',
@@ -96,15 +99,17 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
         images: {
             imageList: {},
             imagePreviewUrl: {},
-            imageBase64: {},
+            imageTargetFile: {},
         },
     });
+    const toast = useToast();
     const [ImageSorted, setImageSorted] = useState([]);
     const [ImageNumber, setImageNumber] = useState(1);
     const [emptyImage, setEmptyImage] = useState([]);
     const [uploadProgress, setUploadProgress] = useState(10);
     const [loading, setLoading] = useState(false);
     const [sort, setSort] = useState(false);
+    const [dragActive, setDragActive] = useState(false);
     const { getRootProps, getInputProps } = useDropzone({});
 
 
@@ -126,6 +131,17 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        if(formData.name == '' || formData.images.imageList == {}){
+            toast({
+                title: "Error",
+                description: "Please fill in all the fields.",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+            return;
+        }
+
         setLoading(true);
         usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/observations',
             { name: formData.name }
@@ -158,8 +174,8 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
             const promises = [];
             const progressUnit = 100 / ImageSorted.length;
             ImageSorted.map((value, index) => {
-                    const promise = usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/observations/' + res.data.id + '/images',
-                    { image: formData.images.imageBase64['image' + value] },
+                const promise = usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/observations/' + res.data.id + '/images',
+                    { image: formData.images.imageTargetFile['image' + value] },
                     { 'Content-Type': 'multipart/form-data' }
                 ).then((res) => {
                     setUploadProgress((prevUploadProgress) => prevUploadProgress + progressUnit);
@@ -186,6 +202,7 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
             setImageNumber((prevImageNumber) => prevImageNumber + 1);
             setImageSorted((prevImageSorted) => [...prevImageSorted, ImageNumber - 1]);
         }
+        console.log(name)
         setFormData((prevFormData) => ({
             ...prevFormData,
             images: {
@@ -198,8 +215,8 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                     ...prevFormData.images.imagePreviewUrl,
                     [name]: URL.createObjectURL(event.target.files[0]),
                 },
-                imageBase64: {
-                    ...prevFormData.images.imageBase64,
+                imageTargetFile: {
+                    ...prevFormData.images.imageTargetFile,
                     [name]: event.target.files[0],
                 },
             },
@@ -220,8 +237,8 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                     ...prevFormData.images.imagePreviewUrl,
                     [name]: '',
                 },
-                imageBase64: {
-                    ...prevFormData.images.imageBase64,
+                imageTargetFile: {
+                    ...prevFormData.images.imageTargetFile,
                     [name]: '',
                 },
             },
@@ -237,6 +254,54 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
             }
         }
     }
+
+    const handleDrag = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === "dragenter" || e.type === "dragover") {
+            setDragActive(true);
+        } else if (e.type === "dragleave") {
+            setDragActive(false);
+        }
+    };
+
+    const handleDrop = async (e,index) => {
+        console.log(ImageNumber,index)
+        if(ImageNumber != index + 1) return 
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        if (e.dataTransfer.files) {
+            for (const file in e.dataTransfer.files) {
+                if (['length', 'item'].includes(file)) continue
+                console.log('start ' + ImageNumber.toString())
+
+                await setImageNumber((prevImageNumber) => prevImageNumber + 1);
+                await setImageSorted((prevImageSorted) => [...prevImageSorted, ImageNumber - 1]);
+                console.log('stop ' + ImageNumber.toString())
+                setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    images: {
+                        ...prevFormData.images,
+                        imageList: {
+                            ...prevFormData.images.imageList,
+                            ['image' + (ImageNumber - 1).toString()]: e.dataTransfer.files[file].name,
+                        },
+                        imagePreviewUrl: {
+                            ...prevFormData.images.imagePreviewUrl,
+                            ['image' + (ImageNumber - 1).toString()]: URL.createObjectURL(e.dataTransfer.files[file]),
+                        },
+                        imageTargetFile: {
+                            ...prevFormData.images.imageTargetFile,
+                            ['image' + (ImageNumber - 1).toString()]: e.dataTransfer.files[file],
+                        },
+                    },
+                }));
+                break
+            }
+
+        }
+    };
 
     const getBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -280,27 +345,29 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
             </Flex>
             {/* sort Images */}
             {sort ? (
-                <Box
-                    border='2px'
-                    borderColor='gray.300'
-                    borderRadius='md'
-                    p={2}
-                    mb={3}
+                <DndProvider backend={HTML5Backend}>
+                    <Box
+                        border='2px'
+                        borderColor='gray.300'
+                        borderRadius='md'
+                        p={2}
+                        mb={3}
 
-                >   
-                    {ImageSorted.length == 0 ? (
-                        <Text textAlign='center'>Nothing to Sort</Text>
-                    ) : null}
-                    {ImageSorted.map((value, index) => (
-                        <ObservationImageDraggable
-                            key={index}
-                            index={index}
-                            value={value}
-                            image={formData.images.imagePreviewUrl['image' + value.toString()]}
-                            moveListItem={moveImageListItem}
-                        />
-                    ))}
-                </Box>
+                    >
+                        {ImageSorted.length == 0 ? (
+                            <Text textAlign='center'>Nothing to Sort</Text>
+                        ) : null}
+                        {ImageSorted.map((value, index) => (
+                            <ObservationImageDraggable
+                                key={index}
+                                index={index}
+                                value={value}
+                                image={formData.images.imagePreviewUrl['image' + value.toString()]}
+                                moveListItem={moveImageListItem}
+                            />
+                        ))}
+                    </Box>
+                </DndProvider>
             ) : null}
             {/* do loop with ImageNumber */}
             < Grid templateColumns="repeat(3, 1fr)" gap={6} display={sort ? 'none' : 'grid'}>
@@ -343,14 +410,15 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                                                         ...prevFormData.images.imagePreviewUrl,
                                                         ['image' + i.toString()]: '',
                                                     },
-                                                    imageBase64: {
-                                                        ...prevFormData.images.imageBase64,
+                                                    imageTargetFile: {
+                                                        ...prevFormData.images.imageTargetFile,
                                                         ['image' + i.toString()]: '',
                                                     },
                                                 },
                                             }));
                                             // setImageNumber((prevImageNumber) => prevImageNumber - 1);
                                         }}
+
                                     >
                                         <Box
                                             position='absolute'
@@ -381,12 +449,15 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                                         borderStyle='dashed'
                                         borderRadius='lg'
                                         borderTopRadius={0}
-                                        bg='gray.100'
+                                        bg={dragActive ? 'gray.100' : 'gray.200'}
                                         cursor='pointer'
                                         h='300px'
                                         w='100%'
                                         m={0}
                                         overflow='hidden'
+                                        onDragEnter={(e) => handleDrag(e)}
+                                        onDrop={(e) => handleDrop(e,i)}
+                                        onDragOver={(e) => e.preventDefault()}
                                     >
                                         <Flex justifyContent='center' alignItems='center' h='100%'>
                                             <Text textAlign='center'>+</Text>
@@ -396,10 +467,10 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
 
 
                                 <Input
+
                                     display='none'
                                     type="file"
                                     name={'image' + i.toString()}
-                                    value={formData.images.imageList['image' + i.toString()] || ''}
                                     onChange={handleImageChange}
                                 />
 
@@ -407,15 +478,13 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                         </GridItem>
                     ))}
             </Grid>
-
-
             {/* <Image src={} /> */}
             {loading && <Progress mt={3} hasStripe value={uploadProgress} />}
             <Flex justifyContent='center' mt='10px'>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
                     Close
                 </Button>
-                <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" >
+                <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" onClick={handleSubmit}>
                     {/* add icon */}
                     <AiOutlinePlus />
                     <Text ml="5px" >Add</Text>
