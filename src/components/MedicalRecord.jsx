@@ -370,7 +370,7 @@ const MedicalRecord = ({ medical_record, user }) => {
         {/* observation modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenObservation} onClose={onCloseObservation}>
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent maxW='1000px'>
             <ModalHeader>ADD OBSERVATION</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={5} pt={0}>

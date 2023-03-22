@@ -65,7 +65,6 @@ const Patient = () => {
     useEffect(() => {
         if (searchParams.get('med')) {
             setTabIndex(1)
-            console.log('first useEffect')
             if (!loadingRecord) handleMedChange(searchParams.get('med'))
         } else {
             setTabIndex(0)

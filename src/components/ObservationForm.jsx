@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
     FormControl,
     FormLabel,
@@ -11,10 +11,84 @@ import {
     Flex,
     Text,
     Image,
+    Box,
+    Center,
+    Icon,
+    Progress,
 } from '@chakra-ui/react';
 import { Form } from 'react-router-dom';
-import { AiOutlinePlus } from 'react-icons/ai';
 import usePost from '../hooks/usePost';
+import { useDropzone } from 'react-dropzone'
+import { useDrag, useDrop } from 'react-dnd'
+
+import { CloseIcon } from '@chakra-ui/icons';
+import { FaSort } from 'react-icons/fa';
+import { GiEmptyChessboard } from 'react-icons/gi';
+import { AiOutlinePlus } from 'react-icons/ai';
+
+const ObservationImageDraggable = ({ image, index,value, moveListItem }) => {
+    // useDrag - the list item is draggable
+    const [{ isDragging }, dragRef] = useDrag({
+        type: 'image',
+        item: { index },
+        collect: (monitor) => ({
+            isDragging: monitor.isDragging(),
+        }),
+    })
+
+
+    // useDrop - the list item is also a drop area
+    const [spec, dropRef] = useDrop({
+        accept: 'image',
+        hover: (item, monitor) => {
+            const dragIndex = item.index
+            const hoverIndex = index
+            const hoverBoundingRect = ref.current?.getBoundingClientRect()
+            const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
+            const hoverActualY = monitor.getClientOffset().y - hoverBoundingRect.top
+
+            // if dragging down, continue only when hover is smaller than middle Y
+            if (dragIndex < hoverIndex && hoverActualY < hoverMiddleY) return
+            // if dragging up, continue only when hover is bigger than middle Y
+            if (dragIndex > hoverIndex && hoverActualY > hoverMiddleY) return
+
+            moveListItem(dragIndex, hoverIndex)
+            item.index = hoverIndex
+        },
+    })
+
+    // Join the 2 refs together into one (both draggable and can be dropped on)
+    const ref = useRef(null)
+    const dragDropRef = dragRef(dropRef(ref))
+
+    // Make items being dragged transparent, so it's easier to see where we drop them
+    const opacity = isDragging ? 0 : 1
+    return (
+        <Box
+            ref={dragDropRef}
+            p={2}
+            m={2}
+            _hover={{ bg: 'gray.100' }}
+            cursor='move'
+        >
+            <Flex>
+                <Box>
+                    <Image
+                        src={image}
+                        boxSize="100px"
+                        objectFit="cover"
+                        w='200px'
+                    />
+                </Box>
+                <Flex alignItems="center" ml={5}>
+                    <Text fontSize={40}>#{value + 1}</Text>
+                </Flex>
+
+            </Flex>
+        </Box>
+
+    )
+}
 
 const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
     const [formData, setFormData] = useState({
@@ -25,8 +99,30 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
             imageBase64: {},
         },
     });
+    const [ImageSorted, setImageSorted] = useState([]);
     const [ImageNumber, setImageNumber] = useState(1);
+    const [emptyImage, setEmptyImage] = useState([]);
+    const [uploadProgress, setUploadProgress] = useState(10);
     const [loading, setLoading] = useState(false);
+    const [sort, setSort] = useState(false);
+    const { getRootProps, getInputProps } = useDropzone({});
+
+
+    const moveImageListItem = useCallback(
+        (dragIndex, hoverIndex) => {
+            const dragItem = ImageSorted[dragIndex]
+            const hoverItem = ImageSorted[hoverIndex]
+            if (dragItem == hoverItem) return
+            if (dragItem == undefined || hoverItem == undefined) return
+            setImageSorted((prevImageSorted) => {
+                const newImageSorted = [...prevImageSorted]
+                newImageSorted[dragIndex] = hoverItem
+                newImageSorted[hoverIndex] = dragItem
+                return newImageSorted
+            })
+        },
+        [ImageSorted],
+    )
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -36,8 +132,6 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
         )
             .then((res) => {
                 const uploadImages = uploadImage(res).then((upload) => {
-
-                    console.log('after upload')
                     setLoading(false);
                     if (res.data) {
                         closeAndRefresh(
@@ -62,15 +156,16 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
     const uploadImage = async (res) => {
         try {
             const promises = [];
-            for (const property in formData.images.imageBase64) {
-                const promise = usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/observations/' + res.data.id + '/images',
-                    { image: formData.images.imageBase64[property] },
+            const progressUnit = 100 / ImageSorted.length;
+            ImageSorted.map((value, index) => {
+                    const promise = usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/observations/' + res.data.id + '/images',
+                    { image: formData.images.imageBase64['image' + value] },
                     { 'Content-Type': 'multipart/form-data' }
                 ).then((res) => {
-                    console.log('upload image')
+                    setUploadProgress((prevUploadProgress) => prevUploadProgress + progressUnit);
                 })
                 promises.push(promise);
-            }
+            })
             await Promise.all(promises);
             return true
         } catch (err) {
@@ -87,9 +182,10 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
     };
     const handleImageChange = (event) => {
         const { name, value } = event.target;
-
-        if (!formData.images.imageList[name]) setImageNumber((prevImageNumber) => prevImageNumber + 1);
-
+        if (!formData.images.imageList[name] && formData.images.imageList[name] != '') {
+            setImageNumber((prevImageNumber) => prevImageNumber + 1);
+            setImageSorted((prevImageSorted) => [...prevImageSorted, ImageNumber - 1]);
+        }
         setFormData((prevFormData) => ({
             ...prevFormData,
             images: {
@@ -108,20 +204,39 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                 },
             },
         }));
-        // getBase64(event.target.files[0]).then((result) => {
-        //     setFormData((prevFormData) => ({
-        //         ...prevFormData,
-        //         images: {
-        //             ...prevFormData.images,
-        //             imageBase64: {
-        //                 ...prevFormData.images.imageBase64,
-        //                 [name]: result,
-        //             },
-        //         },
-        //     }));
-        // });
-        // console.log(formData.images.imageBase64)
     };
+    const handleImageRemove = (event) => {
+        const { name, value } = event.target;
+        if (formData.images.imageList[name]) setImageNumber((prevImageNumber) => prevImageNumber - 1);
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            images: {
+                ...prevFormData.images,
+                imageList: {
+                    ...prevFormData.images.imageList,
+                    [name]: '',
+                },
+                imagePreviewUrl: {
+                    ...prevFormData.images.imagePreviewUrl,
+                    [name]: '',
+                },
+                imageBase64: {
+                    ...prevFormData.images.imageBase64,
+                    [name]: '',
+                },
+            },
+        }));
+    };
+    const deleteEmpty = () => {
+        for (let i = 1; i <= ImageNumber - 1; i++) {
+            if (formData.images.imageList['image' + i.toString()] == '') {
+                if (!emptyImage.includes(i)) {
+                    setEmptyImage((prevEmptyImage) => [...prevEmptyImage, i]);
+                    setImageSorted((prevImageSorted) => prevImageSorted.filter((item) => item != i));
+                }
+            }
+        }
+    }
 
     const getBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -136,7 +251,7 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
         <Form onSubmit={handleSubmit}>
             <br />
             <FormControl id='name' isRequired>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Title</FormLabel>
                 <Input
                     type="text"
                     name="name"
@@ -144,41 +259,158 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                     onChange={handleChange} />
             </FormControl>
             <br />
-            {/* do loop with ImageNumber */}
-            <Grid templateColumns="repeat(3, 1fr)" gap={6}>
-                {ImageNumber && Array.from(Array(ImageNumber).keys()).map((i) => (
-                    <GridItem key={i}>
-                        <FormControl id={'image' + i.toString()} isRequired={ImageNumber != i + 1}>
-                            {/* multiple input with image */}
-                            <FormLabel
-                                border='2px'
-                                borderColor='gray.300'
-                                borderStyle='dashed'
-                                borderRadius='lg'
-                                bg='gray.100'
-                                cursor='pointer'
-                                h='100px'
-                                w='100px'
-                                overflow='hidden'
-                            >
-                                <Flex justifyContent='center' alignItems='center' h='100%'>
-                                    {formData.images.imagePreviewUrl['image' + i.toString()] ? <Image src={formData.images.imagePreviewUrl['image' + i.toString()]} /> : <Text textAlign='center'>+</Text>}
-                                </Flex>
-                            </FormLabel>
-                            <Input
-                                display='none'
-                                type="file"
-                                name={'image' + i.toString()}
-                                value={formData.images.imageList['image' + i.toString()] || ''}
-                                onChange={handleImageChange} />
+            <Flex justify='flex-end' gap={2} mb={3}>
+                <Button
+                    colorScheme="red"
+                    onClick={deleteEmpty}
+                >
+                    <GiEmptyChessboard />
+                    <Text ml={1}>Delete empty</Text>
+                </Button>
 
-                        </FormControl>
-                    </GridItem>
-                ))}
+                <Button
+                    colorScheme="blue"
+                    onClick={() => {
+                        setSort((prevSort) => !prevSort)
+                    }}
+                >
+                    <FaSort />
+                    <Text ml={1}>Sort</Text>
+                </Button>
+            </Flex>
+            {/* sort Images */}
+            {sort ? (
+                <Box
+                    border='2px'
+                    borderColor='gray.300'
+                    borderRadius='md'
+                    p={2}
+                    mb={3}
+
+                >   
+                    {ImageSorted.length == 0 ? (
+                        <Text textAlign='center'>Nothing to Sort</Text>
+                    ) : null}
+                    {ImageSorted.map((value, index) => (
+                        <ObservationImageDraggable
+                            key={index}
+                            index={index}
+                            value={value}
+                            image={formData.images.imagePreviewUrl['image' + value.toString()]}
+                            moveListItem={moveImageListItem}
+                        />
+                    ))}
+                </Box>
+            ) : null}
+            {/* do loop with ImageNumber */}
+            < Grid templateColumns="repeat(3, 1fr)" gap={6} display={sort ? 'none' : 'grid'}>
+                {ImageNumber && Array.from(Array(ImageNumber).keys())
+                    .filter((i) => !emptyImage.includes(i))
+                    .sort((a, b) => ImageSorted.indexOf(a) - ImageSorted.indexOf(b))
+                    .map((i) => (
+                        <GridItem key={i}>
+                            <FormControl id={'image' + i.toString()} isRequired={ImageNumber != i + 1}>
+                                {/* multiple input with image */}
+
+                                {formData.images.imagePreviewUrl['image' + i.toString()] ?
+
+                                    <Box
+                                        border='2px'
+                                        borderColor='gray.300'
+                                        borderStyle='dashed'
+                                        borderRadius='lg'
+                                        borderTopRadius={0}
+                                        bg='gray.100'
+                                        cursor='pointer'
+                                        h='300px'
+                                        w='100%'
+                                        m={0}
+                                        overflow='hidden'
+                                        position='relative'
+                                        bgImage={formData.images.imagePreviewUrl['image' + i.toString()]}
+                                        bgSize='cover'
+                                        bgPosition='center'
+                                        onClick={() => {
+                                            setFormData((prevFormData) => ({
+                                                ...prevFormData,
+                                                images: {
+                                                    ...prevFormData.images,
+                                                    imageList: {
+                                                        ...prevFormData.images.imageList,
+                                                        ['image' + i.toString()]: '',
+                                                    },
+                                                    imagePreviewUrl: {
+                                                        ...prevFormData.images.imagePreviewUrl,
+                                                        ['image' + i.toString()]: '',
+                                                    },
+                                                    imageBase64: {
+                                                        ...prevFormData.images.imageBase64,
+                                                        ['image' + i.toString()]: '',
+                                                    },
+                                                },
+                                            }));
+                                            // setImageNumber((prevImageNumber) => prevImageNumber - 1);
+                                        }}
+                                    >
+                                        <Box
+                                            position='absolute'
+                                            top='0'
+                                            right='0'
+                                            // display='none'
+                                            bg='#edf2f7'
+                                            w='100%'
+                                            h='100%'
+                                            opacity='0'
+                                            _hover={
+                                                {
+                                                    opacity: '0.5',
+                                                }
+                                            }
+                                        >
+                                            <Flex justifyContent={'center'} alignItems={'center'} h='100%'>
+                                                <Text>
+                                                    <CloseIcon fontSize={30} />
+                                                </Text>
+                                            </Flex>
+                                        </Box>
+                                    </Box>
+                                    :
+                                    <FormLabel
+                                        border='2px'
+                                        borderColor='gray.300'
+                                        borderStyle='dashed'
+                                        borderRadius='lg'
+                                        borderTopRadius={0}
+                                        bg='gray.100'
+                                        cursor='pointer'
+                                        h='300px'
+                                        w='100%'
+                                        m={0}
+                                        overflow='hidden'
+                                    >
+                                        <Flex justifyContent='center' alignItems='center' h='100%'>
+                                            <Text textAlign='center'>+</Text>
+                                        </Flex>
+                                    </FormLabel>
+                                }
+
+
+                                <Input
+                                    display='none'
+                                    type="file"
+                                    name={'image' + i.toString()}
+                                    value={formData.images.imageList['image' + i.toString()] || ''}
+                                    onChange={handleImageChange}
+                                />
+
+                            </FormControl>
+                        </GridItem>
+                    ))}
             </Grid>
 
-            {/* <Image src={} /> */}
 
+            {/* <Image src={} /> */}
+            {loading && <Progress mt={3} hasStripe value={uploadProgress} />}
             <Flex justifyContent='center' mt='10px'>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
                     Close
@@ -189,7 +421,7 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                     <Text ml="5px" >Add</Text>
                 </Button>
             </Flex>
-        </Form>)
+        </Form >)
 }
 
 export default ObservationForm;

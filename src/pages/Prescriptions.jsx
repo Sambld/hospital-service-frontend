@@ -47,8 +47,8 @@ import useLoader from "../hooks/useLoader";
 
 
 const Prescriptions = () => {
-    const [PendingPrescriptions, setPrescriptions] = useState([])
-    const [PastPrescriptions, setPastPrescriptions] = useState([])
+    const [PendingPrescriptions, setPrescriptions] = useState(null)
+    const [PastPrescriptions, setPastPrescriptions] = useState(null)
 
     const [PrescriptionDetail, setPrescriptionDetail] = useState(null)
 
@@ -91,10 +91,10 @@ const Prescriptions = () => {
     }, [searchParams])
 
     const getPendingPrescriptions = () => {
-        // abortCont = new AbortController();
-        setPrescriptions([])
+        setPrescriptions(null)
         setPendingPagination(null)
         setPendingLoading(true)
+        
         useLoader(`/medicine-requests?status=open&page=${searchParams.get('page') || 1}`)
             .then(res => {
                 setPendingLoading(false)
@@ -102,14 +102,12 @@ const Prescriptions = () => {
                 setPrescriptions(data)
                 setPendingPagination(pagination)
             })
-        // .catch(err => () => abortCont.abort())
 
     }
     const getPastPrescriptions = () => {
-        // abortCont = new AbortController();
-        setPastPrescriptions([])
         setPastPagination(null)
         setPastLoading(true)
+        setPastPrescriptions(null)
         useLoader(`/medicine-requests?status=closed&page=${searchParams.get('page') || 1}`)
             .then(res => {
                 setPastLoading(false)
@@ -117,7 +115,6 @@ const Prescriptions = () => {
                 setPastPrescriptions(data)
                 setPastPagination(pagination)
             })
-        // .catch(err => () => abortCont.abort())
     }
     const changeAllMedicineRequestStatus = async (MainInfo, message) => {
         let error = false;
@@ -423,7 +420,7 @@ const Prescriptions = () => {
                                                 <Tr>
                                                     <Td>{item.medicine.name}</Td>
                                                     <Td>{item.quantity}</Td>
-                                                    { !PrescriptionDetail.all_requests_responded_to && <Th>{item.medicine.quantity}</Th>}
+                                                    { !PrescriptionDetail.all_requests_responded_to && <Td>{item.medicine.quantity}</Td>}
                                                     <Td>
                                                         {!PrescriptionDetail.all_requests_responded_to && item.status.toLowerCase() == 'pending' && (
                                                             <>
