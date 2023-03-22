@@ -30,7 +30,7 @@ const RootLayout = () => {
                         } else {
                             setUser({
                                 "user": res.data,
-                                "access_token": axios.defaults.headers.common['Authorization']
+                                "access_token": axios.defaults.headers.common['Authorization'].split(' ')[1]
                             })
                         }
                     })
