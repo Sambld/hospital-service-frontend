@@ -24,6 +24,7 @@ import { useDrag, useDrop } from 'react-dnd'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
+import { BiImages } from 'react-icons/bi';
 import { CloseIcon } from '@chakra-ui/icons';
 import { FaSort } from 'react-icons/fa';
 import { GiEmptyChessboard } from 'react-icons/gi';
@@ -106,7 +107,7 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
     const [ImageSorted, setImageSorted] = useState([]);
     const [ImageNumber, setImageNumber] = useState(1);
     const [emptyImage, setEmptyImage] = useState([]);
-    const [uploadProgress, setUploadProgress] = useState(10);
+    const [uploadProgress, setUploadProgress] = useState(0);
     const [loading, setLoading] = useState(false);
     const [sort, setSort] = useState(false);
     const [dragActive, setDragActive] = useState(false);
@@ -131,7 +132,7 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        if(formData.name == '' || formData.images.imageList == {}){
+        if (formData.name == '' || formData.images.imageList == {}) {
             toast({
                 title: "Error",
                 description: "Please fill in all the fields.",
@@ -196,31 +197,59 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
             [name]: value,
         }));
     };
-    const handleImageChange = (event) => {
-        const { name, value } = event.target;
-        if (!formData.images.imageList[name] && formData.images.imageList[name] != '') {
-            setImageNumber((prevImageNumber) => prevImageNumber + 1);
-            setImageSorted((prevImageSorted) => [...prevImageSorted, ImageNumber - 1]);
+    const handleImageChange = (event, index) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (event.target.files) {
+            let ImageNumberClone = ImageNumber - 1;
+            let formDataClone = {
+                images: {
+                    imageList: {},
+                    imagePreviewUrl: {},
+                    imageTargetFile: {},
+                },
+            }
+            let sortedClone = [...ImageSorted]
+
+            if (index + 1 != ImageNumber) ImageNumberClone = index;
+
+            for (const file in event.target.files) {
+                if (['length', 'item'].includes(file)) continue
+
+                formDataClone.images.imageList['image' + ImageNumberClone.toString()] = event.target.files[file].name;
+                formDataClone.images.imagePreviewUrl['image' + ImageNumberClone.toString()] = URL.createObjectURL(event.target.files[file]);
+                formDataClone.images.imageTargetFile['image' + ImageNumberClone.toString()] = event.target.files[file];
+
+                ImageNumberClone += 1;
+                sortedClone = [...sortedClone, ImageNumberClone - 1]
+                if (index + 1 != ImageNumber) break;
+            }
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                images: {
+                    ...prevFormData.images,
+                    imageList: {
+                        ...prevFormData.images.imageList,
+                        ...formDataClone.images.imageList,
+                    },
+                    imagePreviewUrl: {
+                        ...prevFormData.images.imagePreviewUrl,
+                        ...formDataClone.images.imagePreviewUrl,
+                    },
+                    imageTargetFile: {
+                        ...prevFormData.images.imageTargetFile,
+                        ...formDataClone.images.imageTargetFile,
+                    },
+                },
+            }));
+            if (index + 1 == ImageNumber) {
+                setImageNumber(ImageNumberClone + 1);
+                setImageSorted(sortedClone)
+            }
+
+
         }
-        console.log(name)
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            images: {
-                ...prevFormData.images,
-                imageList: {
-                    ...prevFormData.images.imageList,
-                    [name]: value,
-                },
-                imagePreviewUrl: {
-                    ...prevFormData.images.imagePreviewUrl,
-                    [name]: URL.createObjectURL(event.target.files[0]),
-                },
-                imageTargetFile: {
-                    ...prevFormData.images.imageTargetFile,
-                    [name]: event.target.files[0],
-                },
-            },
-        }));
     };
     const handleImageRemove = (event) => {
         const { name, value } = event.target;
@@ -245,7 +274,7 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
         }));
     };
     const deleteEmpty = () => {
-        for (let i = 1; i <= ImageNumber - 1; i++) {
+        for (let i = 0; i <= ImageNumber - 1; i++) {
             if (formData.images.imageList['image' + i.toString()] == '') {
                 if (!emptyImage.includes(i)) {
                     setEmptyImage((prevEmptyImage) => [...prevEmptyImage, i]);
@@ -265,42 +294,16 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
         }
     };
 
-    const handleDrop = async (e,index) => {
-        console.log(ImageNumber,index)
-        if(ImageNumber != index + 1) return 
-        e.preventDefault();
-        e.stopPropagation();
-        setDragActive(false);
-        if (e.dataTransfer.files) {
-            for (const file in e.dataTransfer.files) {
-                if (['length', 'item'].includes(file)) continue
-                // console.log('start ' + ImageNumber.toString())
-
-                await setImageNumber((prevImageNumber) => prevImageNumber + 1);
-                await setImageSorted((prevImageSorted) => [...prevImageSorted, ImageNumber - 1]);
-                // console.log('stop ' + ImageNumber.toString())
-                setFormData((prevFormData) => ({
-                    ...prevFormData,
-                    images: {
-                        ...prevFormData.images,
-                        imageList: {
-                            ...prevFormData.images.imageList,
-                            ['image' + (ImageNumber - 1).toString()]: e.dataTransfer.files[file].name,
-                        },
-                        imagePreviewUrl: {
-                            ...prevFormData.images.imagePreviewUrl,
-                            ['image' + (ImageNumber - 1).toString()]: URL.createObjectURL(e.dataTransfer.files[file]),
-                        },
-                        imageTargetFile: {
-                            ...prevFormData.images.imageTargetFile,
-                            ['image' + (ImageNumber - 1).toString()]: e.dataTransfer.files[file],
-                        },
-                    },
-                }));
-                break
-            }
-
+    const handleDrop = async (event, index) => {
+        const Event = {
+            target: {
+                files: [...event.dataTransfer.files],
+            },
+            preventDefault: () => event.preventDefault(),
+            stopPropagation: () => event.stopPropagation()
         }
+        setDragActive(false);
+        handleImageChange(Event, index);
     };
 
     const getBase64 = (file) => {
@@ -334,13 +337,13 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                 </Button>
 
                 <Button
-                    colorScheme="blue"
+                    colorScheme={sort ? 'green' : 'blue'}
                     onClick={() => {
                         setSort((prevSort) => !prevSort)
                     }}
                 >
-                    <FaSort />
-                    <Text ml={1}>Sort</Text>
+                    {sort ? <BiImages /> : <FaSort />}
+                    <Text ml={1}>{sort ? 'Images' : 'Sort'}</Text>
                 </Button>
             </Flex>
             {/* sort Images */}
@@ -456,7 +459,7 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                                         m={0}
                                         overflow='hidden'
                                         onDragEnter={(e) => handleDrag(e)}
-                                        onDrop={(e) => handleDrop(e,i)}
+                                        onDrop={(e) => handleDrop(e, i)}
                                         onDragOver={(e) => e.preventDefault()}
                                     >
                                         <Flex justifyContent='center' alignItems='center' h='100%'>
@@ -467,11 +470,11 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
 
 
                                 <Input
-
+                                    multiple={i == ImageNumber - 1 ? true : false}
                                     display='none'
                                     type="file"
                                     name={'image' + i.toString()}
-                                    onChange={handleImageChange}
+                                    onChange={(e) => { handleImageChange(e, i) }}
                                 />
 
                             </FormControl>
@@ -479,7 +482,25 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                     ))}
             </Grid>
             {/* <Image src={} /> */}
-            {loading && <Progress mt={3} hasStripe value={uploadProgress} />}
+            {loading && (
+                <Box
+                    position='relative'
+                >
+                    <Progress mt={3} hasStripe value={uploadProgress} h='25px' bg='blue.100 ' />
+                    <Text
+                        textAlign='center'
+                        color={uploadProgress > 49 ? 'gray.50' : 'blue.700'}
+                        textShadow='0 0 1px #000'
+                        position='absolute'
+                        top='0'
+                        left='0'
+                        right='0'
+                        bottom='0'
+                    >
+                        {Math.round(uploadProgress)}%
+                    </Text>
+                </Box>
+            )}
             <Flex justifyContent='center' mt='10px'>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
                     Close
