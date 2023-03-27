@@ -43,10 +43,10 @@ import usePut from '../hooks/usePut';
 
 const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRefresh, loadingData }) => {
     const [examinations, setExaminations] = useState([
-        { name: 'urine', label: 'Urine' },
-        { name: 'blood_pressure', label: 'Blood Pressure' },
-        { name: 'temperature', label: 'Temperature' },
-        { name: 'weight', label: 'Weight' },
+        { name: 'urine', label: 'Urine', suffix: 'ml' },
+        { name: 'blood_pressure', label: 'Blood Pressure', suffix: 'mmHg' },
+        { name: 'temperature', label: 'Temperature', suffix: '°C' },
+        { name: 'weight', label: 'Weight', suffix: 'kg' },
     ]);
     const [formData, setFormData] = useState({
         medicines: [],
@@ -91,7 +91,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                 setLoading(false);
                 closeAndRefresh(
                     {
-                        title: 'Monitoring Sheet created successfully.',
+                        title: 'Monitoring Sheet Row Updated',
                         status: 'success',
                     }
                 )
@@ -138,14 +138,17 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
             {examinations.map((examination, index) => (
                 <FormControl key={index} mb={3} id='type' gap={3} display='flex' justifyContent='space-between'>
                     <FormLabel m={0} alignItems='center' display='flex'>
-                        <Text verticalAlign='middle' fontSize='xl'>{examination.label}</Text>
+                        <Text verticalAlign='middle' fontSize='xl'>
+                            {examination.label}
+                            {' (' + examination.suffix})
+                        </Text>
                     </FormLabel>
                     {/* <InputGroup> */}
                     <NumberInput
                         value={formData[examination.name]}
                         onChange={(value) => setFormData((prevFormData) => ({
                             ...prevFormData,
-                            [examination.name]: parseInt(value),
+                            [examination.name]: parseInt(value) || 0,
                         }))}
                         isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id)}
                     >

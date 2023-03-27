@@ -406,6 +406,7 @@ const MedicalRecord = ({ medical_record, user }) => {
                     data={MonitoringSheetData}
                     openMonitoringForm={onOpenMonitoring}
                     openMonitoringRow={handleMonitoringSheetRow}
+                    medical_record={medical_record}
                     user={user}
                     loading={loadingMonitoringSheet}
                   />
@@ -470,7 +471,7 @@ const MedicalRecord = ({ medical_record, user }) => {
         {/* monitoring sheet row edit model */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenMonitoringSheetRow} onClose={onCloseMonitoringSheetRow}>
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent maxW='600px'>
             <ModalHeader>Monitoring Sheet Row</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={5} pt={0}>
