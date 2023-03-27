@@ -103,6 +103,8 @@ const Patient = () => {
     const handleMedChange = (med) => {
         setLoadingRecord(true)
         setLoading(true)
+        setMed({ 'ok': false })
+
         useLoader("/patients/" + id + "/medical-records/" + med).then(res => {
             setLoadingRecord(false)
             setLoading(false)

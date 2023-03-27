@@ -1,0 +1,6 @@
+/* center element of td */
+
+td,
+th {
+    text-align: center !important;
+}

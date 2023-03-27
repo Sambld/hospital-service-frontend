@@ -2,7 +2,6 @@ import {
   Box,
   Heading,
   Text,
-  Badge,
   Stack,
   Flex,
   Tabs,
@@ -28,14 +27,10 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
   useDisclosure,
   Button,
-  Input,
-  FormControl,
-  FormLabel,
   useToast,
   Spinner,
 } from "@chakra-ui/react";
@@ -49,24 +44,37 @@ import useLoader from "../hooks/useLoader";
 import ExaminationForm from "./ExaminationForm";
 import ObservationForm from "./ObservationForm";
 import OBservationImages from "./ObservationImages";
+import MonitoringSheet from "./MonitoringSheet";
+import MonitoringSheetForm from "./MonitoringSheetForm";
+import MonitoringSheetRow from "./MonitoringSheetRow";
 
 const MedicalRecord = ({ medical_record, user }) => {
   const toast = useToast()
   const [Examination, setExamination] = useState([]);
   const [Observations, setObservations] = useState([]);
   const [Observation, setObservation] = useState([]);
+  const [MonitoringSheetData, setMonitoringSheetData] = useState([]);
+  const [MonitoringSheetRowData , setMonitoringSheetRow] = useState(null);
   const [loadingExamination, setLoadingExamination] = useState(false)
   const [loadingObservation, setLoadingObservation] = useState(false)
+  const [loadingMonitoringSheet, setLoadingMonitoringSheet] = useState(false)
+  const [loadingMonitoringSheetRow, setLoadingMonitoringSheetRow] = useState(false)
   const { isOpen: isOpenExamination, onOpen: onOpenExamination, onClose: onCloseExamination } = useDisclosure()
   const { isOpen: isOpenObservation, onOpen: onOpenObservation, onClose: onCloseObservation } = useDisclosure()
   const { isOpen: isOpenPrescription, onOpen: onOpenPrescription, onClose: onClosePrescription } = useDisclosure()
   const { isOpen: isOpenMonitoring, onOpen: onOpenMonitoring, onClose: onCloseMonitoring } = useDisclosure()
   const { isOpen: isOpenObservationImages, onOpen: onOpenObservationImages, onClose: onCloseObservationImages } = useDisclosure()
+  const { isOpen: isOpenMonitoringSheetRow, onOpen: onOpenMonitoringSheetRow, onClose: onCloseMonitoringSheetRow } = useDisclosure()
 
   useEffect(() => {
+    setExamination([])
+    setObservation([])
+    setMonitoringSheetData([])
+
     handleExamination(medical_record.id)
     handleObservation(medical_record.id)
-  }, [])
+    handleMonitoringSheet(medical_record.id)
+  }, [medical_record])
 
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString();
@@ -134,6 +142,57 @@ const MedicalRecord = ({ medical_record, user }) => {
     handleObservation()
   }
 
+  const handleMonitoringSheet = () => {
+    setLoadingMonitoringSheet(true)
+    useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets')
+      .then((data) => {
+        setLoadingMonitoringSheet(false)
+        let monitoringSheetData = data.data || []
+        setMonitoringSheetData(monitoringSheetData)
+      })
+  }
+
+  // const MonitoringSheetTreatment = async (monitoringSheetData) => {
+  //   try {
+  //     const promises = [];
+  //     let MSD = monitoringSheetData;
+  //     MSD.map((item) => {
+  //       const promise = useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + item.id + '/treatments')
+  //         .then((subData) => {
+  //           item.treatments = subData.data || []
+  //         })
+  //       promises.push(promise)
+  //     })
+  //     await Promise.all(promises);
+  //     return MSD
+  //   } catch (e) {
+  //     console.log(e)
+  //   }
+  // }
+
+
+  const handleMonitoringSheetAdd = (message) => {
+    onCloseMonitoring()
+    onCloseMonitoringSheetRow()
+    toast({
+      title: message.title,
+      status: message.status,
+      duration: 9000,
+      isClosable: true,
+    })
+    handleMonitoringSheet()
+  }
+
+  const handleMonitoringSheetRow = (data) => {
+    setMonitoringSheetRow(null)
+    setLoadingMonitoringSheetRow(true)
+    useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + data )
+      .then((data) => {
+        setLoadingMonitoringSheetRow(false)
+        setMonitoringSheetRow(data.data)
+      })
+    onOpenMonitoringSheetRow()
+  }
   return (
     <Box
       borderRadius="lg"
@@ -192,6 +251,7 @@ const MedicalRecord = ({ medical_record, user }) => {
                   </Stack>
                 </Box>
               </TabPanel>
+
               {/*  Examination Tab */}
               <TabPanel p={0}>
                 <Box >
@@ -244,6 +304,7 @@ const MedicalRecord = ({ medical_record, user }) => {
 
 
               </TabPanel>
+
               {/*  Observation Tab */}
               <TabPanel>
                 {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
@@ -290,7 +351,7 @@ const MedicalRecord = ({ medical_record, user }) => {
 
                         </Box>
                       </Flex>
-                      <Center onClick={()=>{
+                      <Center onClick={() => {
                         setObservation(obs)
                         onOpenObservationImages()
                       }} cursor='pointer'>
@@ -337,19 +398,22 @@ const MedicalRecord = ({ medical_record, user }) => {
                   </Center>
                 )}
               </TabPanel>
+
               {/* monitoring sheet tab */}
               <TabPanel>
                 <Box>
-                  Monitoring Sheet
+                  <MonitoringSheet
+                    data={MonitoringSheetData}
+                    openMonitoringForm={onOpenMonitoring}
+                    openMonitoringRow={handleMonitoringSheetRow}
+                    user={user}
+                    loading={loadingMonitoringSheet}
+                  />
                 </Box>
               </TabPanel>
             </TabPanels>
           </Tabs>
-
-
           <Divider />
-
-
         </>
       )}
 
@@ -378,7 +442,7 @@ const MedicalRecord = ({ medical_record, user }) => {
             </ModalBody>
           </ModalContent>
         </Modal>
-        
+
         {/* observation images modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenObservationImages} onClose={onCloseObservationImages}>
           <ModalOverlay />
@@ -386,7 +450,31 @@ const MedicalRecord = ({ medical_record, user }) => {
             <ModalHeader>Observation Information</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={5} pt={0}>
-              <OBservationImages Observation={Observation}  closeAndRefresh={handleObservationAdd}  patientId={medical_record.patient_id} />
+              <OBservationImages Observation={Observation} closeAndRefresh={handleObservationAdd} patientId={medical_record.patient_id} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+
+        {/* monitoring sheet modal */}
+        <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenMonitoring} onClose={onCloseMonitoring}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Monitoring Sheet</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={5} pt={0}>
+              <MonitoringSheetForm medical_record={medical_record} closeModal={onCloseMonitoring} closeAndRefresh={handleMonitoringSheetAdd} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+
+        {/* monitoring sheet row edit model */}
+        <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenMonitoringSheetRow} onClose={onCloseMonitoringSheetRow}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Monitoring Sheet Row</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={5} pt={0}>
+              <MonitoringSheetRow user={user} medical_record={medical_record} data={MonitoringSheetRowData} closeModal={onCloseMonitoringSheetRow} closeAndRefresh={handleMonitoringSheetAdd} loadingData={loadingMonitoringSheetRow} />
             </ModalBody>
           </ModalContent>
         </Modal>
