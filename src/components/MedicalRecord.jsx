@@ -55,6 +55,7 @@ const MedicalRecord = ({ medical_record, user }) => {
   const [Observation, setObservation] = useState([]);
   const [MonitoringSheetData, setMonitoringSheetData] = useState([]);
   const [MonitoringSheetRowData , setMonitoringSheetRow] = useState(null);
+  const [Treatments, setTreatments] = useState([]);
   const [loadingExamination, setLoadingExamination] = useState(false)
   const [loadingObservation, setLoadingObservation] = useState(false)
   const [loadingMonitoringSheet, setLoadingMonitoringSheet] = useState(false)
@@ -148,28 +149,23 @@ const MedicalRecord = ({ medical_record, user }) => {
       .then((data) => {
         setLoadingMonitoringSheet(false)
         let monitoringSheetData = data.data || []
+        if(monitoringSheetData.length > 0){
+          let treatmentsList = []
+          monitoringSheetData.map((data2) => {
+            if(data2.treatments.length > 0){
+              data2.treatments.map((treatment) => {
+                if(!treatmentsList.includes(treatment.name)){
+                  treatmentsList.push(treatment.name)
+                }
+              })
+            }
+          })
+          setTreatments(treatmentsList)
+        }
+
         setMonitoringSheetData(monitoringSheetData)
       })
   }
-
-  // const MonitoringSheetTreatment = async (monitoringSheetData) => {
-  //   try {
-  //     const promises = [];
-  //     let MSD = monitoringSheetData;
-  //     MSD.map((item) => {
-  //       const promise = useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + item.id + '/treatments')
-  //         .then((subData) => {
-  //           item.treatments = subData.data || []
-  //         })
-  //       promises.push(promise)
-  //     })
-  //     await Promise.all(promises);
-  //     return MSD
-  //   } catch (e) {
-  //     console.log(e)
-  //   }
-  // }
-
 
   const handleMonitoringSheetAdd = (message) => {
     onCloseMonitoring()
@@ -400,10 +396,13 @@ const MedicalRecord = ({ medical_record, user }) => {
               </TabPanel>
 
               {/* monitoring sheet tab */}
-              <TabPanel>
-                <Box>
+              <TabPanel p={0}>
+                <Box
+                  
+                >
                   <MonitoringSheet
                     data={MonitoringSheetData}
+                    treatments={Treatments}
                     openMonitoringForm={onOpenMonitoring}
                     openMonitoringRow={handleMonitoringSheetRow}
                     medical_record={medical_record}
