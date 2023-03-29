@@ -38,16 +38,14 @@ import { AiOutlinePlus } from 'react-icons/ai';
 import { CloseIcon } from '@chakra-ui/icons';
 import useLoader from '../hooks/useLoader';
 
-const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, EditInfo }) => {
+const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh }) => {
     const [formData, setFormData] = useState({
-        TimeField: 7,
         medicines: [],
     });
 
     const [options, setOptions] = useState([]);
     const [selectedMedicine, setSelectedMedicine] = useState(null);
-    const [Dose, setDose] = useState('');
-    const [type, setType] = useState('SC');
+    const [Quantity, setQuantity] = useState(1);
 
     const [uploadProgress, setUploadProgress] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -66,18 +64,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
         event.preventDefault();
         setLoading(true);
         try {
-            // GET DATS OF NEXT TIMEFIELD DAYS
-            const startDate = new Date(EditInfo?.Start_date || new Date());
-            
-            let AllDates = [];
-            for (let i = 0; i < formData.TimeField; i++) {
-                let date = new Date(startDate);
-                date.setDate(date.getDate() + i);
-
-                AllDates.push(formatDate(date));
-            }
-            // console.log(AllDates)
-            MonitoringSheetadd(AllDates).then(() => {
+            MedicinesAdd().then(() => {
                 setLoading(false);
                 closeAndRefresh(
                     {
@@ -91,17 +78,18 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
         }
     };
 
-    const MonitoringSheetadd = async (AllDates) => {
+    const MedicinesAdd = async () => {
         try {
-            const progressUnit = 100 / AllDates.length;
+            const progressUnit = 100 / formData.medicines.length;
             const promises = [];
-            AllDates.map((date) => {
-                const promise = usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets', {
-                    filling_date: date
+            console.log(progressUnit)
+            formData.medicines.map((medicine) => {
+                const promise = usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/medicine-requests', {
+                    medicine_id: medicine.value,
+                    quantity: medicine.quantity,
                 }).then(async (res) => {
-
                     if (res.data) {
-                        await MonitoringSheetMedAdd(res.data.id,progressUnit)
+                        setUploadProgress((prevUploadProgress) => prevUploadProgress + progressUnit);
                     } else {
                         closeAndRefresh(
                             {
@@ -121,43 +109,20 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
         }
     }
 
-    const MonitoringSheetMedAdd = async (id,pu) => {
-        try {
-            const progressUnit = pu / formData.medicines.length;
-            const promises = [];
-            formData.medicines.map((medicine) => {
-                const promise = usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + id + '/treatments', {
-                    medicine_id: medicine.value,
-                    name: medicine.label,
-                    dose: medicine.dose,
-                    type: medicine.type
-                }).then(()=>{
-                    setUploadProgress((prevProgress) => prevProgress + progressUnit);
-                })
-                promises.push(promise);
-            })
-            await Promise.all(promises);
-            return true
-        } catch (err) {
-            console.log(err)
-        }
-    }
     const addMedicine = () => {
-        if (!selectedMedicine || !Dose || type === '') return;
+        if (!selectedMedicine || !Quantity) return;
         event.preventDefault();
 
         const medicine = {
             ...selectedMedicine,
-            dose: Dose,
-            type: type,
+            quantity: Quantity,
         };
         setFormData((prevFormData) => ({
             ...prevFormData,
             medicines: [...prevFormData.medicines.filter((medicine) => medicine.value !== selectedMedicine.value), medicine]
         }));
         setSelectedMedicine(null);
-        setDose('');
-        setType('SC');
+        setQuantity(1);
     };
 
     const removeMedicine = (med) => {
@@ -176,8 +141,6 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                 )
             )
         } else {
-            // setMedicinesSearch(
-            //     setTimeout(() => 
             useLoader(`/medicines?q=${inputValue}&np`).then((res) => {
                 const options = res.data.map((medicine) => ({
                     value: medicine.id,
@@ -186,8 +149,6 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                 setOptions(options);
                 callback(options);
             })
-            //     }, 500)
-            // );
         }
 
     };
@@ -195,28 +156,6 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
 
     return (
         <Form onSubmit={handleSubmit}>
-            <FormControl id='type' gap={3} display='flex'>
-                <FormLabel m={0} alignItems='center' display='flex'>
-                    <Text verticalAlign='middle' fontSize='xl'>Within:</Text>
-                </FormLabel>
-                <InputGroup>
-                    <NumberInput
-                        defaultValue={7}
-                        min={1}
-                        onChange={(value) => setFormData((prevFormData) => ({
-                            ...prevFormData,
-                            TimeField: parseInt(value),
-                        }))}
-                    >
-                        <NumberInputField borderRightRadius={0} />
-                        <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                        </NumberInputStepper>
-                    </NumberInput>
-                    <InputRightAddon children='Days' />
-                </InputGroup>
-            </FormControl>
             <Divider mt='10px' mb='10px' />
             {/* choose medicines */}
             <Box>
@@ -228,8 +167,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                             {formData.medicines.map((medicine) => (
                                 <Tr bg='gray.50' key={medicine.value}>
                                     <Td fontSize={13}>Name: {medicine.label}</Td>
-                                    <Td fontSize={13}>Dose: {medicine.dose}</Td>
-                                    <Td fontSize={13}>Type: {medicine.type}</Td>
+                                    <Td fontSize={13}>Quantity: {medicine.quantity}</Td>
                                     <Td display='flex' p={2} justifyContent='flex-end'>
                                         <IconButton
                                             aria-label="Remove"
@@ -257,25 +195,22 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                             onChange={(value) => setSelectedMedicine(value)}
                             defaultOptions
                         />
-                        <Input
-                            type="text"
-                            name="Dose"
-                            value={Dose}
-                            onChange={(e) => setDose(e.target.value)}
-                            placeholder="Dose"
-                        />
+
                     </Box>
                     <Box mt={3} display='flex' gap={3}>
-                        <Select
-                            name='type'
-                            value={type}
-                            onChange={(e) => setType(e.target.value)}
+                        <NumberInput
+                            min={1}
+                            name='quantity'
+                            value={Quantity}
+                            onChange={(value) => setQuantity(value)}
+                            flexGrow={1}
                         >
-                            <option value="SC">under the skin ( SC )</option>
-                            <option value="IM">in the muscle ( IM )</option>
-                            <option value="IV">in the vein ( IV )</option>
-                            <option value="PO">by mouth ( PO )</option>
-                        </Select>
+                            <NumberInputField borderRightRadius={0} />
+                            <NumberInputStepper>
+                                <NumberIncrementStepper />
+                                <NumberDecrementStepper />
+                            </NumberInputStepper>
+                        </NumberInput>
                         <IconButton
                             aria-label="Add"
                             icon={<AiOutlinePlus />}
@@ -321,4 +256,4 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
         </Form>)
 }
 
-export default MonitoringSheetForm;
+export default PrescriptionForm;

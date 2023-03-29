@@ -196,7 +196,7 @@ const Patients = () => {
                 <Spacer />
                 {user.role == 'doctor' && (
                     <Menu>
-                        <MenuButton colorScheme='blue' as={Button} rightIcon={<ChevronDownIcon />} >
+                        <MenuButton w='120px' colorScheme='blue.300' bg='blue.700' color='gray.100' as={Button} rightIcon={<ChevronDownIcon />} >
                             ADD
                         </MenuButton>
                         <MenuList>

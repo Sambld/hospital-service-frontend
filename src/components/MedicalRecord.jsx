@@ -33,6 +33,7 @@ import {
   Button,
   useToast,
   Spinner,
+  Badge,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { AddIcon } from '@chakra-ui/icons'
@@ -47,34 +48,52 @@ import OBservationImages from "./ObservationImages";
 import MonitoringSheet from "./MonitoringSheet";
 import MonitoringSheetForm from "./MonitoringSheetForm";
 import MonitoringSheetRow from "./MonitoringSheetRow";
+import PrescriptionForm from "./PrescriptionForm";
 
 const MedicalRecord = ({ medical_record, user }) => {
   const toast = useToast()
+  const [tabIndex, setTabIndex] = useState(0)
+
   const [Examination, setExamination] = useState([]);
+
   const [Observations, setObservations] = useState([]);
   const [Observation, setObservation] = useState([]);
+
   const [MonitoringSheetData, setMonitoringSheetData] = useState([]);
-  const [MonitoringSheetRowData , setMonitoringSheetRow] = useState(null);
+  const [MonitoringSheetRowData, setMonitoringSheetRow] = useState(null);
   const [Treatments, setTreatments] = useState([]);
+  const [MonitoringSheetEditInfo, setMonitoringSheetEditInfo] = useState(null)
+
+  const [Prescriptions, setPrescriptions] = useState([]);
+
+
   const [loadingExamination, setLoadingExamination] = useState(false)
   const [loadingObservation, setLoadingObservation] = useState(false)
   const [loadingMonitoringSheet, setLoadingMonitoringSheet] = useState(false)
   const [loadingMonitoringSheetRow, setLoadingMonitoringSheetRow] = useState(false)
+  const [loadingPrescription, setLoadingPrescription] = useState(false)
+
   const { isOpen: isOpenExamination, onOpen: onOpenExamination, onClose: onCloseExamination } = useDisclosure()
   const { isOpen: isOpenObservation, onOpen: onOpenObservation, onClose: onCloseObservation } = useDisclosure()
   const { isOpen: isOpenPrescription, onOpen: onOpenPrescription, onClose: onClosePrescription } = useDisclosure()
   const { isOpen: isOpenMonitoring, onOpen: onOpenMonitoring, onClose: onCloseMonitoring } = useDisclosure()
   const { isOpen: isOpenObservationImages, onOpen: onOpenObservationImages, onClose: onCloseObservationImages } = useDisclosure()
   const { isOpen: isOpenMonitoringSheetRow, onOpen: onOpenMonitoringSheetRow, onClose: onCloseMonitoringSheetRow } = useDisclosure()
+  const { isOpen: isOpenPrescriptionForm, onOpen: onOpenPrescriptionForm, onClose: onClosePrescriptionForm } = useDisclosure()
 
   useEffect(() => {
     setExamination([])
     setObservation([])
     setMonitoringSheetData([])
+    setMonitoringSheetRow(null)
+    setTreatments([])
+    setMonitoringSheetEditInfo(null)
+    setPrescriptions([])
 
     handleExamination(medical_record.id)
     handleObservation(medical_record.id)
     handleMonitoringSheet(medical_record.id)
+    handlePrescription(medical_record.id)
   }, [medical_record])
 
   const formatDate = (date) => {
@@ -102,6 +121,36 @@ const MedicalRecord = ({ medical_record, user }) => {
     }
   }
 
+  const handleTabsChange = (index) => {
+    setTabIndex(index)
+  }
+
+  const ReloadTabContent = () => {
+    switch (tabIndex) {
+      case 1:
+        setExamination([])
+        handleExamination(medical_record.id)
+        break;
+      case 2:
+        setObservation([])
+        handleObservation(medical_record.id)
+        break;
+      case 3:
+        setMonitoringSheetData([])
+        setMonitoringSheetRow(null)
+        setTreatments([])
+        setMonitoringSheetEditInfo(null)
+        handleMonitoringSheet(medical_record.id)
+        break;
+      case 4:
+        setPrescriptions([])
+        handlePrescription(medical_record.id)
+        break;
+    }
+
+  }
+
+  // Examination
   const handleExamination = () => {
     setExamination([])
     setLoadingExamination(true)
@@ -111,6 +160,7 @@ const MedicalRecord = ({ medical_record, user }) => {
         setExamination(data.data || [])
       })
   }
+
   const handleExaminationAdd = (message) => {
     onCloseExamination()
     toast({
@@ -122,6 +172,7 @@ const MedicalRecord = ({ medical_record, user }) => {
     handleExamination()
   }
 
+  // Observation
   const handleObservation = () => {
     setObservations([])
     setLoadingObservation(true)
@@ -143,18 +194,19 @@ const MedicalRecord = ({ medical_record, user }) => {
     handleObservation()
   }
 
+  // Monitoring Sheet
   const handleMonitoringSheet = () => {
     setLoadingMonitoringSheet(true)
     useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets')
       .then((data) => {
         setLoadingMonitoringSheet(false)
         let monitoringSheetData = data.data || []
-        if(monitoringSheetData.length > 0){
+        if (monitoringSheetData.length > 0) {
           let treatmentsList = []
           monitoringSheetData.map((data2) => {
-            if(data2.treatments.length > 0){
+            if (data2.treatments.length > 0) {
               data2.treatments.map((treatment) => {
-                if(!treatmentsList.includes(treatment.name)){
+                if (!treatmentsList.includes(treatment.name)) {
                   treatmentsList.push(treatment.name)
                 }
               })
@@ -167,9 +219,17 @@ const MedicalRecord = ({ medical_record, user }) => {
       })
   }
 
+  const handleMonitoringSheetEdit = (startDate) => {
+    setMonitoringSheetEditInfo({
+      Start_date: startDate
+    })
+    onOpenMonitoring()
+  }
+
   const handleMonitoringSheetAdd = (message) => {
     onCloseMonitoring()
     onCloseMonitoringSheetRow()
+    setMonitoringSheetEditInfo(null)
     toast({
       title: message.title,
       status: message.status,
@@ -181,14 +241,38 @@ const MedicalRecord = ({ medical_record, user }) => {
 
   const handleMonitoringSheetRow = (data) => {
     setMonitoringSheetRow(null)
+    setMonitoringSheetEditInfo(null)
     setLoadingMonitoringSheetRow(true)
-    useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + data )
+    useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + data)
       .then((data) => {
         setLoadingMonitoringSheetRow(false)
         setMonitoringSheetRow(data.data)
       })
     onOpenMonitoringSheetRow()
   }
+
+  // Prescription
+  const handlePrescription = () => {
+    setPrescriptions([])
+    setLoadingPrescription(true)
+    useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/medicine-requests')
+      .then((data) => {
+        setLoadingPrescription(false)
+        setPrescriptions(data.data || [])
+      })
+  }
+  const handlePrescriptionAdd = (message) => {
+    onClosePrescriptionForm()
+    toast({
+      title: message.title,
+      status: message.status,
+      duration: 9000,
+      isClosable: true,
+    })
+    handlePrescription()
+  }
+
+
   return (
     <Box
       borderRadius="lg"
@@ -197,12 +281,33 @@ const MedicalRecord = ({ medical_record, user }) => {
       {medical_record && (
         <>
           {/* Medical Record Examination, Observation, Monitoring Sheet */}
-          <Tabs isFitted variant='unstyled' color='blue.900' mb={5}>
+          <Tabs isFitted variant='unstyled' color='blue.900' mb={5} index={tabIndex} onChange={handleTabsChange}>
             <TabList mb='1em' bg='gray.300' borderRadius={10}>
               <Tab borderLeftRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}>Information</Tab>
-              <Tab _selected={{ color: 'white', bg: 'blue.500' }}>Examination</Tab>
-              <Tab _selected={{ color: 'white', bg: 'blue.500' }}>Observation</Tab>
-              <Tab borderRightRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}>Monitoring Sheet</Tab>
+              <Tab
+                _selected={{ color: 'white', bg: 'blue.500' }}
+                onClick={ReloadTabContent}
+              >
+                Examination
+              </Tab>
+              <Tab
+                _selected={{ color: 'white', bg: 'blue.500' }}
+              >
+                Observation
+              </Tab>
+              <Tab
+                _selected={{ color: 'white', bg: 'blue.500' }}
+              >
+                Monitoring Sheet
+              </Tab>
+              {user.id == medical_record.user_id && (
+                <Tab
+                  borderRightRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}
+                  onClick={ReloadTabContent}
+                >
+                  Prescriptions
+                </Tab>
+              )}
             </TabList>
             <TabPanels>
               {/*  Info Tab */}
@@ -246,6 +351,24 @@ const MedicalRecord = ({ medical_record, user }) => {
                     </Flex>
                   </Stack>
                 </Box>
+                <Box
+                  mb={3}
+                  p="6"
+                  color='blue.900'
+                  borderWidth="2px"
+                  borderColor='gray.300'
+                  borderRadius={10}
+                  display='flex'
+                  flexDirection='column'
+                  alignItems='center'
+                >
+                  <Text fontWeight="bold" textAlign='center'>
+                    Mandatory declaration has not been created yet.
+                  </Text>
+                  <Button colorScheme="blue" mt={3} >
+                    Create Now
+                  </Button>
+                </Box>
               </TabPanel>
 
               {/*  Examination Tab */}
@@ -257,19 +380,18 @@ const MedicalRecord = ({ medical_record, user }) => {
                         <Th><Text>examination Date</Text></Th>
                         <Th><Text>treatment type</Text></Th>
                         <Th pr={3}>
-                          <HStack>
-                            <Text>Result</Text>
-                            <Spacer />
-                            {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
-                              <IconButton
-                                borderRadius='100%'
-                                size='sm'
-                                color='white'
-                                bg='gray.400'
-                                onClick={onOpenExamination}
-                                icon={<AddIcon />} />
-                            )}
-                          </HStack>
+                          <Text>Result</Text>
+                        </Th>
+                        <Th display='flex' justifyContent='flex-end'>
+                          {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
+                            <IconButton
+                              borderRadius='100%'
+                              size='sm'
+                              color='white'
+                              bg='gray.400'
+                              onClick={onOpenExamination}
+                              icon={<AddIcon />} />
+                          )}
 
                         </Th>
                       </Tr>
@@ -279,7 +401,7 @@ const MedicalRecord = ({ medical_record, user }) => {
                         <Tr key={index}>
                           <Td>{changeFormat(Exam.created_at)}</Td>
                           <Td>{Exam.type}</Td>
-                          <Td>{Exam.result}</Td>
+                          <Td colSpan='2'>{Exam.result}</Td>
                         </Tr>
                       ))}
                       {!loadingExamination && Examination.length === 0 && (
@@ -398,12 +520,13 @@ const MedicalRecord = ({ medical_record, user }) => {
               {/* monitoring sheet tab */}
               <TabPanel p={0}>
                 <Box
-                  
+
                 >
                   <MonitoringSheet
                     data={MonitoringSheetData}
                     treatments={Treatments}
                     openMonitoringForm={onOpenMonitoring}
+                    openMonitoringEditForm={handleMonitoringSheetEdit}
                     openMonitoringRow={handleMonitoringSheetRow}
                     medical_record={medical_record}
                     user={user}
@@ -411,11 +534,74 @@ const MedicalRecord = ({ medical_record, user }) => {
                   />
                 </Box>
               </TabPanel>
+
+              {/* Prescription */}
+              {user.id == medical_record.user_id && (
+                <TabPanel p={0}>
+                  <Table variant="simple">
+                    <Thead bg='gray.200'>
+                      <Tr>
+                        <Th>Medicine</Th>
+                        <Th>Quantity</Th>
+                        <Th>Date of Prescription</Th>
+                        <Th>
+                          <Text>status</Text>
+                        </Th>
+                        <Th display='flex' justifyContent='flex-end'>
+                          {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
+                            <IconButton
+                              borderRadius='100%'
+                              size='sm'
+                              color='white'
+                              bg='gray.400'
+                              onClick={onOpenPrescriptionForm}
+                              icon={<AddIcon />} />
+                          )}
+                        </Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {Prescriptions && Prescriptions.map((pres, index) => (
+                        <Tr key={index}>
+                          <Td>{pres.medicine.name}</Td>
+                          <Td>{pres.quantity}</Td>
+                          <Td>{changeFormat(pres.created_at)}</Td>
+                          <Td colSpan='2'>
+                            {pres.status.toLowerCase() === 'pending' && (
+                              <Badge colorScheme='yellow'>Pending</Badge>
+                            )}
+                            {pres.status.toLowerCase() === 'approved' && (
+                              <Badge colorScheme='green'>Approved</Badge>
+                            )}
+                            {pres.status.toLowerCase() === 'rejected' && (
+                              <Badge colorScheme='red'>Rejected</Badge>
+                            )}
+                          </Td>
+                        </Tr>
+                      ))}
+                      {!loadingPrescription && Prescriptions.length === 0 && (
+                        <Tr><Td colSpan={4} p={5}><Text textAlign='center' fontWeight='bold' fontSize='lg'>No Prescription</Text></Td></Tr>
+                      )}
+                    </Tbody>
+                  </Table>
+                  {loadingPrescription && (
+                    <Center p='10px'>
+                      <Spinner thickness='4px'
+                        speed='0.65s'
+                        emptyColor='gray.200'
+                        color='blue.500'
+                        size='xl' />
+                    </Center>
+                  )}
+
+                </TabPanel>
+              )}
             </TabPanels>
           </Tabs>
           <Divider />
         </>
-      )}
+      )
+      }
 
       {/* Medical Record Modal */}
       <Box>
@@ -462,7 +648,7 @@ const MedicalRecord = ({ medical_record, user }) => {
             <ModalHeader>Monitoring Sheet</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={5} pt={0}>
-              <MonitoringSheetForm medical_record={medical_record} closeModal={onCloseMonitoring} closeAndRefresh={handleMonitoringSheetAdd} />
+              <MonitoringSheetForm medical_record={medical_record} closeModal={onCloseMonitoring} closeAndRefresh={handleMonitoringSheetAdd} EditInfo={MonitoringSheetEditInfo} />
             </ModalBody>
           </ModalContent>
         </Modal>
@@ -479,10 +665,22 @@ const MedicalRecord = ({ medical_record, user }) => {
           </ModalContent>
         </Modal>
 
+        {/* prescription modal */}
+        <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenPrescriptionForm} onClose={onClosePrescriptionForm}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Prescription</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={5} pt={0}>
+              <PrescriptionForm medical_record={medical_record} closeModal={onClosePrescriptionForm} closeAndRefresh={handlePrescriptionAdd} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+
       </Box>
 
 
-    </Box>
+    </Box >
   );
 };
 export default MedicalRecord;

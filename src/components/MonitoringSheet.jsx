@@ -4,7 +4,7 @@ import { AiFillCaretLeft, AiFillCaretRight, AiFillPrinter } from "react-icons/ai
 
 import "../styles/MonitoringSheet.css";
 
-const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm, openMonitoringRow, loading, user }) => {
+const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm, openMonitoringEditForm, openMonitoringRow, loading, user }) => {
     const [selected, setSelected] = useState(7);
     const [currentDay, setCurrentDay] = useState(0);
     const toast = useToast();
@@ -36,6 +36,12 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
             )
         }
     }
+
+    const handleAddMoreRows = () => {
+        let date = new Date(data[data.length - 1].filling_date);
+        date.setDate(date.getDate() + 1);
+        openMonitoringEditForm(date)
+    }
     return (
         <Box>
             {data && data.length > 0 ? (
@@ -50,16 +56,8 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                             {
                                 user.role === 'doctor' &&
                                 (
-                                    <Button colorScheme='gray' onClick={
-                                        () => toast({
-                                            title: "TODO",
-                                            description: "edit monitoring sheet to add more rows",
-                                            status: "info",
-                                            duration: 3000,
-                                            isClosable: true,
-                                        })
-                                    }>
-                                        Edit
+                                    <Button colorScheme='gray' onClick={handleAddMoreRows}>
+                                        Add More Rows
                                     </Button>
                                 )
                             }
@@ -71,17 +69,17 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                     </Button>
                                 )
                             }
-                            <Button 
-                            colorScheme='blue' 
-                            onClick={
-                                () => toast({
-                                    title: "TODO",
-                                    description: "print monitoring sheet",
-                                    status:'warning',
-                                    duration: 3000,
-                                    isClosable: true,
-                                })
-                            }
+                            <Button
+                                colorScheme='blue'
+                                onClick={
+                                    () => toast({
+                                        title: "TODO",
+                                        description: "print monitoring sheet",
+                                        status: 'warning',
+                                        duration: 3000,
+                                        isClosable: true,
+                                    })
+                                }
                             >
                                 <AiFillPrinter fontSize={20} />
                                 <Text ml={2}>Print</Text>
@@ -125,7 +123,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                         <Table mb={5} border='2px' borderColor='gray.600' borderRadius="md">
                             <Thead>
                                 <Tr>
-                                    <Th border='2px' w={150}>Examination</Th>
+                                    <Th border='2px' w='150px'>Examination</Th>
                                     {data.slice(currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
                                         <Th
                                             key={index}
@@ -140,6 +138,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                                 }
                                             }}
                                             _hover={{ cursor: 'pointer', bg: 'gray.400' }}
+                                            
                                         >
                                             {item.filling_date}
                                             {item.filling_date == formatDate(new Date()) && ' (today)'}
@@ -200,11 +199,10 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                         </Td>
                                     ))}
                                 </Tr>
-                            </Tbody>
 
-                            <Thead>
+
                                 <Tr border='2px' bg='blue.900'>
-                                    <Th py={3} w={150} color='white' fontSize={20} colSpan={selected > 0 ? selected + 1 : data.length + 1}>
+                                    <Th py={3} color='white' fontSize={20} colSpan={selected > 0 ? selected + 1 : data.length + 1}>
                                         Treatments
                                     </Th>
                                     {/* {data.slice(currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
@@ -221,8 +219,6 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                     ))} */}
 
                                 </Tr>
-                            </Thead>
-                            <Tbody>
                                 {treatments && treatments.map((item, index) => (
                                     <Tr key={index}>
                                         <Td
