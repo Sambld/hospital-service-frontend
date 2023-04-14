@@ -22,6 +22,7 @@ import {
 } from '@chakra-ui/react';
 import { Form } from 'react-router-dom';
 import { BsPersonAdd } from 'react-icons/bs';
+import { AiOutlineEdit, AiOutlinePlus } from 'react-icons/ai';
 import usePost from '../hooks/usePost';
 import useLoader from '../hooks/useLoader';
 
@@ -32,15 +33,16 @@ const SummaryItem = ({ label, children }) => (
     </HStack>
 );
 
-const RecordForm = ({ closeModal, closeAndRefresh, userId , patientId }) => {
+const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, initialData }) => {
     const [formData, setFormData] = useState({
         patient_id: patientId || '',
         user_id: userId,
         medical_specialty: 'Infectious Diseases',
-        condition_description: '',
-        state_upon_enter: '',
-        standard_treatment: '',
-        bed_number: '',
+        condition_description: initialData?.condition_description || '',
+        state_upon_enter: initialData?.state_upon_enter || '',
+        standard_treatment: initialData?.standard_treatment || '',
+        bed_number: initialData?.bed_number || '',
+        state_upon_exit: initialData?.state_upon_exit || '',
         patient_entry_date: new Date().toISOString().slice(0, 10),
     });
     const [Patient, setPatient] = useState(null);
@@ -60,7 +62,7 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId , patientId }) => {
             });
         }
     }, []);
-            
+
     const handleSubmit = (event) => {
         event.preventDefault();
         setLoading(true);
@@ -182,6 +184,17 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId , patientId }) => {
                     onChange={handleChange}
                 />
             </FormControl>
+            {editMode && (
+                <FormControl mb={3} id="patient_leaving_date" isRequired>
+                    <FormLabel>Patient Leaving Date</FormLabel>
+                    <Input
+                        type="Date"
+                        name="patient_leaving_date"
+                        value={formData.patient_leaving_date}
+                        onChange={handleChange}
+                    />
+                </FormControl>
+            )}
             <FormControl mb={3} id="bed_number" isRequired>
                 <FormLabel>Bed Number</FormLabel>
                 <NumberInput name="bed_number" onChange={handleNumberChange} defaultValue={formData.bed_number}>
@@ -217,24 +230,34 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId , patientId }) => {
                     onChange={handleChange}
                 />
             </FormControl>
-            {/* <FormControl mb={3} id="state_upon_exit">
-                <FormLabel>State Upon Exit</FormLabel>
-                <Input
-                    type="text"
-                    name="state_upon_exit"
-                    value={formData.state_upon_exit}
-                    onChange={handleChange}
-                />
-            </FormControl> */}
+            {editMode &&
+                <FormControl mb={3} id="state_upon_exit">
+                    <FormLabel>State Upon Exit</FormLabel>
+                    <Input
+                        type="text"
+                        name="state_upon_exit"
+                        value={formData.state_upon_exit}
+                        onChange={handleChange}
+                    />
+                </FormControl>
+            }
             <Flex justifyContent='center' mt='10px'>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
                     Close
                 </Button>
-                <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" >
-                    {/* add icon */}
-                    <BsPersonAdd />
-                    <Text ml="5px" >Add</Text>
-                </Button>
+                {editMode ? (
+                    <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Updating" >
+                        {/* add icon */}
+                        <AiOutlineEdit />
+                        <Text ml="5px" >Update</Text>
+                    </Button>
+                ) : (
+                    <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" >
+                        {/* add icon */}
+                        <AiOutlinePlus />
+                        <Text ml="5px" >Add</Text>
+                    </Button>
+                )}
             </Flex>
         </Form>)
 }

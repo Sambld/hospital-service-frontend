@@ -49,8 +49,12 @@ const Patients = () => {
     const toast = useToast()
 
     const navigate = useNavigate()
+
     const [searchParams, setSearchParams] = useSearchParams()
     const [searchTimeout, setSearchTimeout] = useState(null)
+
+    const [medicalrecordEditMode, setMedicalrecordEditMode] = useState(false)
+    const [medicalrecordInitialData, setMedicalrecordInitialData] = useState(null)
 
     // Navigate modal
     const { isOpen: isNavigateOpen, onOpen: onNavigateOpen, onClose: onNavigateClose } = useDisclosure()
@@ -170,6 +174,17 @@ const Patients = () => {
         }
     }
 
+    const handleRecordEdit = (initialData) => {
+        setMedicalrecordInitialData(initialData)
+        setMedicalrecordEditMode(true)
+        onRecordOpen()
+    }
+        
+    const RecordFormExit = () => {
+        setMedicalrecordInitialData(null)
+        setMedicalrecordEditMode(false)
+        onRecordClose()
+    }
     return (
         <Box>
 
@@ -219,7 +234,7 @@ const Patients = () => {
             </Flex>
 
             <Box bg='white' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
-                {outlet ? <Outlet context={{ setPatient, user }} /> : (
+                {outlet ? <Outlet context={{ setPatient, user, handleRecordEdit }} /> : (
                     <>
                         <PatientsTable initValue={searchParams.get('q') || ''} patients={data?.data} search={handleSearch} count={data?.total} />
                         {
@@ -255,13 +270,20 @@ const Patients = () => {
                 </ModalContent>
             </Modal>
 
-            <Modal closeOnOverlayClick={false} isOpen={isRecordOpen} onClose={onRecordClose}>
+            <Modal closeOnOverlayClick={false} isOpen={isRecordOpen} onClose={RecordFormExit}>
                 <ModalOverlay />
                 <ModalContent maxW="56rem">
                     <ModalHeader>Add Record</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <RecordForm closeModal={onRecordClose} closeAndRefresh={handleRecordAdd} userId={user.id} patientId={patient?.id || null} />
+                        <RecordForm
+                        closeModal={onRecordClose}
+                        closeAndRefresh={handleRecordAdd}
+                        userId={user.id}
+                        patientId={patient?.id || null} 
+                        editMode={medicalrecordEditMode}
+                        initialData={medicalrecordInitialData}
+                        />
                     </ModalBody>
                 </ModalContent>
             </Modal>

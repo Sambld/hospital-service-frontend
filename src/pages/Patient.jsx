@@ -50,9 +50,11 @@ const Patient = () => {
     const toast = useToast()
 
     const [patient, setpatient] = useState(null)
-    const { setPatient: setPatientInfo, user } = useOutletContext()
+    const { setPatient: setPatientInfo, user, handleRecordEdit } = useOutletContext()
+
     const [RecordList, setRecordList] = useState(null)
     const [NotFound, setNotFound] = useState(false)
+    
 
     const [loading, setLoading] = useState(false)
     const [loadingRecord, setLoadingRecord] = useState(false)
@@ -242,7 +244,7 @@ const Patient = () => {
                     </Center>}
                 </TabPanel>
                 <TabPanel>
-                    {med['ok'] && <MedicalRecord medical_record={med['data']} user={user} />}
+                    {med['ok'] && <MedicalRecord medical_record={med['data']} user={user} editRecord={handleRecordEdit}/>}
                     {loadingRecord && <Center p='10px'><Spinner thickness='4px' /></Center>}
                 </TabPanel>
             </TabPanels>

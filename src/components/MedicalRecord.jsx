@@ -50,7 +50,7 @@ import MonitoringSheetForm from "./MonitoringSheetForm";
 import MonitoringSheetRow from "./MonitoringSheetRow";
 import PrescriptionForm from "./PrescriptionForm";
 
-const MedicalRecord = ({ medical_record, user }) => {
+const MedicalRecord = ({ medical_record, user , editRecord}) => {
   const toast = useToast()
   const [tabIndex, setTabIndex] = useState(0)
 
@@ -150,6 +150,12 @@ const MedicalRecord = ({ medical_record, user }) => {
 
   }
 
+  // Record
+  const handleMedicalRecordEdit = () => {
+    editRecord(medical_record)
+  }
+
+  
   // Examination
   const handleExamination = () => {
     setExamination([])
@@ -313,7 +319,14 @@ const MedicalRecord = ({ medical_record, user }) => {
               {/*  Info Tab */}
               <TabPanel p={0}>
                 {/* Medical Record main information */}
-                <Box mb={3} p="6" color='blue.900' borderWidth="2px" borderColor='gray.300' borderRadius={10}>
+                <Box
+                  p="6"
+                  color='blue.900'
+                  borderWidth="2px"
+                  borderColor='gray.300'
+                  borderRadius={10}
+                  borderBottomRadius={0}
+                >
                   <Heading> Medical Record #{medical_record.id}</Heading>
 
                   <Stack mt="4" spacing="4">
@@ -353,6 +366,22 @@ const MedicalRecord = ({ medical_record, user }) => {
                 </Box>
                 <Box
                   mb={3}
+                  color='blue.900'
+                  borderRadius={10}
+                  borderTopRadius={0}
+                  display='flex'
+                  justifyContent='flex-end'
+                >
+                  <Button variant='solid' colorScheme='green' type="submit" borderRadius={0} onClick={() => handleMedicalRecordEdit(medical_record)}>
+                    {/* add icon */}
+                    <Text ml="5px" >Edit</Text>
+                  </Button>
+                  <Button variant='solid' colorScheme='red' type="submit" borderRadius={0}>
+                    Delete
+                  </Button>
+                </Box>
+                <Box
+                  mb={3}
                   p="6"
                   color='blue.900'
                   borderWidth="2px"
@@ -369,6 +398,7 @@ const MedicalRecord = ({ medical_record, user }) => {
                     Create Now
                   </Button>
                 </Box>
+
               </TabPanel>
 
               {/*  Examination Tab */}

@@ -1,31 +1,551 @@
-import { Container, Heading, Stat, StatArrow, StatGroup, StatHelpText, StatLabel, StatNumber, Text } from "@chakra-ui/react";
-import { MdDashboard } from 'react-icons/md'
+import {
+    Heading,
+    Text,
+    Box,
+    Grid,
+    GridItem,
+    Table,
+    Thead,
+    Tr,
+    Th,
+    Tbody,
+    Td,
+    Button,
+    Textarea,
+    Badge,
+    Spinner,
+    Center,
+    IconButton,
+    Tabs,
+    TabList,
+    TabPanels,
+    Tab,
+    TabPanel,
+    VStack,
+
+} from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { AiFillFolderOpen, AiOutlineSend } from "react-icons/ai";
+import { MdOutlineMarkUnreadChatAlt } from 'react-icons/md'
+import { BiRefresh } from 'react-icons/bi'
+import { NavLink, useOutletContext } from "react-router-dom";
+import useLoader from "../hooks/useLoader";
+import Calendar from '../components/Calendar';
+import { BsFileEarmarkMedical } from "react-icons/bs";
+import { HiOutlineDocumentText } from "react-icons/hi";
 
 
 const Dashboard = () => {
-    
-    return (
-        <Container>
-            <StatGroup p='10px' border='2px' borderColor='gray.300' borderRadius='xl'>
-                <Stat>
-                    <StatLabel>Sent</StatLabel>
-                    <StatNumber>345,670</StatNumber>
-                    <StatHelpText>
-                        <StatArrow type='increase' />
-                        23.36%
-                    </StatHelpText>
-                </Stat>
+    const user = useOutletContext()
+    const [data, setData] = useState({
+        headerTitle: '',
+        column: [],
+        data: [],
+        count: 0
+    })
+    const [patientCount, setPatientCount] = useState(0)
+    const [selectedDate, setSelectedDate] = useState(new Date())
+    const [tabIndex, setTabIndex] = useState(0)
 
-                <Stat>
-                    <StatLabel>Clicked</StatLabel>
-                    <StatNumber>45</StatNumber>
-                    <StatHelpText>
-                        <StatArrow type='decrease' />
-                        9.05%
-                    </StatHelpText>
-                </Stat>
-            </StatGroup>
-        </Container>
+    const [infoLoading, setInfoLoading] = useState(true)
+    useEffect(() => {
+        getDashboardData()
+    }, [])
+
+    const handleTabsChange = (index) => {
+        if (infoLoading) return
+        setTabIndex(index)
+        if (index === 1) {
+            setData((prev) => ({
+                ...prev,
+                column: ['Medicine', 'Quantity'],
+                data: []
+            }))
+            getPendingMedicalRequests(selectedDate, true)
+        } else {
+            setData((prev) => ({
+                ...prev,
+                column: ['Medicine', 'Quantity', 'status'],
+                data: []
+            }))
+            getPendingMedicalRequests(selectedDate)
+        }
+    }
+
+    const getDashboardData = () => {
+        setData({
+            headerTitle: '',
+            column: [],
+            data: [],
+            count: 0
+        })
+
+        if (user.role === 'administrator') {
+
+        } else if (user.role === 'doctor') {
+            getPatientCount()
+            getActiveMedicalRecords()
+        } else if (user.role === 'nurse') {
+            getPatientCount()
+            getTodayFillingMonitoringSheet()
+        } else if (user.role === 'pharmacist') {
+            if (tabIndex === 1) {
+                getPendingMedicalRequests(selectedDate, true)
+            }
+            else {
+                getPendingMedicalRequests(selectedDate)
+            }
+
+        }
+    }
+    const getPatientCount = () => {
+        useLoader('/patients?count=true')
+            .then(res => {
+                setPatientCount(res.count)
+            })
+            .catch(err => {
+                setPatientCount(0)
+            })
+    }
+
+    const getTodayFillingMonitoringSheet = () => {
+
+        setInfoLoading(true)
+        useLoader('/medical-records?nurseId=' + user.id + '&isActive=true')
+            .then(res => {
+                setInfoLoading(false)
+                setData({
+                    headerTitle: 'Today Filling Monitoring Sheet',
+                    column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
+                    data: res,
+                    count: res.length
+                })
+            })
+            .catch(err => {
+                setInfoLoading(false)
+                setData({
+                    headerTitle: '',
+                    column: [],
+                    data: [],
+                    count: 0
+                })
+            })
+
+    }
+    const getActiveMedicalRecords = () => {
+        setInfoLoading(true)
+        useLoader('/medical-records?doctorId=' + user.id + '&isActive=true')
+            .then(res => {
+                setInfoLoading(false)
+                setData({
+                    headerTitle: 'Active Medical Records',
+                    column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
+                    data: res,
+                    count: res.length
+                })
+            })
+            .catch(err => {
+                setInfoLoading(false)
+                setData({
+                    headerTitle: '',
+                    column: [],
+                    data: [],
+                    count: 0
+                })
+            })
+
+    }
+
+    const getPendingMedicalRequests = (date, count = false) => {
+        let SearchDate = date.toISOString().split('T')[0]
+        setInfoLoading(true)
+        useLoader('/medicine-requests?status=open&count=true')
+            .then(res => {
+                setData((prev) => ({
+                    ...prev,
+                    headerTitle: 'Pending Medical Requests',
+                    count: res.count
+                }))
+            })
+            .catch(err => {
+                setInfoLoading(false)
+                setData({
+                    headerTitle: '',
+                    column: [],
+                    data: [],
+                    count: 0
+                })
+            }
+            )
+        let query = count ? '&count=true' : ''
+        useLoader('/medicine-requests/query?startDate=' + SearchDate + '&endDate=' + SearchDate + query)
+            .then(res => {
+                setInfoLoading(false)
+
+                if (!count) {
+                    res = res.map((item) => {
+                        let status = null;
+                        switch (item.status.toLowerCase()) {
+                            case 'pending':
+                                status = <Badge colorScheme='yellow'>Pending</Badge>;
+                                break;
+                            case 'approved':
+                                status = <Badge colorScheme='green'>Approved</Badge>;
+                                break;
+                            case 'rejected':
+                                status = <Badge colorScheme='red'>Rejected</Badge>;
+                                break;
+                            default:
+                                status = <Badge>{item.status}</Badge>;
+                                break;
+                        }
+
+
+                        return {
+                            ...item,
+                            status: status
+                        }
+                    })
+                }
+                setData((prev) => ({
+                    ...prev,
+                    column: count ? ['Medicine', 'Quantity'] : ['Medicine', 'Quantity', 'status'],
+                    data: res
+                }))
+            })
+            .catch(err => {
+                setInfoLoading(false)
+                setData({
+                    headerTitle: '',
+                    column: [],
+                    data: [],
+                    count: 0
+                })
+            }
+            )
+    }
+
+    const setDashboardDefaultDate = (date) => {
+        setSelectedDate(date)
+        if (tabIndex === 1) {
+            getPendingMedicalRequests(date, true)
+        }
+        else {
+            getPendingMedicalRequests(date)
+        }
+
+    }
+
+    return (
+        <Box>
+            <Grid
+                templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
+                templateAreas={{ base: `"state" "content" `, md: `"state content content"` }}
+                gap={6}>
+                <GridItem area={'state'}>
+                    {/* Calendar */}
+                    {user?.role === 'pharmacist' && (
+                        <Box mb={3}>
+                            <Calendar setSelectedDate={setDashboardDefaultDate} />
+                        </Box>
+                    )}
+                    {/* Data info */}
+                    <Box
+                        p={5}
+                        boxShadow='md'
+                        borderWidth="1px"
+                        bgGradient='linear(to-l, #d01414, #803535)'
+                        color='white'
+                        borderRadius='xl'
+                    >
+                        <Heading size="md">
+                            {data?.headerTitle ? data.headerTitle : '...'}
+                        </Heading>
+                        <Box p={5} display='flex' alignItems='center' justifyContent='flex-end'>
+                            {infoLoading ? <Spinner /> : <Text textAlign='right' fontSize={40}>{data.count}</Text>}
+                        </Box>
+
+
+                    </Box>
+                    {/* Patient info */}
+                    {user?.role != 'pharmacist' &&
+                        (
+                            <Box
+                                p={5}
+                                shadow="md"
+                                borderWidth="1px"
+                                bgGradient='linear(to-l, #1775d2, #374083)'
+                                color='white'
+                                borderRadius='xl'
+                                mt={5}
+                            >
+                                <Heading size="md">Patient Number</Heading>
+                                <Box p={5} display='flex' alignItems='center' justifyContent='flex-end'>
+                                    {infoLoading ? <Spinner /> : <Text textAlign='right' fontSize={40}>{patientCount}</Text>}
+                                </Box>
+                            </Box>
+                        )}
+                    {/* Chat */}
+                    <Box
+                        mt={5}
+                        position='relative'
+                    >
+                        <Box
+                            position='absolute'
+                            display='flex'
+                            alignItems='center'
+                            justifyContent='center'
+                            flexDirection='column'
+                            w='100%'
+                            h='100%'
+                            bg='gray.100'
+                            borderRadius='xl'
+                            gap={3}
+                            opacity={0.5}
+                            zIndex={3}
+                        >
+                            <Badge variant='subtle' fontSize='1.5em' >COMING</Badge>
+                            <Badge variant='subtle' fontSize='1.5em' >SOON</Badge>
+                        </Box>
+                        <Box
+                            p={5}
+                            shadow="md"
+                            borderWidth="1px"
+                            bg='gray.100'
+                            borderRadius='xl'
+                            position='relative'
+                        >
+
+                            <Box
+                                display='flex'
+                                alignItems='center'
+                                gap={3}
+                                zIndex={1}
+                            >
+                                <MdOutlineMarkUnreadChatAlt size={30} color="#374083" />
+                                <Text fontSize={25} size="md">Chat</Text>
+                            </Box>
+                            <Box
+                                zIndex={1}
+                                borderRadius='md'
+                                display='flex'
+                                alignItems='center'
+                                gap={2}
+                                mt={5}
+                            >
+                                <Textarea
+                                    bg='white'
+                                    h="auto"
+                                    placeholder="Type your message"
+                                />
+                                <AiOutlineSend size={40} color="#374083" />
+                            </Box>
+                        </Box>
+                    </Box>
+
+                </GridItem>
+                <GridItem area={'content'}>
+                    {user && (user.role === 'doctor' || user?.role === 'nurse') && (
+                        <Box boxShadow='md'>
+                            <Box
+                                shadow="md"
+                                textAlign='center'
+                                color='white'
+                                bg='blue.700'
+                                borderTopRadius='md'
+                                display='flex'
+                                alignItems='center'
+                                justifyContent='space-between'
+                                p={3}
+                            >
+                                <Box w='80px'></Box>
+                                <Text>
+                                    Today Medical Records
+                                </Text>
+                                <IconButton
+                                    colorScheme='blackAlpha'
+                                    bg='gray.600'
+                                    borderRadius='full'
+                                    aria-label='Refresh'
+                                    isLoading={infoLoading}
+                                    onClick={getDashboardData}
+                                    icon={<BiRefresh size={25} />}
+                                />
+                            </Box>
+                            <Box
+                                shadow="md"
+                                bg='white'
+                                borderRadius='md'
+                                maxH='500px'
+                                overflowY='auto'
+                            >
+                                {
+                                    infoLoading && (
+                                        <Center p='10px'>
+                                            <Spinner thickness='4px'
+                                                speed='0.65s'
+                                                emptyColor='gray.200'
+                                                color='gray.500'
+                                                size='lg' />
+                                        </Center>
+                                    )
+                                }
+                                <Table>
+                                    <Thead
+                                        bg='gray.100'
+                                        color='white'
+                                        position="sticky"
+                                        top={0}
+                                        zIndex={1}
+                                    >
+                                        <Tr>
+                                            {data && data?.column.map((item, index) =>
+                                            (
+                                                <Th key={index}>{item}</Th>
+                                            )
+                                            )}
+                                        </Tr>
+                                    </Thead>
+                                    <Tbody>
+
+                                        {data && data?.data.map((item, index) =>
+                                        (
+                                            <Tr key={index}>
+                                                <Td>{item.patient.first_name}</Td>
+                                                <Td>{item.patient.last_name}</Td>
+                                                <Td>{item.bed_number}</Td>
+                                                <Td>
+                                                    <NavLink to={'/patients/' + item.patient.id + "?med=" + item.id}>
+                                                        <Button
+                                                            leftIcon={<AiFillFolderOpen />}
+                                                            colorScheme='blue'
+                                                            variant='outline'
+                                                        >
+                                                            Open
+                                                        </Button>
+                                                    </NavLink>
+                                                </Td>
+                                            </Tr>
+                                        )
+                                        )}
+                                    </Tbody>
+                                </Table>
+                            </Box>
+                        </Box>
+                    )}
+
+                    {user?.role === 'pharmacist' && (
+                        <Box boxShadow='md'>
+                            <Box>
+                                <Box
+                                    shadow="md"
+                                    textAlign='center'
+                                    color='white'
+                                    bg='blue.700'
+                                    borderTopRadius='md'
+                                    display='flex'
+                                    alignItems='center'
+                                    justifyContent='space-between'
+                                    p={3}
+                                >
+                                    <Box w='80px'></Box>
+                                    <Text>
+                                        Medicine Requests
+                                    </Text>
+                                    <IconButton
+                                        colorScheme='blackAlpha'
+                                        bg='gray.600'
+                                        borderRadius='full'
+                                        aria-label='Refresh'
+                                        isLoading={infoLoading}
+                                        onClick={getDashboardData}
+                                        icon={<BiRefresh size={25} />}
+                                    />
+                                </Box>
+                                <Tabs isFitted variant='unstyled' bg='blue.800' color="gray.400" index={tabIndex} onChange={handleTabsChange}>
+                                    <TabList>
+                                        <Tab _selected={{ color: 'white' }}>
+                                            <VStack spacing={0}>
+                                                <BsFileEarmarkMedical size={23} />
+                                                <Text fontSize={15}>Requests</Text>
+                                            </VStack>
+                                        </Tab>
+                                        <Tab _selected={{ color: 'white' }}>
+                                            <VStack spacing={0}>
+                                                <HiOutlineDocumentText size={23} />
+                                                <Text fontSize={15}>Medicine Count</Text>
+                                            </VStack>
+                                        </Tab>
+                                    </TabList>
+                                </Tabs>
+                                <Box
+                                    shadow="md"
+                                    bg='white'
+                                    borderRadius='md'
+                                    maxH='500px'
+                                    overflowY='auto'
+                                >
+                                    <Table>
+                                        <Thead
+                                            bg='gray.100'
+                                            color='white'
+                                            position="sticky"
+                                            top={0}
+                                            zIndex={1}
+                                        >
+                                            <Tr>
+                                                {data && data?.column.map((item, index) =>
+                                                (
+                                                    <Th key={index}>{item}</Th>
+                                                )
+                                                )}
+                                            </Tr>
+                                        </Thead>
+                                        <Tbody>
+                                            {!infoLoading && data && data?.data.map((item, index) =>
+                                            (
+                                                <Tr key={index}>
+                                                    <Td>{item.medicine.name}</Td>
+                                                    <Td>{item.quantity}</Td>
+                                                    {
+                                                        item.status && (
+                                                            <Td>
+                                                                {item.status}
+                                                            </Td>
+                                                        )
+                                                    }
+
+                                                </Tr>
+                                            )
+                                            )}
+                                        </Tbody>
+                                    </Table>
+                                </Box>
+                            </Box>
+                        </Box>
+
+                    )}
+                    {
+                        !infoLoading && data && data?.data.length === 0 && (
+                            <Center p='10px' bg='white' borderBottomRadius='md' boxShadow='md'>
+                                <Text fontSize={20} color='gray.500'>No Data</Text>
+                            </Center>
+                        )
+                    }
+                    {
+                        infoLoading && (
+                            <Center p='10px'>
+                                <Spinner thickness='4px'
+                                    speed='0.65s'
+                                    emptyColor='gray.200'
+                                    color='gray.500'
+                                    size='lg' />
+                            </Center>
+                        )
+                    }
+                </GridItem>
+            </Grid>
+        </Box>
     );
 }
 
