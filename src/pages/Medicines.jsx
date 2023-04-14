@@ -6,7 +6,7 @@ import {
     Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { NavLink, useNavigate, useOutlet, useSearchParams } from "react-router-dom";
+import { NavLink, Outlet, useNavigate, useOutlet, useSearchParams } from "react-router-dom";
 import MedicinesTable from "../components/MedicinesTable";
 import Pagination from "../components/Pagination";
 import useLoader from "../hooks/useLoader";
@@ -14,6 +14,7 @@ import useLoader from "../hooks/useLoader";
 const Medicines = () => {
     const outlet = useOutlet()
     const [data, setData] = useState(null)
+    const [medicinesLoading, setMedicinesLoading] = useState(false)
     const navigate = useNavigate()
     const [searchParams, setSearchParams] = useSearchParams()
     const [searchTimeout, setSearchTimeout] = useState(null)

@@ -47,8 +47,8 @@ import useLoader from "../hooks/useLoader";
 
 
 const Prescriptions = () => {
-    const [PendingPrescriptions, setPrescriptions] = useState(null)
-    const [PastPrescriptions, setPastPrescriptions] = useState(null)
+    const [PendingPrescriptions, setPrescriptions] = useState([])
+    const [PastPrescriptions, setPastPrescriptions] = useState([])
 
     const [PrescriptionDetail, setPrescriptionDetail] = useState(null)
 
@@ -91,7 +91,7 @@ const Prescriptions = () => {
     }, [searchParams])
 
     const getPendingPrescriptions = () => {
-        setPrescriptions(null)
+        setPrescriptions([])
         setPendingPagination(null)
         setPendingLoading(true)
         
@@ -102,18 +102,24 @@ const Prescriptions = () => {
                 setPrescriptions(data)
                 setPendingPagination(pagination)
             })
+            .catch(err => {
+                setPendingLoading(false)
+            })
 
     }
     const getPastPrescriptions = () => {
+        setPastPrescriptions([])
         setPastPagination(null)
         setPastLoading(true)
-        setPastPrescriptions(null)
         useLoader(`/medicine-requests?status=closed&page=${searchParams.get('page') || 1}`)
             .then(res => {
                 setPastLoading(false)
                 const { data, ...pagination } = res;
                 setPastPrescriptions(data)
                 setPastPagination(pagination)
+            })
+            .catch(err => {
+                setPastLoading(false)
             })
     }
     const changeAllMedicineRequestStatus = async (MainInfo, message) => {
@@ -372,7 +378,7 @@ const Prescriptions = () => {
 
                         {PastPrescriptions && PastPrescriptions.length === 0 && !PastLoading &&
                             <Flex justifyContent='center' alignItems='center' h='100px'>
-                                <Text fontSize='20px' fontWeight='bold'>No Pending Prescriptions</Text>
+                                <Text fontSize='20px' fontWeight='bold'>No Past Prescriptions</Text>
                             </Flex>
                         }
                         {PastPagination && PastPagination.last_page > 1 &&

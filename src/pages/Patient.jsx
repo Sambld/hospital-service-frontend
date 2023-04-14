@@ -54,7 +54,7 @@ const Patient = () => {
 
     const [RecordList, setRecordList] = useState(null)
     const [NotFound, setNotFound] = useState(false)
-    
+
 
     const [loading, setLoading] = useState(false)
     const [loadingRecord, setLoadingRecord] = useState(false)
@@ -87,6 +87,16 @@ const Patient = () => {
                 // SET MEDICAL RECORDS
                 useLoader("/patients/" + id + "/medical-records").then(res => {
                     setRecordList(res.data)
+                })
+            }).catch(err => {
+                setPatientInfo({ first_name: "Patient", last_name: "Not Found" })
+                setNotFound(true)
+                toast({
+                    title: "Error",
+                    description: err.message,
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
                 })
             })
         }
@@ -136,7 +146,25 @@ const Patient = () => {
     }
 
 
-    if (NotFound) return <Center><Heading>Patient Not Found</Heading></Center>
+    if (NotFound) return (
+        <Box>
+            <Text
+                as="h2"
+                fontSize={50}
+                fontWeight='bold'
+                bg='blue.700'
+                textAlign='center'
+                backgroundClip="text">
+                404
+            </Text>
+            <Text textAlign='center' fontSize={30}>
+                Patient Not Found
+            </Text>
+            <Text textAlign='center' fontSize={15}>
+                (Please check the id and try again)
+            </Text>
+        </Box>
+    )
     return (
         <Tabs index={tabIndex} onChange={handleTabsChange}>
             <TabList>
@@ -244,7 +272,7 @@ const Patient = () => {
                     </Center>}
                 </TabPanel>
                 <TabPanel>
-                    {med['ok'] && <MedicalRecord medical_record={med['data']} user={user} editRecord={handleRecordEdit}/>}
+                    {med['ok'] && <MedicalRecord medical_record={med['data']} user={user} editRecord={handleRecordEdit} />}
                     {loadingRecord && <Center p='10px'><Spinner thickness='4px' /></Center>}
                 </TabPanel>
             </TabPanels>

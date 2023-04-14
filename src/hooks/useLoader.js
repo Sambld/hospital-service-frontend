@@ -1,13 +1,15 @@
-import axios from '../components/axios'
+import axios from '../components/axios';
 
 const useLoader = async(link, abortCont = null) => {
     if (abortCont === null) abortCont = new AbortController();
-    const { data } = await axios.get(link, { signal: abortCont.signal })
+
+    return axios.get(link, { signal: abortCont.signal })
         .then(res => {
-            return res
+            return res.data;
         })
-        .catch(err => () => abortCont.abort())
-    if (data === undefined) return Promise.reject();
-    return data
-}
+        .catch(err => {
+            return Promise.reject(err);
+        });
+};
+
 export default useLoader;

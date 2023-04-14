@@ -18,6 +18,7 @@ import Patient from "./pages/Patient";
 import NotFound from "./pages/NotFound";
 import Medicines from "./pages/Medicines";
 import Prescriptions from "./pages/Prescriptions";
+import Medicine from "./pages/Medicine";
 
 
 
@@ -32,7 +33,9 @@ const router = createBrowserRouter(
         <Route path=':id' element={<Patient />} />
       </Route>
       <Route path='prescriptions' element={<Prescriptions />}/>
-      <Route path='medicines' element={<Medicines />} />
+      <Route path='medicines' element={<Medicines />} >
+        <Route path=':id' element={<Medicine />} />
+      </Route>
       <Route path='*' element={<NotFound />} />
     </Route>
   )
