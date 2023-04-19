@@ -1,4 +1,4 @@
-import { SearchIcon } from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon, SearchIcon } from "@chakra-ui/icons";
 import {
     Box,
     Icon,
@@ -44,8 +44,12 @@ import {
     AlertDialogBody,
     AlertDialogFooter,
     AlertDialogContent,
+    Grid,
+    GridItem,
+    Flex,
+    Avatar,
 } from "@chakra-ui/react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 // Hooks
 import useLoader from "../hooks/useLoader";
@@ -61,6 +65,7 @@ import StaffForm from "../components/StaffForm";
 import { RiAdminLine } from "react-icons/ri";
 import { FaUserMd, FaUserNurse } from "react-icons/fa";
 import { GiMedicines } from "react-icons/gi";
+import { HiOutlineEmojiSad } from "react-icons/hi";
 
 const UserRoleItem = (user) => {
     let items = [];
@@ -95,17 +100,30 @@ const Staff = () => {
 
     const toast = useToast()
 
+    const navigate = useNavigate()
 
 
     useEffect(() => {
-        if (!data) useLoader('/users').then(res => setData(res.data))
+        if (!data) useLoader('/users')
+            .then(res => setData(res.data))
+            .catch(err => {
+                setData({
+                    data: [],
+                })
+            })
     }, [])
 
     useEffect(() => {
         if (searchParams.get('q') || searchParams.get('page')) {
             setData(null)
             const request_url = requestUrl()
-            useLoader(request_url).then(res => setData(res.data))
+            useLoader(request_url)
+                .then(res => setData(res.data))
+                .catch(err => {
+                    setData({
+                        data: [],
+                    })
+                })
         }
     }, [searchParams])
 
@@ -128,9 +146,9 @@ const Staff = () => {
     const handlePagination = (e) => {
         setData(null)
         if (searchParams.get('q')) {
-            navigate('/users?q=' + searchParams.get('q') + '&page=' + e)
+            navigate('/staff?q=' + searchParams.get('q') + '&page=' + e)
         } else {
-            navigate('/users?page=' + e)
+            navigate('/staff?page=' + e)
         }
     }
 
@@ -141,10 +159,16 @@ const Staff = () => {
         setSearchTimeout(setTimeout(() => {
             setData(null)
             if (!e) {
-                useLoader('/users').then(res => setData(res.data))
-                navigate('/users')
+                useLoader('/users')
+                    .then(res => setData(res.data))
+                    .catch(err => {
+                        setData({
+                            data: [],
+                        })
+                    })
+                navigate('/staff')
             } else {
-                navigate('/users?q=' + e)
+                navigate('/staff?q=' + e)
             }
         }, 500))
     }
@@ -164,14 +188,14 @@ const Staff = () => {
             })
             onDeleteClose()
         })
-        .catch(err => {
-            setDeleteLoading(false)
-            handleStaffActions({
-                title: err.message,
-                status: 'error',
+            .catch(err => {
+                setDeleteLoading(false)
+                handleStaffActions({
+                    title: err.message,
+                    status: 'error',
+                })
+                onDeleteClose()
             })
-            onDeleteClose()
-        })
     }
 
 
@@ -216,92 +240,77 @@ const Staff = () => {
             </HStack>
             <Box bg='white' w='100%' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
                 <Text fontSize='sm' color='gray.500' p='10px' align='right'>10,000 Patients</Text>
-                <TableContainer>
-                    <Table variant='simple'>
-                        <Thead>
-                            <Tr bg='#fafafa'>
-                                <Th w='50px' p='5'>#</Th>
-                                <Th maxW='100px'>
-                                    <InputGroup>
-                                        <InputLeftElement
-                                            pointerEvents='none'
-                                            children={<SearchIcon color='gray.300' />}
+                <Box p='10px' mb='10px' w='100%'>
+                    <InputGroup>
+                        <InputLeftElement
+                            pointerEvents='none'
+                            children={<SearchIcon color='gray.300' />}
+                        />
+                        <Input defaultValue={searchParams.get('q') || ''} variant='outline' type='text' placeholder='Search by Name' onChange={({ target }) => { handleSearch(target.value) }} />
+                    </InputGroup>
+                </Box>
+                <Grid templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }} gap={6}>
+                    {
+                        data && data.data.map((item, index) => (
+                            <GridItem key={index}>
+                                <Box bg='gray.50' borderRadius='md' border='2px' borderColor='gray.200' overflow='hidden'>
+
+                                    <Box p='10px' textAlign='center'>
+                                        <Avatar
+                                            bg={UserRoleItem(item)[2]}
+                                            size={{ base: 'sm', lg: 'md' }}
+                                            icon={UserRoleItem(item)[0]}
                                         />
-                                        <Input defaultValue={searchParams.get('q') || ''} variant='flushed' type='text' placeholder='Search by Name' onChange={({ target }) => { handleSearch(target.value) }} />
-                                    </InputGroup>
-                                </Th>
-                                <Th>Role</Th>
-                                <Th>Created At</Th>
-                                <Th>Options</Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {
-                                data && data.map((item, index) => (
-                                    <Tr key={index}>
-                                        <Td p='1'>
-                                            <Box
-                                                w='50px'
-                                                h='50px'
-                                                bg={UserRoleItem(item)[2]}
-                                                borderRadius='md'
-                                                display='flex'
-                                                justifyContent='center'
-                                                alignItems='center'
-                                                color='white'
-                                                fontSize={{ base: '1rem', md: '1.5rem' }}
+                                        <Text fontWeight='normal' fontSize={{ base: 'sm', lg: 'lg' }}>{item.first_name + " " + item.last_name}</Text>
+                                        <Text fontSize='sm' color='gray.500'>Role: {item.role} </Text>
+                                        <Text fontSize='sm' color='gray.500'>Created At: {new Date(item.created_at).toLocaleDateString()} </Text>
 
-                                            >
-                                                {UserRoleItem(item)[0]}
-                                            </Box>
-                                        </Td>
-                                        <Td><Text fontWeight='normal' fontSize={{base:'sm',lg:'lg'}}>{item.first_name + " " + item.last_name}</Text></Td>
-                                        <Td>
-                                            <Badge colorScheme={
-                                                item.role.toLowerCase() === 'administrator' ? 'gray' :
-                                                    item.role.toLowerCase() === 'doctor' ? 'red' :
-                                                        item.role.toLowerCase() === 'nurse' ? 'blue' :
-                                                            item.role.toLowerCase() === 'pharmacist' ? 'green' : 'purple'
-
-                                            }
-                                                variant='solid' p='2' borderRadius='2xl'>
-                                                {item.role}
-                                            </Badge>
-                                        </Td>
-                                        <Td>{new Date(item.created_at).toLocaleDateString()}</Td>
-                                        <Td
-                                            display='flex'
-                                            justifyContent='center'
-                                            alignItems='center'
+                                    </Box>
+                                    <Flex justifyContent='space-between' bg='gray.100' borderBottomRadius='md' pt='1px' gap='1px'>
+                                        <Button
+                                            bg='white'
+                                            leftIcon={<DeleteIcon />}
+                                            colorScheme='red'
+                                            borderRadius={0}
+                                            border={0}
+                                            variant='outline'
+                                            p='10px'
+                                            px={5}
+                                            w='50%'
+                                            onClick={() => {
+                                                setSelectedStaff(item)
+                                                onDeleteOpen()
+                                            }}
                                         >
-                                            <HStack>
-                                                <Button
-                                                    colorScheme='blue'
-                                                    variant='outline'
-                                                    fontWeight='normal'
-                                                    onClick={() => {
-                                                        setSelectedStaff(item)
-                                                        setEditMode(true)
-                                                        onStaffOpen()
-                                                    }}
-                                                >EDIT</Button>
-                                                <Button
-                                                    colorScheme='red'
-                                                    variant='outline'
-                                                    fontWeight='normal'
-                                                    onClick={() => {
-                                                        setSelectedStaff(item)
-                                                        onDeleteOpen()
-                                                    }}
-                                                >DELETE</Button>
-                                            </HStack>
-                                        </Td>
-                                    </Tr>
-                                ))
-                            }
-                        </Tbody>
-                    </Table>
-                </TableContainer>
+                                            <Text mr='5px' fontSize={15} fontWeight='normal'>Delete</Text>
+                                        </Button>
+
+                                        <Button
+                                            bg='white'
+                                            leftIcon={<EditIcon />}
+                                            colorScheme='green'
+                                            borderRadius={0}
+                                            border={0}
+                                            variant='outline'
+                                            p='10px'
+                                            px={5}
+                                            w='50%'
+                                            onClick={() => {
+                                                setSelectedStaff(item)
+                                                setEditMode(true)
+                                                onStaffOpen()
+                                            }}
+                                        >
+                                            <Text mr='5px' fontSize={15} fontWeight='normal'>Edit</Text>
+                                        </Button>
+                                    </Flex>
+                                </Box>
+
+                            </GridItem>
+
+                        ))
+                    }
+                </Grid>
                 {!data &&
                     <Center p='10px'>
                         <Spinner thickness='7px'
@@ -311,6 +320,12 @@ const Staff = () => {
                             size='xl' />
                     </Center>
                 }
+                { data && data.data.length === 0 && (
+                    <Box p='10px' display='flex' flexDirection='column' alignItems='center' justifyContent='center' gap={2}>
+                        <HiOutlineEmojiSad size='50px' />
+                        <Text fontSize='lg' fontWeight='normal'>No Staff Found</Text>
+                    </Box>
+                )}
                 {
                     data && data.last_page > 1 &&
                     <Pagination pagination={data} action={handlePagination} />

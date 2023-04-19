@@ -23,7 +23,7 @@ const RootLayout = () => {
 
     useEffect(() => {
         if (location.pathname.includes('prescription') || location.pathname.includes('medicines')) {
-            if (!user || user?.role != 'pharmacist') {
+            if (!user || user?.role != 'pharmacist' && user?.role != 'administrator') {
                 goHomePage();
                 toast({
                     title: "You don't have permission to access this page",

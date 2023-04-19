@@ -15,6 +15,8 @@ const SideBarItems = (user) => {
     if (user.role === 'administrator') {
       items.push({ name: 'Staff', icon: <FaUserFriends size={23} />, link: '/staff' });
       items.push({ name: 'Patients', icon: <RiFolderOpenLine size={23} />, link: '/patients' });
+      items.push({ name: 'Prescriptions', icon: <BsFileEarmarkMedical size={23} />, link: '/prescriptions' })
+      items.push({ name: 'Medicines', icon: <MdOutlineMedicalServices size={23} />, link: '/medicines' })
     } else if (user.role === 'doctor') {
       items.push({ name: 'Patients', icon: <RiFolderOpenLine size={23} />, link: '/patients' });
     } else if (user.role === 'nurse') {

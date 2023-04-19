@@ -214,7 +214,7 @@ const Patients = () => {
                     </BreadcrumbItem>
                 </Breadcrumb>
                 <Spacer />
-                {user.role == 'doctor' && (
+                {user.role == 'doctor' || user.role == 'administrator' && (
                     <Menu>
                         <MenuButton w='120px' colorScheme='blue.300' bg='blue.700' color='gray.100' as={Button} rightIcon={<ChevronDownIcon />} >
                             ADD
