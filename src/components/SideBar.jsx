@@ -5,6 +5,7 @@ import { FaUserFriends } from 'react-icons/fa'
 import { BsFileEarmarkMedical } from 'react-icons/bs'
 import { MdOutlineMedicalServices } from 'react-icons/md'
 import { useState } from "react";
+import { useEffect } from "react";
 
 const SideBarItems = (user) => {
   let items = [
@@ -29,6 +30,10 @@ const SideBarItems = (user) => {
 
 const SideBar = ({ user }) => {
   const [SidebarItem, setSidebarItem] = useState(SideBarItems(user));
+
+  useEffect(() => {
+    setSidebarItem(SideBarItems(user));
+  }, [user])
 
   return (
     <List pl={{base:'0px',lg:'10px'}} pt='10px' fontSize="1.2em" spacing={0}>

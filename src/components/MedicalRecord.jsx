@@ -278,7 +278,7 @@ const MedicalRecord = ({ medical_record, user , editRecord}) => {
     handlePrescription()
   }
 
-
+  
   return (
     <Box
       borderRadius="lg"
@@ -332,11 +332,15 @@ const MedicalRecord = ({ medical_record, user , editRecord}) => {
                   <Stack mt="4" spacing="4">
                     <Box>
                       <Text fontWeight="bold">Condition description: </Text>
-                      <Text ml={5}>{medical_record.condition_description}</Text>
+                      {medical_record.condition_description.split('\n').map((item, key) => {
+                        return <Text key={key} ml={5}>{item}</Text>
+                      })}
                     </Box>
                     <Box>
                       <Text fontWeight="bold">Standard treatment: </Text>
-                      <Text ml={5}>{medical_record.standard_treatment}</Text>
+                      {medical_record.standard_treatment.split('\n').map((item, key) => {
+                        return <Text key={key} ml={5}>{item}</Text>
+                      })}
                     </Box>
                     <Flex justify="normal" gap={2}>
                       <Text fontWeight="bold">State upon enter: </Text>

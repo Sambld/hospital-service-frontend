@@ -159,7 +159,7 @@ const Patients = () => {
         }
     }
 
-    const handleRecordAdd = (message) => {
+    const handleRecordActions = (message) => {
         onRecordClose()
         toast({
             title: message.title,
@@ -169,8 +169,12 @@ const Patients = () => {
         })
         if (message?.redirect) {
             setData(null)
-            navigate(message.redirect)
-            useLoader(message.redirect).then(res => setData(res.data))
+            if (message.redirect === location.pathname + location.search) {
+                location.reload()
+            } else {
+                navigate(message.redirect)
+                useLoader(message.redirect).then(res => setData(res.data))
+            }
         }
     }
 
@@ -178,8 +182,9 @@ const Patients = () => {
         setMedicalrecordInitialData(initialData)
         setMedicalrecordEditMode(true)
         onRecordOpen()
+        // reload web page
     }
-        
+
     const RecordFormExit = () => {
         setMedicalrecordInitialData(null)
         setMedicalrecordEditMode(false)
@@ -273,16 +278,18 @@ const Patients = () => {
             <Modal closeOnOverlayClick={false} isOpen={isRecordOpen} onClose={RecordFormExit}>
                 <ModalOverlay />
                 <ModalContent maxW="56rem">
-                    <ModalHeader>Add Record</ModalHeader>
+                    <ModalHeader>{
+                        medicalrecordEditMode ? 'Edit Medical Record' : 'Add Medical Record'
+                    }</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
                         <RecordForm
-                        closeModal={onRecordClose}
-                        closeAndRefresh={handleRecordAdd}
-                        userId={user.id}
-                        patientId={patient?.id || null} 
-                        editMode={medicalrecordEditMode}
-                        initialData={medicalrecordInitialData}
+                            closeModal={onRecordClose}
+                            closeAndRefresh={handleRecordActions}
+                            userId={user.id}
+                            patientId={patient?.id || null}
+                            editMode={medicalrecordEditMode}
+                            initialData={medicalrecordInitialData}
                         />
                     </ModalBody>
                 </ModalContent>

@@ -24,6 +24,7 @@ import { Form } from 'react-router-dom';
 import { BsPersonAdd } from 'react-icons/bs';
 import { AiOutlineEdit, AiOutlinePlus } from 'react-icons/ai';
 import usePost from '../hooks/usePost';
+import usePut from '../hooks/usePut';
 import useLoader from '../hooks/useLoader';
 
 const SummaryItem = ({ label, children }) => (
@@ -44,6 +45,7 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
         bed_number: initialData?.bed_number || '',
         state_upon_exit: initialData?.state_upon_exit || '',
         patient_entry_date: new Date().toISOString().slice(0, 10),
+        patient_leaving_date: initialData?.patient_leaving_date || '',
     });
     const [Patient, setPatient] = useState(null);
     const [LoadingPatient, setLoadingPatient] = useState(false);
@@ -66,6 +68,16 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
     const handleSubmit = (event) => {
         event.preventDefault();
         setLoading(true);
+        if (editMode) {
+            handleEdit();
+        }
+        else {
+            handAdd();
+        }
+        
+    };
+
+    const handAdd = (event) => {
         usePost('/patients/' + formData.patient_id + '/medical-records', formData).then((res) => {
             setLoading(false);
             if (res.message === 'Medical record created successfully.') {
@@ -87,6 +99,29 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
             }
         });
     };
+    const handleEdit = (event) => {
+        usePut('/patients/' + formData.patient_id + '/medical-records/' + initialData.id, formData).then((res) => {
+            setLoading(false);
+            if (res.message === 'Medical record updated successfully.') {
+                closeAndRefresh(
+                    {
+                        title: 'Medical Record updated successfully.',
+                        status: 'success',
+                        redirect: '/patients/' + formData.patient_id + '?med=' + initialData.id
+                    }
+                )
+            } else {
+                closeAndRefresh(
+                    {
+                        title: 'Error',
+                        description: res.message,
+                        status: 'error',
+                    }
+                )
+            }
+        });
+    };
+
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData((prevFormData) => ({
@@ -185,7 +220,7 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
                 />
             </FormControl>
             {editMode && (
-                <FormControl mb={3} id="patient_leaving_date" isRequired>
+                <FormControl mb={3} id="patient_leaving_date">
                     <FormLabel>Patient Leaving Date</FormLabel>
                     <Input
                         type="Date"

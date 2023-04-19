@@ -379,17 +379,6 @@ const Dashboard = () => {
                                 maxH='500px'
                                 overflowY='auto'
                             >
-                                {
-                                    infoLoading && (
-                                        <Center p='10px'>
-                                            <Spinner thickness='4px'
-                                                speed='0.65s'
-                                                emptyColor='gray.200'
-                                                color='gray.500'
-                                                size='lg' />
-                                        </Center>
-                                    )
-                                }
                                 <Table>
                                     <Thead
                                         bg='gray.100'
@@ -534,7 +523,7 @@ const Dashboard = () => {
                     }
                     {
                         infoLoading && (
-                            <Center p='10px'>
+                            <Center p='10px' bg='white' borderBottomRadius='md' boxShadow='md'>
                                 <Spinner thickness='4px'
                                     speed='0.65s'
                                     emptyColor='gray.200'

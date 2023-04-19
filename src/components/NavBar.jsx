@@ -22,7 +22,7 @@ import {
     AlertDialogOverlay,
     useDisclosure,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaShieldVirus, FaUserNurse, FaUserMd } from "react-icons/fa";
 import { RiShutDownLine, RiAdminLine } from "react-icons/ri";
 import { NavLink } from "react-router-dom";
@@ -50,6 +50,11 @@ const NavBar = ({ logout, user }) => {
     const cancelRef = useRef()
 
     const [Leading, setLeading] = useState(false);
+
+    useEffect(() => {
+        setUserRoleItem(UserRoleItem(user));
+    }, [user])
+    
     const handleLogout = () => {
         setLeading(true);
         setTimeout(() => {
@@ -57,6 +62,7 @@ const NavBar = ({ logout, user }) => {
             logout();
         }, 1000);
     }
+
     return (
         <Flex justifyContent={'space-between'} p={{ base: '5px', lg: '10px' }}>
             <HStack color="#374083">
@@ -80,7 +86,7 @@ const NavBar = ({ logout, user }) => {
                             </HStack>
                         </Box>
                     </MenuButton>
-                    <MenuList mt='10px' p='5px' borderTopLeftRadius={0} borderTopRightRadius={0}>
+                    <MenuList mt='10px' p='5px' borderTopLeftRadius={0} borderTopRightRadius={0} zIndex={5}>
                         <br />
                         <Center>
                             <Avatar

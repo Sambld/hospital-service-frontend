@@ -21,7 +21,6 @@ const Medicines = () => {
 
     useEffect(() => {
         if (!data && !outlet) useLoader('/medicines').then(res => setData(res.data))
-        // if (!outlet) setPatient(null)
     }, [outlet])
 
     useEffect(() => {
