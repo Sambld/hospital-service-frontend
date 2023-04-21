@@ -138,7 +138,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                                 }
                                             }}
                                             _hover={{ cursor: 'pointer', bg: 'gray.400' }}
-                                            
+
                                         >
                                             {item.filling_date}
                                             {item.filling_date == formatDate(new Date()) && ' (today)'}
@@ -248,11 +248,11 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
             ) :
                 loading ? (
                     <Center p='10px'>
-                        <Spinner thickness='4px'
+                        <Spinner thickness='5px'
                             speed='0.65s'
                             emptyColor='gray.200'
-                            color='blue.500'
-                            size='xl' />
+                            color='gray.500'
+                            size='md' />
                     </Center>
                 ) : (
                     <Box>

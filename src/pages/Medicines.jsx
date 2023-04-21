@@ -4,30 +4,65 @@ import {
     BreadcrumbItem,
     BreadcrumbLink,
     Text,
+    Flex,
+    Spacer,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+    Button,
+    useDisclosure,
+    useToast,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+    Spinner
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate, useOutlet, useSearchParams } from "react-router-dom";
+
+// Hooks
+import { useEffect, useState } from "react";
+import useLoader from "../hooks/useLoader";
+
+// Icons
+import { ChevronDownIcon } from "@chakra-ui/icons";
+import { GoDiffAdded } from "react-icons/go";
+import { FaBriefcaseMedical } from "react-icons/fa";
+
+// Components
 import MedicinesTable from "../components/MedicinesTable";
 import Pagination from "../components/Pagination";
-import useLoader from "../hooks/useLoader";
+import MedicineQuantityForm from "../components/MedicineQuantityForm";
+import MedicineForm from "../components/MedicineForm";
 
 const Medicines = () => {
     const outlet = useOutlet()
     const [data, setData] = useState(null)
+    const [medicine, setMedicine] = useState(null)
     const [medicinesLoading, setMedicinesLoading] = useState(false)
-    const navigate = useNavigate()
+
     const [searchParams, setSearchParams] = useSearchParams()
     const [searchTimeout, setSearchTimeout] = useState(null)
 
+    const toast = useToast()
+    const navigate = useNavigate()
+
+    const { isOpen: isQuantityModalOpen, onOpen: onQuantityModalOpen, onClose: onQuantityModalClose } = useDisclosure()
+    const { isOpen: isMedicineModalOpen, onOpen: onMedicineModalOpen, onClose: onMedicineModalClose } = useDisclosure()
+
     useEffect(() => {
-        if (!data && !outlet) useLoader('/medicines').then(res => setData(res.data))
+        if (!data && !outlet) useLoader('/medicines').then(res => setData(res.data)).catch(err => setData({data: []}))
     }, [outlet])
 
     useEffect(() => {
         if (!data && !outlet) {
-            // setPatient(null)
+            setMedicine(null)
             const request_url = requestUrl()
-            useLoader(request_url).then(res => setData(res.data))
+            useLoader(request_url).then(res => setData(res.data)).catch(err => setData({data: []}))
         }
         if (outlet) {
             setData(null)
@@ -38,7 +73,7 @@ const Medicines = () => {
         if (searchParams.get('q') || searchParams.get('page')) {
             setData(null)
             const request_url = requestUrl()
-            useLoader(request_url).then(res => setData(res.data))
+            useLoader(request_url).then(res => setData(res.data)).catch(err => setData({data: []}))
         }
     }, [searchParams])
 
@@ -74,7 +109,7 @@ const Medicines = () => {
         setSearchTimeout(setTimeout(() => {
             setData(null)
             if (!e) {
-                useLoader('/medicines').then(res => setData(res.data))
+                useLoader('/medicines').then(res => setData(res.data)).catch(err => setData({data: []}))
                 navigate('/medicines')
             } else {
                 navigate('/medicines?q=' + e)
@@ -82,22 +117,94 @@ const Medicines = () => {
         }, 500))
     }
 
+    const handleMedicineActions = (message) => {
+        const request_url = requestUrl()
+        useLoader(request_url).then(res => setData(res.data)).catch(err => setData({data: []}))
+        onQuantityModalClose()
+        onMedicineModalClose()
+        toast({
+            title: message.title,
+            status: message.status,
+            duration: 9000,
+            isClosable: true,
+        })
+        if (message?.redirect) {
+            setData(null)
+            navigate(message.redirect)
+            useLoader(message.redirect).then(res => setData(res.data))
+        }
+    }
     return (
         <Box>
-            <Breadcrumb fontSize={{ base: "md", lg: '3xl' }}>
-                <BreadcrumbItem>
-                    <NavLink to='/Medicines' color='blue.500'>
-                        <Text fontSize={{ base: "md", lg: '3xl' }} color='#2e3149' ml='20px'>Medicines</Text>
-                    </NavLink>
-                </BreadcrumbItem>
-            </Breadcrumb>
+            <Flex mr={3}>
+                <Breadcrumb fontSize={{ base: "md", lg: '3xl' }}>
+                    <BreadcrumbItem>
+                        <NavLink to='/Medicines' color='blue.500'>
+                            <Text fontSize={{ base: "md", lg: '3xl' }} color='#2e3149' ml='20px'>Medicines</Text>
+                        </NavLink>
+                    </BreadcrumbItem>
+                    
+                        {outlet && (
+                            <BreadcrumbItem>
+                                {medicine? <Text fontSize={{ base: "md", lg: '3xl' }} color='#2e3149' >{medicine?.name}</Text> : <Spinner thickness='4px' />}
+                            </BreadcrumbItem>
+                            )
+                        }
+                    
+                </Breadcrumb>
+                <Spacer />
+                {!outlet && (
+                    <Menu>
+                        <MenuButton w='120px' colorScheme='blue.300' bg='blue.700' color='gray.100' as={Button} rightIcon={<ChevronDownIcon />} >
+                            ADD
+                        </MenuButton>
+                        <MenuList>
+                            <MenuItem onClick={onMedicineModalOpen}>
+                                <FaBriefcaseMedical />
+                                <Text ml={3}>
+                                    NEW MEDICINE
+                                </Text>
+                            </MenuItem>
+                            <MenuItem onClick={onQuantityModalOpen}>
+                                <GoDiffAdded />
+                                <Text ml={3}>
+                                    ADD QUANTITY
+                                </Text>
+                            </MenuItem>
+                        </MenuList>
+                    </Menu>
+                )}
+            </Flex>
             <Box bg='white' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
-                {outlet ? <Outlet /> : <MedicinesTable initValue={searchParams.get('q') || ''} medicines={data?.data} search={handleSearch} count={data?.total}/>}
+                {outlet ? <Outlet context={{ setMedicine }}/> : <MedicinesTable initValue={searchParams.get('q') || ''} medicines={data?.data} search={handleSearch} count={data?.total} />}
                 {
                     data && data.last_page > 1 &&
                     <Pagination pagination={data} action={handlePagination} />
                 }
             </Box>
+
+            <Modal closeOnOverlayClick={false} isOpen={isQuantityModalOpen} onClose={onQuantityModalClose}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>ADD QUANTITY</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <MedicineQuantityForm closeModal={onQuantityModalClose} closeAndRefresh={handleMedicineActions} />
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+
+            <Modal closeOnOverlayClick={false} isOpen={isMedicineModalOpen} onClose={onMedicineModalClose}>
+                <ModalOverlay />
+                <ModalContent maxW='700px'>
+                    <ModalHeader>ADD MEDICINE</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <MedicineForm closeModal={onMedicineModalClose} closeAndRefresh={handleMedicineActions} />
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+
         </Box>
     );
 }

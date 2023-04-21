@@ -15,7 +15,7 @@ import { Form } from 'react-router-dom';
 import { BsPersonAdd } from 'react-icons/bs';
 import usePost from '../hooks/usePost';
 
-const PatientForm = ({ closeModal,closeAndRefresh }) => {
+const PatientForm = ({ closeModal, closeAndRefresh }) => {
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -30,30 +30,28 @@ const PatientForm = ({ closeModal,closeAndRefresh }) => {
         emergency_contact_number: '',
     });
     const [loading, setLoading] = useState(false);
-
+    
     const handleSubmit = (event) => {
         event.preventDefault();
         setLoading(true);
         usePost('/patients', formData).then((res) => {
             setLoading(false);
-            if(res.message === 'Patient created successfully.'){
-                closeAndRefresh(
-                    {
-                        title: 'Patient created successfully.',
-                        status: 'success',
-                        redirect: '/patients/' + res.patient.id,
-                    }
-                )
-            }else{
-                closeAndRefresh(
-                    {
-                        title: 'Error',
-                        description: res.message,
-                        status: 'error',
-                    }
-                )
-            }
-        });
+            closeAndRefresh(
+                {
+                    title: 'Patient created successfully.',
+                    status: 'success',
+                    redirect: '/patients/' + res.patient.id,
+                }
+            )
+        }).catch((err) => {
+            setLoading(false);
+            closeAndRefresh(
+                {
+                    title: err.response.data.message,
+                    status: 'error',
+                }
+            )
+        })
     };
 
     const handleChange = (event) => {

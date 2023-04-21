@@ -34,13 +34,14 @@ const MedicinesTable = ({ initValue, medicines, count, search }) => {
                             <Td><NavLink to={medicine.id.toString()}><Button colorScheme='blue' w='100%'>Detail</Button></NavLink></Td>
                         </Tr>
                     ))}
+                    {medicines && medicines.length == 0 && <Tr><Td colSpan='5'><Text textAlign='center' fontWeight='bold' fontSize='xl'>No Data</Text></Td></Tr>}
                 </Tbody>
             </Table>
             {!medicines && <Center p='10px'>
-                <Spinner thickness='4px'
+                <Spinner thickness='5px'
                     speed='0.65s'
                     emptyColor='gray.200'
-                    color='blue.500'
+                    color='gray.500'
                     size='xl' />
             </Center>}
         </>

@@ -35,8 +35,8 @@ import {
   Spinner,
   Badge,
 } from "@chakra-ui/react";
+import { DeleteIcon, EditIcon, SearchIcon, AddIcon } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
-import { AddIcon } from '@chakra-ui/icons'
 import { Form } from "react-router-dom";
 
 // Hooks
@@ -50,11 +50,13 @@ import MonitoringSheetForm from "./MonitoringSheetForm";
 import MonitoringSheetRow from "./MonitoringSheetRow";
 import PrescriptionForm from "./PrescriptionForm";
 
-const MedicalRecord = ({ medical_record, user , editRecord}) => {
+const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const toast = useToast()
   const [tabIndex, setTabIndex] = useState(0)
 
   const [Examination, setExamination] = useState([]);
+  const [ExaminationEditMode, setExaminationEditMode] = useState(false)
+  const [ExaminationEditInfo, setExaminationEditInfo] = useState(null)
 
   const [Observations, setObservations] = useState([]);
   const [Observation, setObservation] = useState([]);
@@ -155,7 +157,7 @@ const MedicalRecord = ({ medical_record, user , editRecord}) => {
     editRecord(medical_record)
   }
 
-  
+
   // Examination
   const handleExamination = () => {
     setExamination([])
@@ -167,8 +169,9 @@ const MedicalRecord = ({ medical_record, user , editRecord}) => {
       })
   }
 
-  const handleExaminationAdd = (message) => {
+  const handleExaminationActions = (message) => {
     onCloseExamination()
+    setExaminationEditMode(false)
     toast({
       title: message.title,
       status: message.status,
@@ -177,6 +180,13 @@ const MedicalRecord = ({ medical_record, user , editRecord}) => {
     })
     handleExamination()
   }
+
+  const handleExaminationEdit = (examination) => {
+    setExaminationEditInfo(examination)
+    setExaminationEditMode(true)
+    onOpenExamination()
+  }
+
 
   // Observation
   const handleObservation = () => {
@@ -278,7 +288,7 @@ const MedicalRecord = ({ medical_record, user , editRecord}) => {
     handlePrescription()
   }
 
-  
+
   return (
     <Box
       borderRadius="lg"
@@ -320,16 +330,31 @@ const MedicalRecord = ({ medical_record, user , editRecord}) => {
               <TabPanel p={0}>
                 {/* Medical Record main information */}
                 <Box
-                  p="6"
+                  p={0}
                   color='blue.900'
                   borderWidth="2px"
                   borderColor='gray.300'
                   borderRadius={10}
-                  borderBottomRadius={0}
                 >
-                  <Heading> Medical Record #{medical_record.id}</Heading>
+                  {user.id == medical_record.user_id && (
+                    <Box
+                      color='blue.900'
+                      display='flex'
+                      borderBottom='1px'
+                      borderColor='gray.300'
+                     
+                    >
+                      <Button leftIcon={<EditIcon />} w='50%' variant='solid' colorScheme="green" opacity={0.7} type="submit" borderRadius={0} borderTopLeftRadius={10} onClick={() => handleMedicalRecordEdit(medical_record)}>
+                        Edit
+                      </Button>
+                      <Button leftIcon={<DeleteIcon />} w='50%' variant='solid' colorScheme="red" opacity={0.7} type="submit" borderRadius={0} borderTopRightRadius={10}>
+                        Delete
+                      </Button>
+                    </Box>
+                  )}
+                  <Heading p={5}> Medical Record #{medical_record.id}</Heading>
 
-                  <Stack mt="4" spacing="4">
+                  <Stack p={5} mt="4" spacing="4">
                     <Box>
                       <Text fontWeight="bold">Condition description: </Text>
                       {medical_record.condition_description.split('\n').map((item, key) => {
@@ -367,25 +392,12 @@ const MedicalRecord = ({ medical_record, user , editRecord}) => {
                       </Text>
                     </Flex>
                   </Stack>
+
                 </Box>
+
+
                 <Box
-                  mb={3}
-                  color='blue.900'
-                  borderRadius={10}
-                  borderTopRadius={0}
-                  display='flex'
-                  justifyContent='flex-end'
-                >
-                  <Button variant='solid' colorScheme='green' type="submit" borderRadius={0} onClick={() => handleMedicalRecordEdit(medical_record)}>
-                    {/* add icon */}
-                    <Text ml="5px" >Edit</Text>
-                  </Button>
-                  <Button variant='solid' colorScheme='red' type="submit" borderRadius={0}>
-                    Delete
-                  </Button>
-                </Box>
-                <Box
-                  mb={3}
+                  mt={3}
                   p="6"
                   color='blue.900'
                   borderWidth="2px"
@@ -435,21 +447,33 @@ const MedicalRecord = ({ medical_record, user , editRecord}) => {
                         <Tr key={index}>
                           <Td>{changeFormat(Exam.created_at)}</Td>
                           <Td>{Exam.type}</Td>
-                          <Td colSpan='2'>{Exam.result}</Td>
+                          <Td>{Exam.result}</Td>
+                          <Td display='flex' justifyContent='flex-end'>
+                            {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
+                              <IconButton
+                                borderRadius='100%'
+                                size='sm'
+                                color='white'
+                                bg='green.400'
+                                onClick={() => handleExaminationEdit(Exam)}
+                                icon={<EditIcon />} />
+                            )}
+                          </Td>
+
                         </Tr>
                       ))}
                       {!loadingExamination && Examination.length === 0 && (
-                        <Tr><Td colSpan={3}><Text textAlign='center' fontWeight='bold' fontSize='xl'>No Examination</Text></Td></Tr>
+                        <Tr><Td colSpan={4}><Text textAlign='center' fontWeight='bold' fontSize='xl'>No Examination</Text></Td></Tr>
                       )}
                     </Tbody>
                   </Table>
                   {loadingExamination && (
                     <Center p='10px'>
-                      <Spinner thickness='4px'
+                      <Spinner thickness='5px'
                         speed='0.65s'
                         emptyColor='gray.200'
-                        color='blue.500'
-                        size='xl' />
+                        color='gray.500'
+                        size='md' />
                     </Center>
                   )}
                 </Box>
@@ -542,11 +566,11 @@ const MedicalRecord = ({ medical_record, user , editRecord}) => {
                 )}
                 {loadingObservation && (
                   <Center p='10px'>
-                    <Spinner thickness='4px'
-                      speed='0.65s'
-                      emptyColor='gray.200'
-                      color='blue.500'
-                      size='xl' />
+                    <Spinner thickness='5px'
+                        speed='0.65s'
+                        emptyColor='gray.200'
+                        color='gray.500'
+                        size='md' />
                   </Center>
                 )}
               </TabPanel>
@@ -620,11 +644,11 @@ const MedicalRecord = ({ medical_record, user , editRecord}) => {
                   </Table>
                   {loadingPrescription && (
                     <Center p='10px'>
-                      <Spinner thickness='4px'
+                      <Spinner thickness='5px'
                         speed='0.65s'
                         emptyColor='gray.200'
-                        color='blue.500'
-                        size='xl' />
+                        color='gray.500'
+                        size='md' />
                     </Center>
                   )}
 
@@ -646,7 +670,7 @@ const MedicalRecord = ({ medical_record, user , editRecord}) => {
             <ModalHeader>ADD EXAMINATION</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={5} pt={0}>
-              <ExaminationForm medical_record={medical_record} closeModal={onCloseExamination} closeAndRefresh={handleExaminationAdd} />
+              <ExaminationForm medical_record={medical_record} closeModal={onCloseExamination} closeAndRefresh={handleExaminationActions} editMode={ExaminationEditMode} examination={ExaminationEditInfo} />
             </ModalBody>
           </ModalContent>
         </Modal>

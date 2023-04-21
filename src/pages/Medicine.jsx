@@ -2,11 +2,12 @@ import { Box, Center, Divider, Spinner, Stack, Text, useToast } from "@chakra-ui
 import useLoader from "../hooks/useLoader";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useOutletContext } from "react-router-dom";
 
 const Medicine = () => {
     const { id } = useParams()
     const [medicine, setMedicine] = useState(null)
+    const { setMedicine: setMedicineInfo } = useOutletContext()
 
     const [loading, setLoading] = useState(false)
     const [NotFound, setNotFound] = useState(false)
@@ -22,6 +23,7 @@ const Medicine = () => {
         setLoading(true)
         useLoader(`/medicines/${id}`).then(res => {
             setMedicine(res.data)
+            setMedicineInfo(res.data)
             setLoading(false)
         }).catch(err => {
             if (err.response.status === 404) {
@@ -95,13 +97,6 @@ const Medicine = () => {
                                 Description
                             </Text>
                             <Text>{medicine.description}</Text>
-                        </Box>
-                        <Divider />
-                        <Box>
-                            <Text fontSize="lg" fontWeight="bold">
-                                Price
-                            </Text>
-                            <Text>${medicine.price}</Text>
                         </Box>
                         <Divider />
                         <Box>

@@ -48,6 +48,7 @@ import {
     GridItem,
     Flex,
     Avatar,
+    IconButton,
 } from "@chakra-ui/react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
@@ -66,6 +67,7 @@ import { RiAdminLine } from "react-icons/ri";
 import { FaUserMd, FaUserNurse } from "react-icons/fa";
 import { GiMedicines } from "react-icons/gi";
 import { HiOutlineEmojiSad } from "react-icons/hi";
+import { BiRefresh } from "react-icons/bi";
 
 const UserRoleItem = (user) => {
     let items = [];
@@ -134,6 +136,19 @@ const Staff = () => {
             + (searchParams.get('page') ? 'page=' + searchParams.get('page') : '')
         return request_url
     }
+
+    const handleRefresh = () => {
+        setData(null)
+        const request_url = requestUrl()
+        useLoader(request_url)
+            .then(res => setData(res.data))
+            .catch(err => {
+                setData({
+                    data: [],
+                })
+            })
+    }
+
 
     const handleSubmit = (e) => {
         if (!isNaN(e) && e) {
@@ -239,8 +254,8 @@ const Staff = () => {
                 >ADD STAFF</Button>
             </HStack>
             <Box bg='white' w='100%' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
-                <Text fontSize='sm' color='gray.500' p='10px' align='right'>10,000 Patients</Text>
-                <Box p='10px' mb='10px' w='100%'>
+                <Text fontSize='sm' color='gray.500' p='10px' align='right'>Showing {data && data.data.length} of {data && data.total} staff</Text>
+                <Box p='10px' mb='10px' w='100%' display='flex' justifyContent='space-between' gap={2}>
                     <InputGroup>
                         <InputLeftElement
                             pointerEvents='none'
@@ -248,6 +263,13 @@ const Staff = () => {
                         />
                         <Input defaultValue={searchParams.get('q') || ''} variant='outline' type='text' placeholder='Search by Name' onChange={({ target }) => { handleSearch(target.value) }} />
                     </InputGroup>
+                    <IconButton
+                        colorScheme='blackAlpha'
+                        bg='gray.600'
+                        aria-label='Refresh'
+                        onClick={handleRefresh}
+                        icon={<BiRefresh size={25} />}
+                    />
                 </Box>
                 <Grid templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }} gap={6}>
                     {
@@ -258,7 +280,6 @@ const Staff = () => {
                                     <Box p='10px' textAlign='center'>
                                         <Avatar
                                             bg={UserRoleItem(item)[2]}
-                                            size={{ base: 'sm', lg: 'md' }}
                                             icon={UserRoleItem(item)[0]}
                                         />
                                         <Text fontWeight='normal' fontSize={{ base: 'sm', lg: 'lg' }}>{item.first_name + " " + item.last_name}</Text>
@@ -320,7 +341,7 @@ const Staff = () => {
                             size='xl' />
                     </Center>
                 }
-                { data && data.data.length === 0 && (
+                {data && data.data.length === 0 && (
                     <Box p='10px' display='flex' flexDirection='column' alignItems='center' justifyContent='center' gap={2}>
                         <HiOutlineEmojiSad size='50px' />
                         <Text fontSize='lg' fontWeight='normal'>No Staff Found</Text>
