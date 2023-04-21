@@ -34,13 +34,20 @@ import {
   useToast,
   Spinner,
   Badge,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogContent,
+  AlertDialogOverlay,
 } from "@chakra-ui/react";
 import { DeleteIcon, EditIcon, SearchIcon, AddIcon } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
-import { Form } from "react-router-dom";
 
 // Hooks
 import useLoader from "../hooks/useLoader";
+import useDelete from "../hooks/useDelete";
+import { useNavigate } from "react-router-dom";
+
 // Components
 import ExaminationForm from "./ExaminationForm";
 import ObservationForm from "./ObservationForm";
@@ -50,8 +57,11 @@ import MonitoringSheetForm from "./MonitoringSheetForm";
 import MonitoringSheetRow from "./MonitoringSheetRow";
 import PrescriptionForm from "./PrescriptionForm";
 
+
 const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const toast = useToast()
+  const navigate = useNavigate()
+
   const [tabIndex, setTabIndex] = useState(0)
 
   const [Examination, setExamination] = useState([]);
@@ -69,12 +79,14 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const [Prescriptions, setPrescriptions] = useState([]);
 
 
+  const [deleteLoading, setDeleteLoading] = useState(false)
   const [loadingExamination, setLoadingExamination] = useState(false)
   const [loadingObservation, setLoadingObservation] = useState(false)
   const [loadingMonitoringSheet, setLoadingMonitoringSheet] = useState(false)
   const [loadingMonitoringSheetRow, setLoadingMonitoringSheetRow] = useState(false)
   const [loadingPrescription, setLoadingPrescription] = useState(false)
 
+  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
   const { isOpen: isOpenExamination, onOpen: onOpenExamination, onClose: onCloseExamination } = useDisclosure()
   const { isOpen: isOpenObservation, onOpen: onOpenObservation, onClose: onCloseObservation } = useDisclosure()
   const { isOpen: isOpenPrescription, onOpen: onOpenPrescription, onClose: onClosePrescription } = useDisclosure()
@@ -155,6 +167,31 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   // Record
   const handleMedicalRecordEdit = () => {
     editRecord(medical_record)
+  }
+
+  const handleMedicalRecordDelete = () => {
+    setDeleteLoading(true)
+    useDelete('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id)
+      .then((data) => {
+        setDeleteLoading(false)
+        toast({
+          title: data.message,
+          status: data.status,
+          duration: 9000,
+          isClosable: true,
+        })
+        window.location = '/patients/' + medical_record.patient_id
+      })
+      .catch((error) => {
+        setDeleteLoading(false)
+        toast({
+          title: error.message,
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        })
+        onDeleteClose()
+      })
   }
 
 
@@ -278,7 +315,10 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       })
   }
   const handlePrescriptionAdd = (message) => {
-    onClosePrescriptionForm()
+    if (message?.status === 'success') {
+      onClosePrescriptionForm()
+    }
+
     toast({
       title: message.title,
       status: message.status,
@@ -335,23 +375,8 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                   borderWidth="2px"
                   borderColor='gray.300'
                   borderRadius={10}
+                  overflow='hidden'
                 >
-                  {user.id == medical_record.user_id && (
-                    <Box
-                      color='blue.900'
-                      display='flex'
-                      borderBottom='1px'
-                      borderColor='gray.300'
-                     
-                    >
-                      <Button leftIcon={<EditIcon />} w='50%' variant='solid' colorScheme="green" opacity={0.7} type="submit" borderRadius={0} borderTopLeftRadius={10} onClick={() => handleMedicalRecordEdit(medical_record)}>
-                        Edit
-                      </Button>
-                      <Button leftIcon={<DeleteIcon />} w='50%' variant='solid' colorScheme="red" opacity={0.7} type="submit" borderRadius={0} borderTopRightRadius={10}>
-                        Delete
-                      </Button>
-                    </Box>
-                  )}
                   <Heading p={5}> Medical Record #{medical_record.id}</Heading>
 
                   <Stack p={5} mt="4" spacing="4">
@@ -392,7 +417,23 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                       </Text>
                     </Flex>
                   </Stack>
-
+                  {user.id == medical_record.user_id && (
+                    <Box
+                      color='blue.900'
+                      bg='gray.300'
+                      display='flex'
+                      borderTop='1px'
+                      borderColor='gray.300'
+                      gap='1px'
+                    >
+                      <Button leftIcon={<EditIcon />} bg='white' w='50%' variant='outline' border={0} colorScheme="green" type="submit" borderRadius={0} onClick={() => handleMedicalRecordEdit(medical_record)}>
+                        Edit
+                      </Button>
+                      <Button leftIcon={<DeleteIcon />} bg='white' w='50%' variant='outline' border={0} colorScheme="red" type="submit" borderRadius={0} isLoading={deleteLoading} onClick={() => onDeleteOpen()}>
+                        Delete
+                      </Button>
+                    </Box>
+                  )}
                 </Box>
 
 
@@ -567,10 +608,10 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                 {loadingObservation && (
                   <Center p='10px'>
                     <Spinner thickness='5px'
-                        speed='0.65s'
-                        emptyColor='gray.200'
-                        color='gray.500'
-                        size='md' />
+                      speed='0.65s'
+                      emptyColor='gray.200'
+                      color='gray.500'
+                      size='md' />
                   </Center>
                 )}
               </TabPanel>
@@ -662,6 +703,28 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       }
 
       {/* Medical Record Modal */}
+      <AlertDialog
+        isOpen={isDeleteOpen}
+        onClose={onDeleteClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent maxW='300px' p={5}>
+
+            <AlertDialogBody textAlign='center'>
+              <Text fontSize='lg' fontWeight='bold'>Are you sure?</Text>
+            </AlertDialogBody>
+
+            <AlertDialogFooter justifyContent='center'>
+              <Button onClick={onDeleteClose}>
+                Cancel
+              </Button>
+              <Button colorScheme='red' onClick={handleMedicalRecordDelete} ml={3} isLoading={deleteLoading}>
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
       <Box>
         {/* examination modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenExamination} onClose={onCloseExamination}>
@@ -734,6 +797,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
             </ModalBody>
           </ModalContent>
         </Modal>
+
 
       </Box>
 

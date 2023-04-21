@@ -215,7 +215,10 @@ const Staff = () => {
 
 
     const handleStaffActions = (message) => {
-        onStaffClose()
+        if (message?.status === 'success') {
+            onStaffClose()
+        }
+        
         toast({
             title: message.title,
             status: message.status,

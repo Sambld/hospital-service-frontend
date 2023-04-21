@@ -1,19 +1,46 @@
-import { Box, Center, Divider, Spinner, Stack, Text, useToast } from "@chakra-ui/react";
-import useLoader from "../hooks/useLoader";
+import { Box,
+    Button,
+    Center,
+    Divider,
+    Flex,
+    Spinner,
+    Stack,
+    Text,
+    useToast,
+    AlertDialog,
+    AlertDialogBody,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogContent,
+    AlertDialogOverlay,
+    useDisclosure,
+
+} from "@chakra-ui/react";
+// Icons
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+
+// Hooks
 import { useState } from "react";
 import { useEffect } from "react";
-import { useParams, useOutletContext } from "react-router-dom";
+import useDelete from "../hooks/useDelete";
+import useLoader from "../hooks/useLoader";
+import { useParams, useOutletContext, useNavigate } from "react-router-dom";
 
 const Medicine = () => {
     const { id } = useParams()
     const [medicine, setMedicine] = useState(null)
-    const { setMedicine: setMedicineInfo } = useOutletContext()
-
+    const { setMedicine: setMedicineInfo, enableMedicineEditMode: openMedicineModel, user } = useOutletContext()
+    
     const [loading, setLoading] = useState(false)
+    const [deleteLoading, setDeleteLoading] = useState(false)
+
     const [NotFound, setNotFound] = useState(false)
     const [Errorhappen, setErrorhappen] = useState(false)
 
     const toast = useToast()
+    const navigate = useNavigate()
+
+    const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
 
     useEffect(() => {
         getMedicine()
@@ -50,6 +77,31 @@ const Medicine = () => {
 
         })
     }
+
+    const handleDeleteMedicine = () => {
+        setDeleteLoading(true)
+        useDelete(`/medicines/${id}`).then(res => {
+            setDeleteLoading(false)
+            toast({
+                title: "Success",
+                description: "Medicine deleted successfully",
+                status: "success",
+                duration: 9000,
+                isClosable: true,
+            })
+            onDeleteClose()
+            navigate('/medicines')
+        }).catch(err => {
+            setDeleteLoading(false)
+            toast({
+                title: "Error",
+                description: "Something went wrong",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+        })
+    }
     if (Errorhappen) return (
         <Box>
             <Text textAlign='center' fontSize={30}>
@@ -84,7 +136,42 @@ const Medicine = () => {
                 <Box
                     p={5}
                 >
-                    <Stack spacing={4}>
+                    {user.role == 'administrator' || user.role == 'pharmacist' && (
+                        <Flex justifyContent='space-between' bg='gray.100' borderRadius='md' pt='1px' mb={3} overflow='hidden'>
+                            <Button
+                                bg='white'
+                                leftIcon={<DeleteIcon />}
+                                colorScheme='red'
+                                variant='outline'
+                                borderRadius={0}
+                                borderLeftRadius='md'
+                                border={0}
+                                p='10px'
+                                px={5}
+                                w='50%'
+                                onClick={onDeleteOpen}
+                            >
+                                <Text mr='5px' fontSize={15} fontWeight='normal'>Delete</Text>
+                            </Button>
+
+                            <Button
+                                bg='white'
+                                leftIcon={<EditIcon />}
+                                colorScheme='green'
+                                borderRadius={0}
+                                borderRightRadius='md'
+                                variant='outline'
+                                border={0}
+                                p='10px'
+                                px={5}
+                                w='50%'
+                                onClick={() => openMedicineModel(medicine)}
+                            >
+                                <Text mr='5px' fontSize={15} fontWeight='normal'>Edit</Text>
+                            </Button>
+                        </Flex>
+                    )}
+                    <Stack p={5} spacing={4} border='1px' borderColor='gray.200' borderRadius='md'>
                         <Box>
                             <Text fontSize="2xl" fontWeight="bold">
                                 {medicine.name}
@@ -96,7 +183,9 @@ const Medicine = () => {
                             <Text fontSize="lg" fontWeight="bold">
                                 Description
                             </Text>
-                            <Text>{medicine.description}</Text>
+                            {medicine.description.split('\n').map((item, key) => {
+                                return <Text key={key} ml={5}>{item}</Text>
+                            })}
                         </Box>
                         <Divider />
                         <Box>
@@ -134,8 +223,31 @@ const Medicine = () => {
                             <Text>{medicine.expiration_date}</Text>
                         </Box>
                     </Stack>
+
                 </Box>
             )}
+            <AlertDialog
+                isOpen={isDeleteOpen}
+                onClose={onDeleteClose}
+            >
+                <AlertDialogOverlay>
+                    <AlertDialogContent maxW='300px' p={5}>
+
+                        <AlertDialogBody textAlign='center'>
+                            <Text fontSize='lg' fontWeight='bold'>Are you sure?</Text>
+                        </AlertDialogBody>
+
+                        <AlertDialogFooter justifyContent='center'>
+                            <Button onClick={onDeleteClose}>
+                                Cancel
+                            </Button>
+                            <Button colorScheme='red' onClick={handleDeleteMedicine} ml={3} isLoading={deleteLoading}>
+                                Delete
+                            </Button>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialogOverlay>
+            </AlertDialog>
         </Box>
     );
 }

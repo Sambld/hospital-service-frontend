@@ -18,25 +18,40 @@ import {
     Box,
 } from '@chakra-ui/react';
 import { Form } from 'react-router-dom';
-import { FaBriefcaseMedical } from 'react-icons/fa';
-import usePost from '../hooks/usePost';
 
-const MedicineForm = ({ closeModal, closeAndRefresh }) => {
+// Icons
+import { FaBriefcaseMedical } from 'react-icons/fa';
+
+// Hooks
+import usePost from '../hooks/usePost';
+import usePut from '../hooks/usePut';
+
+const MedicineForm = ({ closeModal, closeAndRefresh, editMode, medicine }) => {
     const [formData, setFormData] = useState({
-        name: '',
-        description: '',
-        category: '',
-        price: '',
-        quantity: '',
-        is_pharmaceutical: false,
-        manufacturer: '',
-        supplier: '',
-        expiration_date: '',
+        name: editMode ? medicine.name : '',
+        description: editMode ? medicine.description : '',
+        category: editMode ? medicine.category : '',
+        quantity: editMode ? medicine.quantity : '',
+        is_pharmaceutical: editMode ? medicine.is_pharmaceutical : false,
+        manufacturer: editMode ? medicine.manufacturer : '',
+        supplier: editMode ? medicine.supplier : '',
+        expiration_date: editMode ? medicine.expiration_date : '',
     });
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        setLoading(true);
+        if (editMode) {
+            handleEdit();
+        }
+        else {
+            handleAdd();
+        }
+        
+    };
+
+    const handleAdd = () => {
         setLoading(true);
         usePost('/medicines', formData)
         .then((res) => {
@@ -46,6 +61,29 @@ const MedicineForm = ({ closeModal, closeAndRefresh }) => {
                     title: 'Medicine created successfully.',
                     status: 'success',
                     redirect: '/medicines/' + res.data.id,
+                }
+            )
+        }).catch((err) => {
+            setLoading(false);
+            closeAndRefresh(
+                {
+                    title: err.response.data.message,
+                    status: 'error',
+                }
+            )
+        })
+    };
+
+    const handleEdit = () => {
+        setLoading(true);
+        usePut('/medicines/' + medicine.id, formData)
+        .then((res) => {
+            setLoading(false);
+            closeAndRefresh(
+                {
+                    title: 'Medicine updated successfully.',
+                    status: 'success',
+                    redirect: '/medicines/' + medicine.id,
                 }
             )
         }).catch((err) => {
@@ -91,7 +129,7 @@ const MedicineForm = ({ closeModal, closeAndRefresh }) => {
             <FormControl mb={3} id="category" isRequired>
                 <FormLabel>Category</FormLabel>
                 <Input
-                    type="date"
+                    type="text"
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
@@ -184,7 +222,7 @@ const MedicineForm = ({ closeModal, closeAndRefresh }) => {
                 <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" >
                     {/* add icon */}
                     <FaBriefcaseMedical />
-                    <Text ml="5px" >Add</Text>
+                    <Text ml="5px" >{editMode ? 'Update' : 'Add'}</Text>
                 </Button>
             </Flex>
         </Form>)

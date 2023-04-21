@@ -160,7 +160,10 @@ const Patients = () => {
     }
 
     const handleRecordActions = (message) => {
-        onRecordClose()
+        if (message?.status === 'success') {
+            onRecordClose()
+        }
+        
         toast({
             title: message.title,
             status: message.status,

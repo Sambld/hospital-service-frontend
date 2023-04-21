@@ -3,26 +3,24 @@ import { NavLink } from "react-router-dom";
 import { RiFolderOpenLine, RiDashboardLine } from 'react-icons/ri'
 import { FaUserFriends } from 'react-icons/fa'
 import { BsFileEarmarkMedical } from 'react-icons/bs'
-import { MdOutlineMedicalServices } from 'react-icons/md'
+import { MdOutlineMedicalServices, MdOutlineSick } from 'react-icons/md'
 import { useState } from "react";
 import { useEffect } from "react";
 
 const SideBarItems = (user) => {
   let items = [
     { name: 'Dashboard', icon: <RiDashboardLine size={23} />, link: '/' },
+    { name: 'Patients', icon: <MdOutlineSick size={23} />, link: '/patients' },
   ];
   try {
     if (user.role === 'administrator') {
       items.push({ name: 'Staff', icon: <FaUserFriends size={23} />, link: '/staff' });
-      items.push({ name: 'Patients', icon: <RiFolderOpenLine size={23} />, link: '/patients' });
       items.push({ name: 'Prescriptions', icon: <BsFileEarmarkMedical size={23} />, link: '/prescriptions' })
       items.push({ name: 'Medicines', icon: <MdOutlineMedicalServices size={23} />, link: '/medicines' })
     } else if (user.role === 'doctor') {
-      items.push({ name: 'Patients', icon: <RiFolderOpenLine size={23} />, link: '/patients' });
+      items.push({ name: 'Medical Records' , icon: <RiFolderOpenLine size={23} />, link: '/medical-records' });
     } else if (user.role === 'nurse') {
-      items.push({ name: 'Patients', icon: <RiFolderOpenLine size={23} />, link: '/patients' });
     } else if (user.role === 'pharmacist') {
-      items.push({ name: 'Patients', icon: <RiFolderOpenLine size={23} />, link: '/patients' });
       items.push({ name: 'Prescriptions', icon: <BsFileEarmarkMedical size={23} />, link: '/prescriptions' })
       items.push({ name: 'Medicines', icon: <MdOutlineMedicalServices size={23} />, link: '/medicines' })
     }

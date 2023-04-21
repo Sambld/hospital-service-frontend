@@ -22,7 +22,7 @@ import {
     ModalCloseButton,
     Spinner
 } from "@chakra-ui/react";
-import { NavLink, Outlet, useNavigate, useOutlet, useSearchParams } from "react-router-dom";
+import { NavLink, Outlet, useNavigate, useOutletContext, useOutlet, useSearchParams } from "react-router-dom";
 
 // Hooks
 import { useEffect, useState } from "react";
@@ -41,8 +41,11 @@ import MedicineForm from "../components/MedicineForm";
 
 const Medicines = () => {
     const outlet = useOutlet()
+    const user = useOutletContext()
     const [data, setData] = useState(null)
+
     const [medicine, setMedicine] = useState(null)
+    const [medicineEditMode, setMedicineEditMode] = useState(false)
     const [medicinesLoading, setMedicinesLoading] = useState(false)
 
     const [searchParams, setSearchParams] = useSearchParams()
@@ -55,14 +58,14 @@ const Medicines = () => {
     const { isOpen: isMedicineModalOpen, onOpen: onMedicineModalOpen, onClose: onMedicineModalClose } = useDisclosure()
 
     useEffect(() => {
-        if (!data && !outlet) useLoader('/medicines').then(res => setData(res.data)).catch(err => setData({data: []}))
+        if (!data && !outlet) useLoader('/medicines').then(res => setData(res.data)).catch(err => setData({ data: [] }))
     }, [outlet])
 
     useEffect(() => {
         if (!data && !outlet) {
             setMedicine(null)
             const request_url = requestUrl()
-            useLoader(request_url).then(res => setData(res.data)).catch(err => setData({data: []}))
+            useLoader(request_url).then(res => setData(res.data)).catch(err => setData({ data: [] }))
         }
         if (outlet) {
             setData(null)
@@ -73,7 +76,7 @@ const Medicines = () => {
         if (searchParams.get('q') || searchParams.get('page')) {
             setData(null)
             const request_url = requestUrl()
-            useLoader(request_url).then(res => setData(res.data)).catch(err => setData({data: []}))
+            useLoader(request_url).then(res => setData(res.data)).catch(err => setData({ data: [] }))
         }
     }, [searchParams])
 
@@ -109,7 +112,7 @@ const Medicines = () => {
         setSearchTimeout(setTimeout(() => {
             setData(null)
             if (!e) {
-                useLoader('/medicines').then(res => setData(res.data)).catch(err => setData({data: []}))
+                useLoader('/medicines').then(res => setData(res.data)).catch(err => setData({ data: [] }))
                 navigate('/medicines')
             } else {
                 navigate('/medicines?q=' + e)
@@ -117,11 +120,25 @@ const Medicines = () => {
         }, 500))
     }
 
+    const enableMedicineEditMode = (medicine) => {
+        setMedicineEditMode(true)
+        setMedicine(medicine)
+        onMedicineModalOpen()
+    }
+
+
     const handleMedicineActions = (message) => {
-        const request_url = requestUrl()
-        useLoader(request_url).then(res => setData(res.data)).catch(err => setData({data: []}))
-        onQuantityModalClose()
-        onMedicineModalClose()
+        if (message?.status === 'success') {
+            if (medicineEditMode) {
+                setMedicineEditMode(false)
+            } else {
+                const request_url = requestUrl()
+                useLoader(request_url).then(res => setData(res.data)).catch(err => setData({ data: [] }))
+            }
+            onQuantityModalClose()
+            onMedicineModalClose()
+        }
+
         toast({
             title: message.title,
             status: message.status,
@@ -130,8 +147,12 @@ const Medicines = () => {
         })
         if (message?.redirect) {
             setData(null)
-            navigate(message.redirect)
-            useLoader(message.redirect).then(res => setData(res.data))
+            if (message.redirect === location.pathname + location.search) {
+                location.reload()
+            } else {
+                navigate(message.redirect)
+                useLoader(message.redirect).then(res => setData(res.data))
+            }
         }
     }
     return (
@@ -139,21 +160,21 @@ const Medicines = () => {
             <Flex mr={3}>
                 <Breadcrumb fontSize={{ base: "md", lg: '3xl' }}>
                     <BreadcrumbItem>
-                        <NavLink to='/Medicines' color='blue.500'>
+                        <NavLink to='/medicines' color='blue.500'>
                             <Text fontSize={{ base: "md", lg: '3xl' }} color='#2e3149' ml='20px'>Medicines</Text>
                         </NavLink>
                     </BreadcrumbItem>
-                    
-                        {outlet && (
-                            <BreadcrumbItem>
-                                {medicine? <Text fontSize={{ base: "md", lg: '3xl' }} color='#2e3149' >{medicine?.name}</Text> : <Spinner thickness='4px' />}
-                            </BreadcrumbItem>
-                            )
-                        }
-                    
+
+                    {outlet && (
+                        <BreadcrumbItem>
+                            {medicine ? <Text fontSize={{ base: "md", lg: '3xl' }} color='#2e3149' >{medicine?.name}</Text> : <Spinner thickness='4px' />}
+                        </BreadcrumbItem>
+                    )
+                    }
+
                 </Breadcrumb>
                 <Spacer />
-                {!outlet && (
+                {user.role== 'administrator' || user.role== 'pharmacist' &&  !outlet && (
                     <Menu>
                         <MenuButton w='120px' colorScheme='blue.300' bg='blue.700' color='gray.100' as={Button} rightIcon={<ChevronDownIcon />} >
                             ADD
@@ -176,7 +197,7 @@ const Medicines = () => {
                 )}
             </Flex>
             <Box bg='white' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
-                {outlet ? <Outlet context={{ setMedicine }}/> : <MedicinesTable initValue={searchParams.get('q') || ''} medicines={data?.data} search={handleSearch} count={data?.total} />}
+                {outlet ? <Outlet context={{ setMedicine, enableMedicineEditMode, user }} /> : <MedicinesTable initValue={searchParams.get('q') || ''} medicines={data?.data} search={handleSearch} count={data?.total} />}
                 {
                     data && data.last_page > 1 &&
                     <Pagination pagination={data} action={handlePagination} />
@@ -200,7 +221,7 @@ const Medicines = () => {
                     <ModalHeader>ADD MEDICINE</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <MedicineForm closeModal={onMedicineModalClose} closeAndRefresh={handleMedicineActions} />
+                        <MedicineForm closeModal={onMedicineModalClose} closeAndRefresh={handleMedicineActions} editMode={medicineEditMode} medicine={medicine} />
                     </ModalBody>
                 </ModalContent>
             </Modal>
