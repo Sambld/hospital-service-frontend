@@ -22,17 +22,20 @@ import {
     Tab,
     TabPanel,
     VStack,
+    Input,
+    FormControl,
 
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { AiFillFolderOpen, AiOutlineSend } from "react-icons/ai";
 import { MdOutlineMarkUnreadChatAlt } from 'react-icons/md'
 import { BiRefresh } from 'react-icons/bi'
-import { NavLink, useOutletContext } from "react-router-dom";
+import { Form, NavLink, useOutletContext } from "react-router-dom";
 import useLoader from "../hooks/useLoader";
 import Calendar from '../components/Calendar';
 import { BsFileEarmarkMedical } from "react-icons/bs";
-import { HiOutlineDocumentText } from "react-icons/hi";
+import { HiOutlineDocumentText, HiOutlineEmojiSad } from "react-icons/hi";
+import ChatAi from "../components/ChatAi";
 
 
 const Dashboard = () => {
@@ -47,6 +50,7 @@ const Dashboard = () => {
     const [userCount, setUserCount] = useState(0)
     const [selectedDate, setSelectedDate] = useState(new Date())
     const [tabIndex, setTabIndex] = useState(0)
+
 
     const [infoLoading, setInfoLoading] = useState(true)
     useEffect(() => {
@@ -100,6 +104,7 @@ const Dashboard = () => {
 
         }
     }
+
     const getPatientCount = () => {
         useLoader('/patients?count=true')
             .then(res => {
@@ -290,6 +295,7 @@ const Dashboard = () => {
                             </Box>
                         </GridItem>
                     </Grid>
+
                 </Box>
             ) : (
                 <Grid
@@ -340,7 +346,7 @@ const Dashboard = () => {
                                 </Box>
                             )}
                         {/* Chat */}
-                        <Box
+                        {/* <Box
                             mt={5}
                             position='relative'
                         >
@@ -395,7 +401,7 @@ const Dashboard = () => {
                                     <AiOutlineSend size={40} color="#374083" />
                                 </Box>
                             </Box>
-                        </Box>
+                        </Box> */}
 
                     </GridItem>
                     <GridItem area={'content'}>
@@ -589,6 +595,8 @@ const Dashboard = () => {
                     </GridItem>
                 </Grid>
             )}
+            {/* Chat */}
+            <ChatAi />
         </Box>
     );
 }
