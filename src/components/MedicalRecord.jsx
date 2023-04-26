@@ -104,10 +104,32 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     setMonitoringSheetEditInfo(null)
     setPrescriptions([])
 
-    handleExamination(medical_record.id)
-    handleObservation(medical_record.id)
-    handleMonitoringSheet(medical_record.id)
-    handlePrescription(medical_record.id)
+    // handleExamination(medical_record.id)
+    // handleObservation(medical_record.id)
+    // handleMonitoringSheet(medical_record.id)
+    // handlePrescription(medical_record.id)
+
+    // check if there is anchor in url
+    if (window.location.hash) {
+      let anchor = window.location.hash
+      switch (anchor) {
+        case '#examination':
+          setTabIndex(1)
+          break;
+        case '#observation':
+          setTabIndex(2)
+          break;
+        case '#monitoring':
+          setTabIndex(3)
+          break;
+        case '#prescription':
+          setTabIndex(4)
+          break;
+        default:
+          setTabIndex(0)
+          break;
+      }
+    }
   }, [medical_record])
 
   const formatDate = (date) => {
@@ -142,18 +164,24 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const ReloadTabContent = () => {
     switch (tabIndex) {
       case 1:
-        setExamination([])
-        handleExamination(medical_record.id)
+        if (Examination.length == 0) { 
+          handleExamination(medical_record.id)
+        }
         break;
       case 2:
-        setObservation([])
-        handleObservation(medical_record.id)
+        console.log('hihihi')
+        if (Observations.length == 0) {
+          handleObservation(medical_record.id)
+        }
         break;
       case 3:
-        setMonitoringSheetData([])
-        setMonitoringSheetRow(null)
-        setTreatments([])
-        setMonitoringSheetEditInfo(null)
+        if (MonitoringSheetData.length == 0) {
+        } else {
+          setMonitoringSheetData([])
+          setMonitoringSheetRow(null)
+          setTreatments([])
+          setMonitoringSheetEditInfo(null)
+        }
         handleMonitoringSheet(medical_record.id)
         break;
       case 4:
@@ -348,11 +376,13 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
               </Tab>
               <Tab
                 _selected={{ color: 'white', bg: 'blue.500' }}
+                onClick={ReloadTabContent}
               >
                 Observation
               </Tab>
               <Tab
                 _selected={{ color: 'white', bg: 'blue.500' }}
+                onClick={ReloadTabContent}
               >
                 Monitoring Sheet
               </Tab>
@@ -646,6 +676,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                         <Th>
                           <Text>status</Text>
                         </Th>
+                        <Th>
+                          <Text>Review</Text>
+                        </Th>
                         <Th display='flex' justifyContent='flex-end'>
                           {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
                             <IconButton
@@ -665,7 +698,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                           <Td>{pres.medicine.name}</Td>
                           <Td>{pres.quantity}</Td>
                           <Td>{changeFormat(pres.created_at)}</Td>
-                          <Td colSpan='2'>
+                          <Td>
                             {pres.status.toLowerCase() === 'pending' && (
                               <Badge colorScheme='yellow'>Pending</Badge>
                             )}
@@ -675,6 +708,11 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             {pres.status.toLowerCase() === 'rejected' && (
                               <Badge colorScheme='red'>Rejected</Badge>
                             )}
+                          </Td>
+                          <Td colSpan='2'>
+                            <Text>
+                              {pres.review ? pres.review : 'No Review'}
+                            </Text>
                           </Td>
                         </Tr>
                       ))}

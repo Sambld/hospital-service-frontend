@@ -22,6 +22,46 @@ const RootLayout = () => {
     }
 
     useEffect(() => {
+        // if (location.pathname == '/') {
+        //     if(user?.role === 'administrator') {
+        //         navigate('/staff')
+        //     }
+        // }
+
+        if (location.pathname.includes('medical-records')) {
+            if (!user || user?.role != 'doctor' && user?.role != 'nurse' && user?.role != 'administrator') {
+                goHomePage();
+                toast({
+                    title: "You don't have permission to access this page",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                })
+            }
+        }
+        if (location.pathname.includes('patients')) {
+            if (!user || user?.role != 'doctor' && user?.role != 'nurse' && user?.role != 'administrator') {
+                goHomePage();
+                toast({
+                    title: "You don't have permission to access this page",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                })
+            }
+        }
+        if (location.pathname.includes('staff')) {
+            if (!user || user?.role != 'administrator') {
+                goHomePage();
+                toast({
+                    title: "You don't have permission to access this page",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                })
+            }
+        }
+
         if (location.pathname.includes('prescription') || location.pathname.includes('medicines')) {
             if (!user || user?.role != 'pharmacist' && user?.role != 'administrator') {
                 goHomePage();

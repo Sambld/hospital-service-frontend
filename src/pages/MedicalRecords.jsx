@@ -22,7 +22,7 @@ import { BiRefresh } from "react-icons/bi";
 // Hooks
 import useLoader from "../hooks/useLoader";
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useOutletContext } from "react-router-dom";
 
 // Components
 import Pagination from "../components/Pagination";
@@ -30,7 +30,7 @@ import Pagination from "../components/Pagination";
 
 
 const MedicalRecords = () => {
-
+    const user = useOutletContext()
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -42,14 +42,16 @@ const MedicalRecords = () => {
     }, [searchParams])
 
     const requestUrl = () => {
-        const { q, startDate, endDate, status, page } = Object.fromEntries(searchParams.entries());
+        const { q, id, startDate, endDate, status, page } = Object.fromEntries(searchParams.entries());
         const SEARCH_PARAMS = {
             q: q && `q=${q}`,
             startDate: startDate && `startDate=${startDate}`,
             endDate: endDate && `endDate=${endDate}`,
             status: status && status !== 'all' ? status === 'In hospital' ? `isActive=${status}` : `isInactive=${status}` : null,
             page: page && `page=${page}`,
-            pagination: 'withPagination=true'
+            pagination: 'withPagination=true',
+            id: id && `id=${id}`,
+            Userid: user.role === 'doctor' ? `doctorId=${user.id}` : user.role === 'nurse' ? `nurseId=${user.id}` : null
         };
 
         const PARAMS = Object.values(SEARCH_PARAMS).filter(Boolean).join('&');
@@ -144,8 +146,8 @@ const MedicalRecords = () => {
                         <Text fontWeight='bold' fontSize='md'>Filter By Status</Text>
                         <Box w='100%' display='flex' gap={2}>
                             <Button
-                                bg={searchParams.get('status') === 'all' ? 'gray.600' : 'gray.50'}
-                                color={searchParams.get('status') === 'all' ? 'white' : null}
+                                bg={searchParams.get('status') != 'In hospital' && searchParams.get('status') != 'Discharged' ? 'gray.600' : 'gray.50'}
+                                color={searchParams.get('status') != 'In hospital' && searchParams.get('status') != 'Discharged' ? 'white' : null}
                                 onClick={() => handleSearchParams({ status: 'all' })}
                             >
                                 All
@@ -173,6 +175,17 @@ const MedicalRecords = () => {
                         icon={<BiRefresh size={25} />}
                         onClick={getMedicalRecords}
                     /> */}
+                    {/* <Box w='100%' display='flex' flexDirection='column' gap={2}>
+                        <Text fontWeight='bold' fontSize='md'>Filter By Medical Record ID</Text>
+                        <Input
+                            type='text'
+                            bg='white'
+                            value={searchParams.get('id') || ''}
+                            onChange={(e) => handleSearchParams({ id: e.target.value })}
+                        />
+                    </Box> */}
+
+
                     <Button
                         colorScheme='blackAlpha'
                         bg='gray.600'

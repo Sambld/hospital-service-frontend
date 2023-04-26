@@ -33,6 +33,7 @@ import {
     useToast,
     Center,
     Spinner,
+    Textarea,
 } from "@chakra-ui/react";
 import { FaUserMd } from "react-icons/fa";
 import { AiFillFile, AiOutlineClockCircle } from "react-icons/ai";
@@ -52,11 +53,17 @@ const Prescriptions = () => {
 
     const [PrescriptionDetail, setPrescriptionDetail] = useState(null)
 
+    const [rejectSelecteItem, setRejectSelecteItem] = useState(null)
+    const [review, setReview] = useState(null)
+
+
     const [PendingPagination, setPendingPagination] = useState(null)
     const [PastPagination, setPastPagination] = useState(null)
 
     const [PendingLoading, setPendingLoading] = useState(false)
     const [PastLoading, setPastLoading] = useState(false)
+
+    const [reviewLoading, setReviewLoading] = useState(false)
 
     const [singleButtonLoading, setSingleButtonLoading] = useState(
         {
@@ -67,6 +74,7 @@ const Prescriptions = () => {
     )
 
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const { isOpen: isReviewOpen, onOpen: onReviewOpen, onClose: onReviewClose } = useDisclosure()
 
     const [searchParams, setSearchParams] = useSearchParams()
     const navigate = useNavigate()
@@ -94,7 +102,7 @@ const Prescriptions = () => {
         setPrescriptions([])
         setPendingPagination(null)
         setPendingLoading(true)
-        
+
         useLoader(`/medicine-requests?status=open&page=${searchParams.get('page') || 1}`)
             .then(res => {
                 setPendingLoading(false)
@@ -122,6 +130,40 @@ const Prescriptions = () => {
                 setPastLoading(false)
             })
     }
+
+    const rejectMedicineRequestWithReason = async (MainInfo, message) => {
+        try {
+            setReviewLoading(true)
+            if (rejectSelecteItem === null) {
+                await changeAllMedicineRequestStatus(MainInfo, message)
+            } else {
+                await changeMedicineRequestStatus(MainInfo, rejectSelecteItem, 'Rejected', {
+                    status: 'Rejected',
+                })
+                if(MainInfo.medicine_requests.filter(medicine => medicine.status.toLowerCase() === 'pending').length === 1){
+                    onClose();
+                    setPrescriptions(null);
+                    getPendingPrescriptions();
+                }
+            }
+            setReviewLoading(false)
+            setRejectSelecteItem(null)
+            onReviewClose();
+            setReview(null);
+            
+        } catch (err) {
+            toast({
+                title: "There was an error",
+                description: "The prescription was not completed",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
+        }
+    }
+
+
+
     const changeAllMedicineRequestStatus = async (MainInfo, message) => {
         let error = false;
         for (const medicine of MainInfo.medicine_requests.filter(medicine => medicine.status.toLowerCase() === 'pending')) {
@@ -151,11 +193,13 @@ const Prescriptions = () => {
                 isClosable: true,
             });
         }
+        onReviewClose();
+        setReview(null);
     }
     const changeMedicineRequestStatus = async (MainInfo, MedInfo, message, loading = null, stopNotification = false) => {
         try {
             if (loading) setSingleButtonLoading({ index: loading.index, status: loading.status, isLoading: true });
-            const res = await axios.put(`/patients/${MainInfo.patient_id}/medical-records/${MainInfo.medical_record_id}/medicine-requests/${MedInfo.id}`, { status: message, review: '' });
+            const res = await axios.put(`/patients/${MainInfo.patient_id}/medical-records/${MainInfo.medical_record_id}/medicine-requests/${MedInfo.id}`, { status: message, review: message === 'Rejected' ? review : null });
             if (loading) setSingleButtonLoading({ index: loading.index, status: loading.status, isLoading: false });
             setPrescriptionDetail(prevState => {
                 return {
@@ -335,19 +379,6 @@ const Prescriptions = () => {
                                                 <Text>{item.doctor}</Text>
                                             </Flex>
                                             <Flex justifyContent='space-between' bg='gray.100' borderBottomRadius='md' pt='1px' gap='1px'>
-                                                {/* <Button
-                                                    bg='white'
-                                                    leftIcon={<IoClose color="red.700" />}
-                                                    colorScheme='red'
-                                                    borderRadius={0}
-                                                    border={0}
-                                                    variant='outline'
-                                                    p='10px'
-                                                    px={5}
-                                                    w='50%'>
-                                                    <Text mr='5px' fontSize={15} fontWeight='normal'>Reject</Text>
-                                                </Button> */}
-
                                                 <Button
                                                     bg='white'
                                                     leftIcon={<AiFillFile color='blue.700' />}
@@ -413,7 +444,7 @@ const Prescriptions = () => {
                                         <Tr>
                                             <Th>Medicine</Th>
                                             <Th>Quantity</Th>
-                                            { !PrescriptionDetail.all_requests_responded_to && <Th>Remains</Th>}
+                                            {!PrescriptionDetail.all_requests_responded_to && <Th>Remains</Th>}
                                             <Th>Action</Th>
                                         </Tr>
                                     </Thead>
@@ -426,7 +457,7 @@ const Prescriptions = () => {
                                                 <Tr>
                                                     <Td>{item.medicine.name}</Td>
                                                     <Td>{item.quantity}</Td>
-                                                    { !PrescriptionDetail.all_requests_responded_to && <Td>{item.medicine.quantity}</Td>}
+                                                    {!PrescriptionDetail.all_requests_responded_to && <Td>{item.medicine.quantity}</Td>}
                                                     <Td>
                                                         {!PrescriptionDetail.all_requests_responded_to && item.status.toLowerCase() == 'pending' && (
                                                             <>
@@ -455,10 +486,10 @@ const Prescriptions = () => {
                                                                         singleButtonLoading.index == index &&
                                                                         singleButtonLoading.status == 'Rejected'
                                                                     }
-                                                                    onClick={(event) => changeMedicineRequestStatus(PrescriptionDetail, item, 'Rejected', {
-                                                                        index,
-                                                                        status: 'Rejected',
-                                                                    })}
+                                                                    onClick={(event) => {
+                                                                        setRejectSelecteItem(item);
+                                                                        onReviewOpen();
+                                                                    }}
                                                                 />
                                                             </>
                                                         )}
@@ -486,7 +517,7 @@ const Prescriptions = () => {
                                     p='10px'
                                     px={5}
                                     w='50%'
-                                    onClick={() => changeAllMedicineRequestStatus(PrescriptionDetail, 'Rejected')}
+                                    onClick={() => onReviewOpen()}
                                 >
                                     <Text mr='5px' fontSize={15} fontWeight='normal'>Reject All</Text>
                                 </Button>
@@ -506,6 +537,30 @@ const Prescriptions = () => {
 
                     </ModalContent>
                 )}
+            </Modal>
+            <Modal blockScrollOnMount={false} isOpen={isReviewOpen} onClose={onReviewClose}>
+                <ModalOverlay />
+                <ModalContent maxW='800px'>
+                    <ModalHeader>Review Prescription</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <Textarea placeholder='Write your review here' value={review} onChange={(event) => setReview(event.target.value)} />
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button
+                            leftIcon={<IoCheckmarkSharp color="green.700" />}
+                            colorScheme='green'
+                            variant='solid'
+                            p='10px'
+                            px={5}
+                            w='50%'
+                            isLoading={reviewLoading}
+                            onClick={() => rejectMedicineRequestWithReason(PrescriptionDetail, 'Rejected')}
+                        >
+                            <Text mr='5px' fontSize={15} fontWeight='normal'>Submit</Text>
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
             </Modal>
         </Box>
     );
