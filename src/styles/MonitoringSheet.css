@@ -1,6 +1,6 @@
 /* center element of td */
 
-td,
-th {
+.table td,
+.table th {
     text-align: center !important;
 }

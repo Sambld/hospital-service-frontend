@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react"
 
 // Icons
-import { AiFillFile } from "react-icons/ai";
+import { AiFillFile, AiFillFilter } from "react-icons/ai";
 import { BiRefresh } from "react-icons/bi";
 
 // Hooks
@@ -32,6 +32,7 @@ import Pagination from "../components/Pagination";
 const MedicalRecords = () => {
     const user = useOutletContext()
     const [data, setData] = useState(null);
+    const [showFilter, setShowFilter] = useState(false);
     const [loading, setLoading] = useState(true);
 
     const [searchParams, setSearchParams] = useSearchParams()
@@ -47,10 +48,10 @@ const MedicalRecords = () => {
             q: q && `q=${q}`,
             startDate: startDate && `startDate=${startDate}`,
             endDate: endDate && `endDate=${endDate}`,
-            status: status && status !== 'all' ? status === 'In hospital' ? `isActive=${status}` : `isInactive=${status}` : null,
+            status: status && status !== 'all' ? status === 'active' ? `isActive=${status}` : `isInactive=${status}` : null,
             page: page && `page=${page}`,
             pagination: 'withPagination=true',
-            id: id && `id=${id}`,
+            id: id && id == 'mineOnly' ? `mineOnly=true` : null, // 'mine' or 'all
             Userid: user.role === 'doctor' ? `doctorId=${user.id}` : user.role === 'nurse' ? `nurseId=${user.id}` : null
         };
 
@@ -98,15 +99,15 @@ const MedicalRecords = () => {
             <Box bg='white' w='100%' m='10px' p='20px' border='2px' borderColor='gray.200' borderRadius='2xl'>
                 <Text fontSize='sm' color='gray.500' p='10px' align='right'>Showing {data && data.data.length} of {data && data.total} Medical Records</Text>
 
-                {/* <Box p='10px' mb='10px' w='100%' display='flex' justifyContent='space-between' gap={2}>
+                <Box p='10px' mb='10px' w='100%' display='flex' justifyContent='space-between' gap={2}>
                     <InputGroup>
                         <InputLeftElement
                             pointerEvents='none'
                             children={<SearchIcon color='gray.300' />}
                         />
-                        <Input defaultValue={searchParams.get('q') || ''} variant='outline' type='text' placeholder='Search by Name' onChange={(e) => setSearchParams({ q: e.target.value })} />
+                        <Input defaultValue={searchParams.get('q') || ''} variant='outline' type='text' placeholder='Search by Condition Or treatment' onChange={(e) => handleSearchParams({ q: e.target.value ? e.target.value : null })} />
                     </InputGroup>
-                    <Button colorScheme='blue'>
+                    <Button colorScheme='blue' leftIcon={<AiFillFilter />} onClick={() => setShowFilter((prev) => !prev)}>
                         Filter
                     </Button>
                     <IconButton
@@ -116,7 +117,8 @@ const MedicalRecords = () => {
                         icon={<BiRefresh size={25} />}
                         onClick={getMedicalRecords}
                     />
-                </Box> */}
+                </Box>
+                { showFilter &&
                 <Box bg='gray.50' border='2px' borderColor='gray.100' borderRadius={10} p='10px' mb='10px' w='100%' display='flex' flexDirection='column' gap={2}>
                     <Box w='100%' display='flex' flexDirection='column' gap={2}>
                         <Text fontWeight='bold' fontSize='md'>Filter By Date</Text>
@@ -146,25 +148,44 @@ const MedicalRecords = () => {
                         <Text fontWeight='bold' fontSize='md'>Filter By Status</Text>
                         <Box w='100%' display='flex' gap={2}>
                             <Button
-                                bg={searchParams.get('status') != 'In hospital' && searchParams.get('status') != 'Discharged' ? 'gray.600' : 'gray.50'}
-                                color={searchParams.get('status') != 'In hospital' && searchParams.get('status') != 'Discharged' ? 'white' : null}
+                                bg={searchParams.get('status') != 'active' && searchParams.get('status') != 'close' ? 'gray.600' : 'gray.50'}
+                                color={searchParams.get('status') != 'active' && searchParams.get('status') != 'close' ? 'white' : null}
                                 onClick={() => handleSearchParams({ status: 'all' })}
                             >
                                 All
                             </Button>
                             <Button
-                                bg={searchParams.get('status') === 'In hospital' ? 'red.600' : 'gray.50'}
-                                color={searchParams.get('status') === 'In hospital' ? 'white' : null}
-                                onClick={() => handleSearchParams({ status: 'In hospital' })}
+                                bg={searchParams.get('status') === 'active' ? 'green.600' : 'gray.50'}
+                                color={searchParams.get('status') === 'active' ? 'white' : null}
+                                onClick={() => handleSearchParams({ status: 'active' })}
                             >
-                                In hospital
+                                Active
                             </Button>
                             <Button
-                                bg={searchParams.get('status') === 'Discharged' ? 'green.600' : 'gray.50'}
-                                color={searchParams.get('status') === 'Discharged' ? 'white' : null}
-                                onClick={() => handleSearchParams({ status: 'Discharged' })}
+                                bg={searchParams.get('status') === 'close' ? 'red.600' : 'gray.50'}
+                                color={searchParams.get('status') === 'close' ? 'white' : null}
+                                onClick={() => handleSearchParams({ status: 'close' })}
                             >
-                                Discharged
+                                Close
+                            </Button>
+                        </Box>
+                    </Box>
+                    <Box w='100%' display='flex' flexDirection='column' gap={2}>
+                        <Text fontWeight='bold' fontSize='md'>Filter By Id</Text>
+                        <Box w='100%' display='flex' gap={2}>
+                            <Button
+                                bg={searchParams.get('id') != 'all' && searchParams.get('id') != 'mineOnly' ? 'gray.600' : 'gray.50'}
+                                color={searchParams.get('id') != 'all' && searchParams.get('id') != 'mineOnly' ? 'white' : null}
+                                onClick={() => handleSearchParams({ id: null })}
+                            >
+                                All
+                            </Button>
+                            <Button
+                                bg={searchParams.get('id') === 'mineOnly' ? 'green.600' : 'gray.50'}
+                                color={searchParams.get('id') === 'mineOnly' ? 'white' : null}
+                                onClick={() => handleSearchParams({ id: 'mineOnly' })}
+                            >
+                                Only Mine
                             </Button>
                         </Box>
                     </Box>
@@ -186,16 +207,17 @@ const MedicalRecords = () => {
                     </Box> */}
 
 
-                    <Button
+                    {/* <Button
                         colorScheme='blackAlpha'
                         bg='gray.600'
                         leftIcon={<BiRefresh size={25} />}
                         onClick={getMedicalRecords}
                     >
                         Refresh
-                    </Button>
+                    </Button> */}
 
                 </Box>
+                }
                 <Box>
                     <Box>
                         <Grid templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' }} gap={6}>
@@ -207,7 +229,7 @@ const MedicalRecords = () => {
                                                 {item.patient_leaving_date ? 'Discharged' : 'In hospital'}
                                             </Text>
                                         </Box> */}
-                                        <Box bg={item.patient_leaving_date ? 'green.100' : 'red.100'} p={2}>
+                                        <Box bg={item.patient_leaving_date ? 'red.100' : 'green.100'} p={2}>
                                             <Text fontWeight='bold' fontSize='md' textAlign='center' color='gray.500'>
                                                 Medical Record #{item.id}
                                             </Text>
@@ -217,6 +239,7 @@ const MedicalRecords = () => {
                                             <Text fontSize='sm' color='gray.500'>Patient: {item.patient.first_name} {item.patient.last_name}</Text>
                                             <Text fontSize='sm' color='gray.500'>Entry day: {item.patient_entry_date}</Text>
                                             <Text fontSize='sm' color='gray.500'>Discharge day: {item.patient_leaving_date || 'still in hospital'}</Text>
+                                            <Text fontSize='sm' color='gray.500'>state: {item.state_upon_enter}</Text>
                                         </Box>
                                         <Box bg='gray.100' p={0}>
                                             <Button

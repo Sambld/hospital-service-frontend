@@ -48,10 +48,13 @@ const ChatAi = (user) => {
           zIndex={1}
         >
           <MdOutlineMarkUnreadChatAlt size={30} color="#374083" />
-          <Text fontSize={25} size="md">Chat</Text>
+          <Text fontSize={25} size="md">Ai Search Assistant</Text>
         </Box>
 
-        <Form>
+        <Form onSubmit={(e) => {
+          e.preventDefault()
+          getAiChat()
+        }}>
           <FormControl
             zIndex={1}
             borderRadius='md'
@@ -97,7 +100,7 @@ const ChatAi = (user) => {
             p={2}
             m={2}
             borderRadius='md'
-            maxH='300px'
+            maxH='70vh'
           >
             <Table variant='simple' boxShadow='md' bg='white'>
               <Thead bg='blue.700'>

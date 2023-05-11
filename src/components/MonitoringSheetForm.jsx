@@ -40,7 +40,8 @@ import useLoader from '../hooks/useLoader';
 
 const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, EditInfo }) => {
     const [formData, setFormData] = useState({
-        TimeField: 7,
+        TimeField: 1,
+        Start_date: EditInfo?.Start_date || new Date(),
         medicines: [],
     });
 
@@ -52,29 +53,29 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
     const [uploadProgress, setUploadProgress] = useState(0);
     const [loading, setLoading] = useState(false);
 
-    const formatDate = (date) => {
+    const formatDate = (date,separator) => {
         let date_ = new Date(date);
         const year = date_.getUTCFullYear();
         const month = (date_.getUTCMonth() + 1).toString().padStart(2, '0'); // pad month with leading zero if less than 10
         const day = date_.getUTCDate().toString().padStart(2, '0'); // pad day with leading zero if less than 10
-        const hours = date_.getUTCHours().toString().padStart(2, '0'); // pad hours with leading zero if less than 10
-        const minutes = date_.getUTCMinutes().toString().padStart(2, '0'); // pad minutes with leading zero if less than 10
-        const seconds = date_.getUTCSeconds().toString().padStart(2, '0'); // pad seconds with leading zero if less than 10
-        return `${year}/${month}/${day}`;
+        // const hours = date_.getUTCHours().toString().padStart(2, '0'); // pad hours with leading zero if less than 10
+        // const minutes = date_.getUTCMinutes().toString().padStart(2, '0'); // pad minutes with leading zero if less than 10
+        // const seconds = date_.getUTCSeconds().toString().padStart(2, '0'); // pad seconds with leading zero if less than 10
+        return `${year}${separator || '-'}${month}${separator || '-'}${day}`;
     };
     const handleSubmit = (event) => {
         event.preventDefault();
         setLoading(true);
         try {
             // GET DATS OF NEXT TIMEFIELD DAYS
-            const startDate = new Date(EditInfo?.Start_date || new Date());
+            const startDate = new Date(formData?.Start_date || new Date());
             
             let AllDates = [];
             for (let i = 0; i < formData.TimeField; i++) {
                 let date = new Date(startDate);
                 date.setDate(date.getDate() + i);
 
-                AllDates.push(formatDate(date));
+                AllDates.push(formatDate(date,'/'));
             }
             // console.log(AllDates)
             MonitoringSheetadd(AllDates).then(() => {
@@ -182,6 +183,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                 const options = res.data.map((medicine) => ({
                     value: medicine.id,
                     label: medicine.name,
+                    old_quantity: medicine.quantity,
                 }));
                 setOptions(options);
                 callback(options);
@@ -195,13 +197,27 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
 
     return (
         <Form onSubmit={handleSubmit}>
+            <FormControl id='type' gap={3} display='flex' mb={3}>
+                <Input
+                    type='date'
+                    value={formatDate(formData.Start_date)}
+                    onChange={(event) => {
+                        console.log(new Date(event.target.value))
+                        setFormData((prevFormData) => ({
+                            ...prevFormData,
+                            Start_date: new Date(event.target.value),
+                        }))
+                    }}
+                />
+            </FormControl>
+
             <FormControl id='type' gap={3} display='flex'>
                 <FormLabel m={0} alignItems='center' display='flex'>
                     <Text verticalAlign='middle' fontSize='xl'>Within:</Text>
                 </FormLabel>
                 <InputGroup>
                     <NumberInput
-                        defaultValue={7}
+                        value={formData.TimeField}
                         min={1}
                         onChange={(value) => setFormData((prevFormData) => ({
                             ...prevFormData,
@@ -289,6 +305,20 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
 
                 </FormControl>
             </Box>
+            {selectedMedicine && (
+                <Box
+                    mt={3}
+                    border='2px'
+                    borderColor='gray.300'
+                    borderRadius={5}
+                    boxShadow='md'
+                    bg='gray.50'
+                    p={2}
+                >
+                    <Text fontSize={13}> Name: {selectedMedicine ? selectedMedicine.label : ''}</Text>
+                    <Text fontSize={13}> Quantity: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
+                </Box>
+            )}
             {loading && (
                 <Box
                     position='relative'

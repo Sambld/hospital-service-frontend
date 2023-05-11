@@ -31,14 +31,28 @@ import {
     AccordionIcon,
     Divider,
     useToast,
+    Table,
+    Tr,
+    Td,
+    Tbody,
+    Thead,
+    Th,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+
 import { NavLink, useOutletContext, useParams, useSearchParams } from "react-router-dom";
+
+// Styles
+import styles from "../styles/Patient.module.css";
+
+// Components
 import MedicalRecord from "../components/MedicalRecord";
+
+// Hooks
+import { useEffect, useState } from "react";
 import useLoader from "../hooks/useLoader";
 
 const SummaryItem = ({ label, children }) => (
-    <Box>
+    <Box w='100%' display='flex' flexDirection='row' justifyContent='space-between'>
         <Text pt='2' fontSize='lg' fontWeight="bold">{label}:</Text>
         <Text pl='10' pt='2' fontSize='lg'>{children}</Text>
     </Box>
@@ -178,84 +192,122 @@ const Patient = () => {
                         {patient && <Box>
                             <Card>
                                 <CardBody>
-                                    <Grid maxW='100%' templateColumns={{ base: '1fr', xl: 'repeat(2, 50%)' }} gap={4}>
+                                    <Grid maxW='100%' templateColumns={{ base: '1fr', xl: 'repeat(2, 1fr)' }} gap={4}>
                                         <GridItem>
                                             <Stack spacing={4} divider={<StackDivider borderColor='gray.200' />}>
                                                 <Box>
                                                     <Stack spacing={4}>
-                                                        <Box p='0px' borderRadius={8}>
-                                                            <Heading bg='blue.700' p='10px' borderTopRadius={8} size='sm' color='gray.100' textTransform='uppercase' w='100%'>
-                                                                Patient information
-                                                            </Heading>
-                                                            <VStack bg='gray.50' color='blue.900' p='20px' spacing={2} align="start" pl='3' borderBottomRadius={8}>
-                                                                <SummaryItem label="Name ">{patient.first_name + " " + patient.last_name}</SummaryItem>
-                                                                <SummaryItem label="Birth date">{patient.birth_date}</SummaryItem>
-                                                                <SummaryItem label="Place of birth">{patient.place_of_birth}</SummaryItem>
-                                                                <SummaryItem label="Gender">{patient.gender}</SummaryItem>
-                                                                <SummaryItem label="Nationality">{patient.nationality}</SummaryItem>
-                                                                <SummaryItem label="Address">{patient.address}</SummaryItem>
-                                                                <Divider />
-                                                                <Box color="red">
-                                                                    {/* Emergency Contact */}
-                                                                    <SummaryItem label="Emergency Contact Name">{patient.emergency_contact_name}</SummaryItem>
-                                                                    <SummaryItem label="Emergency Contact Phone">{patient.emergency_contact_number}</SummaryItem>
-                                                                </Box>
-
-                                                            </VStack>
+                                                        <Box bg='gray.50' border='2px' borderRadius='lg' borderColor='gray.300' p='20px' px='20px' boxShadow='sm'>
+                                                            <Text
+                                                                fontSize={25}
+                                                                color='gray.700'
+                                                            >
+                                                                Information:
+                                                            </Text>
+                                                            <Box mt={4}>
+                                                                <Table className={styles.table} variant="unstyled">
+                                                                    <Tbody fontSize={18}>
+                                                                        <Tr >
+                                                                            <Td color='gray.700'><Text>Name:</Text></Td>
+                                                                            <Td color='gray.500'>{patient.first_name + " " + patient.last_name}</Td>
+                                                                        </Tr>
+                                                                        <Tr>
+                                                                            <Td color='gray.700'>Phone number:</Td>
+                                                                            <Td color='gray.500'>{patient.phone_number}</Td>
+                                                                        </Tr>
+                                                                        <Tr>
+                                                                            <Td color='gray.700'>Birth date:</Td>
+                                                                            <Td color='gray.500'>{patient.birth_date}</Td>
+                                                                        </Tr>
+                                                                        <Tr>
+                                                                            <Td color='gray.700'>Place of birth:</Td>
+                                                                            <Td color='gray.500'>{patient.place_of_birth}</Td>
+                                                                        </Tr>
+                                                                        <Tr>
+                                                                            <Td color='gray.700'>Gender:</Td>
+                                                                            <Td color='gray.500'>{patient.gender}</Td>
+                                                                        </Tr>
+                                                                        <Tr>
+                                                                            <Td color='gray.700'>Nationality:</Td>
+                                                                            <Td color='gray.500'>{patient.nationality}</Td>
+                                                                        </Tr>
+                                                                        <Tr>
+                                                                            <Td color='gray.700'>Address:</Td>
+                                                                            <Td color='gray.500'>{patient.address}</Td>
+                                                                        </Tr>
+                                                                    </Tbody>
+                                                                </Table>
+                                                            </Box>
                                                         </Box>
-                                                        {/* <Box bg='red' p='0px' borderRadius={20}>
-                                                            <Heading p='10px' bg='red' borderTopRadius={5} size='md' color='gray.100' textTransform='uppercase'>
-                                                                Emergency Contact
-                                                            </Heading>
-                                                            <VStack bg='red.50' p='20px' spacing={2} align="start" pl='3' fontSize={30} borderRadius={20} borderTopRadius={0}>
-                                                                <SummaryItem label="Name">{patient.emergency_contact_name}</SummaryItem>
-                                                                <SummaryItem label="Phone">{patient.emergency_contact_number}</SummaryItem>
-                                                            </VStack>
-                                                        </Box> */}
+                                                        <Box bg='gray.50' border='2px' borderRadius='lg' borderColor='red.300' p='20px' px='20px' boxShadow='sm'>
+                                                            <Text
+                                                                fontSize={25}
+                                                                color='red.700'
+                                                            >
+                                                                Emergency Information:
+                                                            </Text>
+                                                            <Box mt={4}>
+                                                                <Table className={styles.tableRed} variant="unstyled">
+                                                                    <Tbody fontSize={18}>
+                                                                        <Tr >
+                                                                            <Td color='red.700'><Text>Emergency Contact Name:</Text></Td>
+                                                                            <Td color='gray.500'>{patient.emergency_contact_name}</Td>
+                                                                        </Tr>
+                                                                        <Tr>
+                                                                            <Td color='red.700'>Emergency Contact Phone:</Td>
+                                                                            <Td color='gray.500'>{patient.emergency_contact_number}</Td>
+                                                                        </Tr>
+                                                                    </Tbody>
+                                                                </Table>
+                                                            </Box>
+                                                        </Box>
                                                     </Stack>
                                                 </Box>
 
                                             </Stack>
                                         </GridItem>
                                         <GridItem>
-                                            <Box p={0}>
-                                                <Heading p='10px' bg='blue.700' size='md' color='gray.200' textTransform='uppercase' w='100%' borderTopRadius={8}>
+                                            <Box p={0} bg='gray.50' boxShadow='lg' borderRadius='lg' border='2px' borderColor='gray.300' overflow='hidden'>
+                                                <Heading p='10px' size='md' color='gray.700' textTransform='uppercase' w='100%'>
                                                     Medical Records
                                                 </Heading>
                                                 {/* only doctor  */}
-                                                <Accordion p={0} bg='gray.100' width='100%' allowToggle>
-                                                    {/* if there is no record */}
-                                                    {RecordList && RecordList.length === 0 && <Text bg='gray.100' textAlign='center' p={2} mt='0' fontSize={20}>NO MEDICAL RECORDS FOUND</Text>}
-                                                    {RecordList && RecordList.map((record, index) => (
-                                                        <AccordionItem bg='white' key={index}>
-                                                            <h2>
-                                                                <AccordionButton _expanded={{ bg: record.patient_leaving_date ? 'green.500' : 'red.500', color: 'white' }}>
-                                                                    <Box fontSize='lg' as="span" flex='1' textAlign='left'>
-                                                                        <Text>Medical Record #{record.id}
-                                                                            {record.patient_leaving_date ? ' - Discharged ' : ' - In Hospital '}
-                                                                            {record.user_id == user.id ? '(owned)' : ''}
-                                                                        </Text>
-                                                                    </Box>
-                                                                    <AccordionIcon />
-                                                                </AccordionButton>
-                                                            </h2>
-                                                            <AccordionPanel border='4px' borderTop={0} borderColor={record.patient_leaving_date ? 'green.500' : 'red.500'} pb={4} color='gray.900'>
-                                                                <Text pt='2' fontSize='md'>
-                                                                    Entry day: {record.patient_entry_date}
-                                                                </Text>
-                                                                <Text pt='2' mb='5' fontSize='md'>
-                                                                    Leaving day: {record.patient_leaving_date ? record.patient_leaving_date : 'still in hospital'}
-                                                                </Text>
-                                                                <NavLink to={"?med=" + record.id} onClick={() => handleMedChange(record.id)}>
-                                                                    <Button colorScheme={record.patient_leaving_date ? 'green' : 'red'} width='100%' variant='solid' isLoading={loading}>
-                                                                        Open
-                                                                    </Button>
-                                                                </NavLink>
-                                                            </AccordionPanel>
-                                                        </AccordionItem>
-                                                    ))}
-                                                    {!RecordList && <Center p='10px'><Spinner thickness='4px' /></Center>}
-                                                </Accordion>
+                                                <Box p={2} >
+                                                    <Accordion p={0} bg='gray.50' width='100%' border='4px' borderColor='gray.300' borderRadius='md' allowToggle>
+                                                        {/* if there is no record */}
+                                                        {RecordList && RecordList.length === 0 && <Text bg='gray.100' textAlign='center' p={2} mt='0' fontSize={20}>NO MEDICAL RECORDS FOUND</Text>}
+                                                        {RecordList && RecordList.map((record, index) => (
+                                                            <AccordionItem bg='white' key={index}>
+                                                                <h2>
+                                                                    <AccordionButton _expanded={{ bg: record.patient_leaving_date ? 'red.500' : 'green.500', color: 'white' }}>
+                                                                        <Box fontSize='lg' as="span" flex='1' textAlign='left'>
+                                                                            <Text>Medical Record #{record.id}
+                                                                                {record.patient_leaving_date ? ' - Discharged ' : ' - In Hospital '}
+                                                                                {record.user_id == user.id ? '(owned)' : ''}
+                                                                            </Text>
+                                                                        </Box>
+                                                                        <AccordionIcon />
+                                                                    </AccordionButton>
+                                                                </h2>
+                                                                <AccordionPanel border='4px' borderTop={0} borderColor={record.patient_leaving_date ? 'red.500' : 'green.500'} pb={4} color='gray.900'>
+                                                                    <Text pt='2' fontSize='md'>
+                                                                        Entry day: {record.patient_entry_date}
+                                                                    </Text>
+                                                                    <Text pt='2' mb='5' fontSize='md'>
+                                                                        Leaving day: {record.patient_leaving_date ? record.patient_leaving_date : 'still in hospital'}
+                                                                    </Text>
+                                                                    <NavLink to={"?med=" + record.id} onClick={() => handleMedChange(record.id)}>
+                                                                        <Button colorScheme={record.patient_leaving_date ? 'red' : 'green'} width='100%' variant='solid' isLoading={loading}>
+                                                                            Open
+                                                                        </Button>
+                                                                    </NavLink>
+                                                                </AccordionPanel>
+                                                            </AccordionItem>
+                                                        ))}
+                                                        {!RecordList && <Center p='10px'><Spinner thickness='4px' /></Center>}
+                                                    </Accordion>
+                                                </Box>
+
                                             </Box>
                                         </GridItem>
                                     </Grid>

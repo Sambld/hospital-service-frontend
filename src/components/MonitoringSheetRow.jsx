@@ -28,7 +28,8 @@ import {
     IconButton,
     Heading,
     Select,
-    Progress
+    Progress,
+    useToast
 } from '@chakra-ui/react';
 import { Form } from 'react-router-dom';
 import usePost from '../hooks/usePost';
@@ -40,6 +41,7 @@ import useLoader from '../hooks/useLoader';
 import { BiPencil } from 'react-icons/bi';
 import { useEffect } from 'react';
 import usePut from '../hooks/usePut';
+import useDelete from '../hooks/useDelete';
 
 const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRefresh, loadingData }) => {
     const [examinations, setExaminations] = useState([
@@ -56,12 +58,15 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
         weight: 0,
     });
 
+    const [deletedTreatments, setDeletedTreatments] = useState([]);
 
     const [options, setOptions] = useState([]);
     const [selectedMedicine, setSelectedMedicine] = useState(null);
 
     const [uploadProgress, setUploadProgress] = useState(0);
     const [loading, setLoading] = useState(false);
+
+    const toast = useToast();
 
     useEffect(() => {
 
@@ -76,6 +81,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
             }));
         }
     }, [data]);
+
     const handleSubmit = (event) => {
         event.preventDefault();
         setLoading(true);
@@ -110,6 +116,36 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
         }
     };
 
+    const handleDeleteAllTreatments = async () => {
+        try {
+            const progressUnit = 100 / deletedTreatments.length;
+            const promises = [];
+            setLoading(true);
+            deletedTreatments.map((treatment) => {
+                const promise = useDelete('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + data.id + '/treatments/' + treatment).then((res) => {
+                    setUploadProgress((prev) => prev + progressUnit);
+
+                })
+                promises.push(promise);
+            })
+            await Promise.all(promises);
+            setLoading(false);
+            closeAndRefresh(
+                {
+                    title: 'Monitoring Sheet Row Updated',
+                    status: 'success',
+                }
+            )
+        } catch (err) {
+           toast({
+                title: 'Error',
+                description: err.message,
+                status: 'error',
+            });
+        }
+    }
+
+
     return (
         <Form onSubmit={handleSubmit}>
             <Center mb={3}>
@@ -135,7 +171,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                 </Text>
             </Center>
 
-            {examinations.map((examination, index) => (
+            {user && user?.role == 'nurse' && examinations.map((examination, index) => (
                 <FormControl key={index} mb={3} id='type' gap={3} display='flex' justifyContent='space-between'>
                     <FormLabel m={0} alignItems='center' display='flex'>
                         <Text verticalAlign='middle' fontSize='xl'>
@@ -187,12 +223,12 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                                                 size='sm'
                                                 colorScheme='red'
                                                 onClick={() => {
-                                                    setFormData((prevFormData) => ({
-                                                        ...prevFormData,
-                                                        medicines: prevFormData.medicines.filter((m) => m.id !== medicine.id),
-                                                    }));
+                                                    setDeletedTreatments((prev) => [...prev, medicine.id])
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        medicines: prev.medicines.filter((med) => med.id != medicine.id)
+                                                    }))
                                                 }}
-                                                isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id)}
                                             >
                                                 <AiOutlineDelete />
                                             </Button>
@@ -204,6 +240,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     </Box>
                 )}
             </Box>
+            {/* <Divider my={3} /> */}
 
             {loading && (
                 <Box
@@ -228,20 +265,32 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
                     Close
                 </Button>
-                {data && data['filled_by_id'] ? (
+                {user && user?.role == 'doctor' && (
+                    <Button
+                        variant='solid'
+                        colorScheme='green'
+                        isLoading={loading}
+                        loadingText="Editing"
+                        onClick={() => handleDeleteAllTreatments()}
+                    >
+                        {/* add icon */}
+                        <BiPencil />
+                        <Text ml="5px" >Edit</Text>
+                    </Button>
+                )}
+                {user && user?.role == 'nurse' ? data && data['filled_by_id'] ? (
                     <Button
                         variant='solid'
                         colorScheme='green'
                         type="submit"
                         isLoading={loading}
-                        loadingText="Adding"
+                        loadingText="Editing"
                         isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id)}
                     >
                         {/* add icon */}
                         <BiPencil />
-                        <Text ml="5px" >edit</Text>
+                        <Text ml="5px" >Edit</Text>
                     </Button>) : (
-
                     <Button
                         variant='solid'
                         colorScheme='green'
@@ -254,7 +303,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                         <AiOutlinePlus />
                         <Text ml="5px" >Apply</Text>
                     </Button>
-                )}
+                ) : null}
             </Flex>
         </Form>)
 }

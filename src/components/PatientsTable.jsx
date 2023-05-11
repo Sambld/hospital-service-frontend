@@ -40,14 +40,14 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                                 <Input defaultValue={initValue} variant='flushed' type='text' placeholder='Search by Name' onChange={({ target }) => { search(target.value) }} />
                             </InputGroup>
                         </Th>
-                        <Th>birth place</Th>
-                        <Th>birth Date</Th>
-                        <Th w='200px'><Text textAlign='center'>Open</Text></Th>
+                        <Th>Phone Number</Th>
+                        <Th>birth Info</Th>
+                        <Th w='200px'></Th>
                     </Tr>
                 </Thead>
                 <Tbody>
                     {patients && patients.map((patient, index) => (
-                        <Tr key={index}>
+                        <Tr key={index} bg={(patient.gender == 'Male') ? 'blue.50' : 'pink.50'}>
                             <Td p='2'>
                                 <IconButton
                                     colorScheme={(patient.gender == 'Male') ? 'blue' : 'pink'}
@@ -57,11 +57,14 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                                 />
                             </Td>
                             <Td><Text fontWeight='normal' fontSize={{base:'sm',lg:'lg'}}>{patient.first_name + " " + patient.last_name}</Text></Td>
-                            <Td fontSize={{base:'sm',lg:'lg'}}>{patient.place_of_birth}</Td>
-                            <Td fontSize={{base:'sm',lg:'lg'}}>{patient.birth_date}</Td>
+                            <Td fontSize={{base:'sm',lg:'lg'}}>{patient.phone_number}</Td>
+                            <Td fontSize={{base:'sm',lg:'lg'}}>
+                                <Text fontSize={{base:'sm',lg:'lg'}}>{patient.birth_date}</Text>
+                                <Text fontSize={{base:'xs',lg:'sm'}} color='gray.500'>{patient.place_of_birth}</Text>
+                            </Td>
                             <Td p={1}>
                                 <NavLink to={patient.id.toString()} style={{'display':'block','borderRadius':'5px'}}>
-                                    <Button colorScheme='green' w='100%' p={0}>
+                                    <Button colorScheme={(patient.gender == 'Male') ? 'blue' : 'pink'} w='100%' p={0}>
                                         <AiFillFolderOpen size={20} />
                                         <Text ml={1}>Open</Text>
                                     </Button>

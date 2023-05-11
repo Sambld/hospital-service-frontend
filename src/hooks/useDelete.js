@@ -2,8 +2,8 @@ import axios from '../components/axios';
 
 const useDelete = async(link, header = null, abortCont = null) => {
     if (abortCont === null) abortCont = new AbortController();
-
-    return axios.delete(link, { signal: abortCont.signal })
+    const config = { headers: header };
+    return axios.delete(link, { signal: abortCont.signal, ...config })
         .then(res => {
             return res.data;
         })

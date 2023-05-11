@@ -24,6 +24,7 @@ import {
     VStack,
     Input,
     FormControl,
+    Flex,
 
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -35,7 +36,6 @@ import useLoader from "../hooks/useLoader";
 import Calendar from '../components/Calendar';
 import { BsFileEarmarkMedical } from "react-icons/bs";
 import { HiOutlineDocumentText, HiOutlineEmojiSad } from "react-icons/hi";
-import ChatAi from "../components/ChatAi";
 
 
 const Dashboard = () => {
@@ -50,6 +50,8 @@ const Dashboard = () => {
     const [userCount, setUserCount] = useState(0)
     const [selectedDate, setSelectedDate] = useState(new Date())
     const [tabIndex, setTabIndex] = useState(0)
+
+    const [StaffInfo, setStaffInfo] = useState([])
 
 
     const [infoLoading, setInfoLoading] = useState(true)
@@ -87,7 +89,6 @@ const Dashboard = () => {
 
         if (user.role === 'administrator') {
             getUserCount()
-            getPatientCount()
         } else if (user.role === 'doctor') {
             getPatientCount()
             getActiveMedicalRecords()
@@ -120,7 +121,11 @@ const Dashboard = () => {
         useLoader('/users?count=true')
             .then(res => {
                 setInfoLoading(false)
-                setUserCount(res.count)
+                let count = []
+                res.forEach((item) => {
+                    count.push(item.count)
+                })
+                setStaffInfo(count)
             })
             .catch(err => {
                 console.log('error')
@@ -131,8 +136,9 @@ const Dashboard = () => {
     const getTodayFillingMonitoringSheet = () => {
 
         setInfoLoading(true)
-        useLoader('/medical-records?nurseId=' + user.id + '&isActive=true')
+        useLoader('/monitoring-sheets/today-available')
             .then(res => {
+                console.log(res)
                 setInfoLoading(false)
                 setData({
                     headerTitle: 'Today Filling Monitoring Sheet',
@@ -265,19 +271,21 @@ const Dashboard = () => {
                         <Heading size="lg">Dashboard</Heading>
                         <Text fontSize="sm">Welcome to the dashboard</Text>
                     </Box> */}
-                    <Grid w='100%' templateColumns="repeat(2, 1fr)" gap={6}>
+                    <Grid w='100%' templateColumns="repeat(4, 1fr)" gap={6}>
                         <GridItem>
                             <Box
                                 p={5}
                                 shadow="md"
                                 borderWidth="1px"
-                                bgGradient='linear(to-l, #1775d2, #374083)'
+                                bg='black'
                                 color='white'
                                 borderRadius='xl'
                                 mt={5}
                             >
-                                <Heading size="md" mb={3}>Total Patients Number</Heading>
-                                {infoLoading ? <Spinner /> : <Text textAlign='right' fontSize={40}>{patientCount}</Text>}
+                                <Heading size="md" mb={3} textAlign='center'>administrator Number</Heading>
+                                <Flex justifyContent='center'>
+                                    {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[0]}</Text>}
+                                </Flex>
                             </Box>
                         </GridItem>
                         <GridItem>
@@ -285,13 +293,47 @@ const Dashboard = () => {
                                 p={5}
                                 shadow="md"
                                 borderWidth="1px"
-                                bgGradient='linear(to-l, #14d09b, #35806b)'
+                                bg='red.500'
                                 color='white'
                                 borderRadius='xl'
                                 mt={5}
                             >
-                                <Heading size="md" mb={3}>Total User Number</Heading>
-                                {infoLoading ? <Spinner /> : <Text textAlign='right' fontSize={40}>{userCount}</Text>}
+                                <Heading size="md" mb={3} textAlign='center'>Doctor Number</Heading>
+                                <Flex justifyContent='center'>
+                                    {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[1]}</Text>}
+                                </Flex>
+                            </Box>
+                        </GridItem>
+                        <GridItem>
+                            <Box
+                                p={5}
+                                shadow="md"
+                                borderWidth="1px"
+                                bg='blue.500'
+                                color='white'
+                                borderRadius='xl'
+                                mt={5}
+                            >
+                                <Heading size="md" mb={3} textAlign='center'>Nurse Number</Heading>
+                                <Flex justifyContent='center'>
+                                    {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[2]}</Text>}
+                                </Flex>
+                            </Box>
+                        </GridItem>
+                        <GridItem>
+                            <Box
+                                p={5}
+                                shadow="md"
+                                borderWidth="1px"
+                                bg='green.500'
+                                color='white'
+                                borderRadius='xl'
+                                mt={5}
+                            >
+                                <Heading size="md" mb={3} textAlign='center'>Pharmacist Number</Heading>
+                                <Flex justifyContent='center'>
+                                    {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[3]}</Text>}
+                                </Flex>
                             </Box>
                         </GridItem>
                     </Grid>
@@ -300,7 +342,7 @@ const Dashboard = () => {
             ) : (
                 <Grid
                     templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
-                    templateAreas={{ base: `"state" "content" `, md: `"state content content"` }}
+                    templateAreas={{ base: ` "content" "state" `, md: `"content content state"` }}
                     gap={6}>
                     <GridItem area={'state'}>
                         {/* Calendar */}
@@ -439,13 +481,14 @@ const Dashboard = () => {
                                     maxH='500px'
                                     overflowY='auto'
                                 >
-                                    <Table>
+                                    <Table  variant='simple'  colorScheme='blackAlpha'>
                                         <Thead
-                                            bg='gray.100'
+                                            bg='#fafafa'
                                             color='white'
                                             position="sticky"
                                             top={0}
                                             zIndex={1}
+                                            boxShadow='md'
                                         >
                                             <Tr>
                                                 {data && data?.column.map((item, index) =>
@@ -457,26 +500,25 @@ const Dashboard = () => {
                                         </Thead>
                                         <Tbody>
 
-                                            {data && data?.data.map((item, index) =>
-                                            (
-                                                <Tr key={index}>
+                                            {data && data?.data.map((item, index) => (
+                                                <Tr key={index} bg={(item.patient.gender == 'Male') ? 'blue.50' : 'pink.50'}>
                                                     <Td>{item.patient.first_name}</Td>
                                                     <Td>{item.patient.last_name}</Td>
                                                     <Td>{item.bed_number}</Td>
                                                     <Td>
-                                                        <NavLink to={'/patients/' + item.patient.id + "?med=" + item.id + (user?.role === 'nurse' ? "#monitoring" : null)}>
+                                                        <NavLink w='100%' to={'/patients/' + item.patient.id + "?med=" + item.id + (user?.role === 'nurse' ? "#monitoring" : '')}style={{'display':'block','borderRadius':'5px'}}>
                                                             <Button
                                                                 leftIcon={<AiFillFolderOpen />}
-                                                                colorScheme='blue'
                                                                 variant='outline'
+                                                                w='100%'
+                                                                colorScheme={(item.patient.gender == 'Male') ? 'blue' : 'pink'}
                                                             >
                                                                 Open
                                                             </Button>
                                                         </NavLink>
                                                     </Td>
                                                 </Tr>
-                                            )
-                                            )}
+                                            ))}
                                         </Tbody>
                                     </Table>
                                 </Box>
@@ -595,8 +637,6 @@ const Dashboard = () => {
                     </GridItem>
                 </Grid>
             )}
-            {/* Chat */}
-            <ChatAi />
         </Box>
     );
 }

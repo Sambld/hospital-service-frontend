@@ -176,7 +176,7 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
             const progressUnit = 100 / ImageSorted.length;
             ImageSorted.map((value, index) => {
                 const promise = usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/observations/' + res.data.id + '/images',
-                    { image: formData.images.imageTargetFile['image' + value] },
+                    { image: formData.images.imageTargetFile['image0'] },
                     { 'Content-Type': 'multipart/form-data' }
                 ).then((res) => {
                     setUploadProgress((prevUploadProgress) => prevUploadProgress + progressUnit);
@@ -190,6 +190,8 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
         }
 
     }
+
+    
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData((prevFormData) => ({

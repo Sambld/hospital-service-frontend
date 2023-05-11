@@ -40,13 +40,18 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
 } from "@chakra-ui/react";
+
+// Icons
 import { DeleteIcon, EditIcon, SearchIcon, AddIcon } from "@chakra-ui/icons";
-import { useEffect, useState } from "react";
+import { BsFillTrashFill } from "react-icons/bs";
+import { AiOutlineCheck } from "react-icons/ai";
+
 
 // Hooks
 import useLoader from "../hooks/useLoader";
 import useDelete from "../hooks/useDelete";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 // Components
 import ExaminationForm from "./ExaminationForm";
@@ -57,6 +62,9 @@ import MonitoringSheetForm from "./MonitoringSheetForm";
 import MonitoringSheetRow from "./MonitoringSheetRow";
 import PrescriptionForm from "./PrescriptionForm";
 
+// Styles
+import styles from "../styles/MedicalRecord.module.css";
+
 
 const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const toast = useToast()
@@ -66,6 +74,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
 
   const [Examination, setExamination] = useState([]);
   const [ExaminationEditMode, setExaminationEditMode] = useState(false)
+  const [deleteConfirmation, setDeleteConfirmation] = useState(false);
   const [ExaminationEditInfo, setExaminationEditInfo] = useState(null)
 
   const [Observations, setObservations] = useState([]);
@@ -115,15 +124,19 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       switch (anchor) {
         case '#examination':
           setTabIndex(1)
+          handleExamination(medical_record.id)
           break;
         case '#observation':
           setTabIndex(2)
+          handleObservation(medical_record.id)
           break;
         case '#monitoring':
           setTabIndex(3)
+          handleMonitoringSheet(medical_record.id)
           break;
         case '#prescription':
           setTabIndex(4)
+          handlePrescription(medical_record.id)
           break;
         default:
           setTabIndex(0)
@@ -164,12 +177,11 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const ReloadTabContent = () => {
     switch (tabIndex) {
       case 1:
-        if (Examination.length == 0) { 
+        if (Examination.length == 0) {
           handleExamination(medical_record.id)
         }
         break;
       case 2:
-        console.log('hihihi')
         if (Observations.length == 0) {
           handleObservation(medical_record.id)
         }
@@ -233,6 +245,33 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         setExamination(data.data || [])
       })
   }
+  const handleDeleteExaminationConfirm = (Exam) => {
+    if (deleteConfirmation) {
+      handleDeleteExamination(Exam);
+    } else {
+      setDeleteConfirmation(true);
+    }
+  };
+  const handleDeleteExamination = (examination) => {
+    setDeleteLoading(true);
+    useDelete('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/examinations/' + examination.id).then((res) => {
+      setDeleteLoading(false);
+      handleExaminationActions(
+        {
+          title: 'Examination deleted successfully.',
+          status: 'success',
+        }
+      )
+    }).catch((err) => {
+      setDeleteLoading(false);
+      handleExaminationActions(
+        {
+          title: err.response.data.message,
+          status: 'error',
+        }
+      )
+    })
+  };
 
   const handleExaminationActions = (message) => {
     onCloseExamination()
@@ -332,6 +371,13 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     onOpenMonitoringSheetRow()
   }
 
+  const refreshMonitoringSheet = () => {
+    handleMonitoringSheet()
+    setMonitoringSheetData([])
+    setMonitoringSheetRow(null)
+    setTreatments([])
+    setMonitoringSheetEditInfo(null)
+  }
   // Prescription
   const handlePrescription = () => {
     setPrescriptions([])
@@ -368,18 +414,22 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
           <Tabs isFitted variant='unstyled' color='blue.900' mb={5} index={tabIndex} onChange={handleTabsChange}>
             <TabList mb='1em' bg='gray.300' borderRadius={10}>
               <Tab borderLeftRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}>Information</Tab>
-              <Tab
-                _selected={{ color: 'white', bg: 'blue.500' }}
-                onClick={ReloadTabContent}
-              >
-                Examination
-              </Tab>
-              <Tab
-                _selected={{ color: 'white', bg: 'blue.500' }}
-                onClick={ReloadTabContent}
-              >
-                Observation
-              </Tab>
+              {user.id == medical_record.user_id && (
+                <>
+                  <Tab
+                    _selected={{ color: 'white', bg: 'blue.500' }}
+                    onClick={ReloadTabContent}
+                  >
+                    Examination
+                  </Tab>
+                  <Tab
+                    _selected={{ color: 'white', bg: 'blue.500' }}
+                    onClick={ReloadTabContent}
+                  >
+                    Observation
+                  </Tab>
+                </>
+              )}
               <Tab
                 _selected={{ color: 'white', bg: 'blue.500' }}
                 onClick={ReloadTabContent}
@@ -407,46 +457,76 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                   borderRadius={10}
                   overflow='hidden'
                 >
-                  <Heading p={5}> Medical Record #{medical_record.id}</Heading>
+                  {/* <Heading p={5}> Medical Record #{medical_record.id}</Heading> */}
 
-                  <Stack p={5} mt="4" spacing="4">
-                    <Box>
-                      <Text fontWeight="bold">Condition description: </Text>
-                      {medical_record.condition_description.split('\n').map((item, key) => {
-                        return <Text key={key} ml={5}>{item}</Text>
-                      })}
+                  <Box bg='gray.50' p='20px' px='20px' boxShadow='sm'>
+                    <Text
+                      fontSize={25}
+                      color='gray.700'
+                    >
+                      Medical Record #{medical_record.id}
+                    </Text>
+                    <Box mt={4}>
+                      <Table className={styles.table} variant="unstyled">
+                        <Tbody fontSize={18}>
+                          <Tr >
+                            <Td color='gray.700'><Text>Condition description:</Text></Td>
+                            <Td color='blue.900'>
+                              {medical_record.condition_description.split('\n').map((item, key) => {
+                                return <Text key={key} mt={2}>{item}</Text>
+                              })}
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td color='gray.700'><Text>Standard treatment:</Text></Td>
+                            <Td color='blue.900'>
+                              {medical_record.standard_treatment.split('\n').map((item, key) => {
+                                return <Text key={key} mt={2}>{item}</Text>
+                              })}
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td color='gray.700'><Text>State upon enter:</Text></Td>
+                            <Td color='blue.900'><Text>{medical_record.state_upon_enter}</Text></Td>
+                          </Tr>
+                          <Tr>
+                            <Td color='gray.700'><Text>Patient entry date:</Text></Td>
+                            <Td color='blue.900'><Text>{medical_record.patient_entry_date}</Text></Td>
+                          </Tr>
+                          <Tr>
+                            <Td color='gray.700'><Text>Bed number:</Text></Td>
+                            <Td color='blue.900'><Text>{medical_record.bed_number}</Text></Td>
+                          </Tr>
+                          {medical_record.patient_leaving_date && (
+                            <>
+                              <Tr>
+                                <Td color='green.400' colSpan={2}><Text>Leaving Information:</Text></Td>
+                              </Tr>
+                              <Tr>
+                                <Td color='gray.700'><Text>State upon exit:</Text></Td>
+                                <Td color='blue.900'>
+                                  <Text>
+                                    {medical_record.state_upon_exit || "Still in hospital"}
+                                  </Text>
+                                </Td>
+
+                              </Tr>
+                              <Tr>
+                                <Td color='gray.700'><Text>Patient leaving date:</Text></Td>
+                                <Td color='blue.900'>
+                                  <Text>
+                                    {medical_record.patient_leaving_date
+                                      ? medical_record.patient_leaving_date
+                                      : "Still in hospital"}
+                                  </Text>
+                                </Td>
+                              </Tr>
+                            </>
+                          )}
+                        </Tbody>
+                      </Table>
                     </Box>
-                    <Box>
-                      <Text fontWeight="bold">Standard treatment: </Text>
-                      {medical_record.standard_treatment.split('\n').map((item, key) => {
-                        return <Text key={key} ml={5}>{item}</Text>
-                      })}
-                    </Box>
-                    <Flex justify="normal" gap={2}>
-                      <Text fontWeight="bold">State upon enter: </Text>
-                      <Text>{medical_record.state_upon_enter}</Text>
-                    </Flex>
-                    <Flex justify="normal" gap={2}>
-                      <Text fontWeight="bold">State upon exit: </Text>
-                      <Text>{medical_record.state_upon_exit}</Text>
-                    </Flex>
-                    <Flex justify="normal" gap={2}>
-                      <Text fontWeight="bold">Bed number:</Text>
-                      <Text>{medical_record.bed_number}</Text>
-                    </Flex>
-                    <Flex justify="normal" gap={2}>
-                      <Text fontWeight="bold">Patient entry date:</Text>
-                      <Text>{formatDate(medical_record.patient_entry_date)}</Text>
-                    </Flex>
-                    <Flex justify="normal" gap={2}>
-                      <Text fontWeight="bold">Patient leaving date:</Text>
-                      <Text>
-                        {medical_record.patient_leaving_date
-                          ? formatDate(medical_record.patient_leaving_date)
-                          : "N/A"}
-                      </Text>
-                    </Flex>
-                  </Stack>
+                  </Box>
                   {user.id == medical_record.user_id && (
                     <Box
                       color='blue.900'
@@ -521,13 +601,26 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                           <Td>{Exam.result}</Td>
                           <Td display='flex' justifyContent='flex-end'>
                             {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
-                              <IconButton
-                                borderRadius='100%'
-                                size='sm'
-                                color='white'
-                                bg='green.400'
-                                onClick={() => handleExaminationEdit(Exam)}
-                                icon={<EditIcon />} />
+                              <>
+                                <IconButton
+                                  borderRadius='100%'
+                                  mr={2}
+                                  size='sm'
+                                  color='white'
+                                  bg='green.400'
+                                  onClick={() => handleExaminationEdit(Exam)}
+                                  icon={<EditIcon />} />
+                                <IconButton
+                                  colorScheme='red'
+                                  borderRadius='100%'
+                                  size='sm'
+                                  color='white'
+                                  bg='red.400'
+                                  onClick={() => handleDeleteExaminationConfirm(Exam)}
+                                  isLoading={deleteLoading}
+                                  onMouseLeave={() => setDeleteConfirmation(false)}
+                                  icon={deleteConfirmation ? <AiOutlineCheck /> : <BsFillTrashFill />} />
+                              </>
                             )}
                           </Td>
 
@@ -556,7 +649,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
               <TabPanel>
                 {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
                   <Flex justify='flex-end' mb='15px'>
-                    <Button colorScheme='red' onClick={onOpenObservation} mr={3}>
+                    <Button colorScheme='green' onClick={onOpenObservation} mr={3}>
                       <Text>Add Observation</Text>
                     </Button>
                   </Flex>
@@ -618,13 +711,24 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             top: 'calc(50% - 15px)',
                             display: 'block'
                           }}>
-                          <Wrap spacing={0}>
+                          <Box bg='gray.300' p={2} w='50%'>
+                            <Text
+                              textAlign='center'
+                              fontWeight='bold'
+                              fontSize='xl'
+                              color='blue.700'
+                            >
+                              {obs.name}
+                            </Text>
+                          </Box>
+
+                          <Flex flexWrap='wrap'>
                             {obs.images && obs.images.map((img, index) => (
-                              <WrapItem key={index} bg='gray.300' p={2}>
+                              <Box key={index} bg='gray.300' p={2}>
                                 <Image src={'http://localhost:8000/storage/images/' + img.path} boxSize='150px' />
-                              </WrapItem>
+                              </Box>
                             ))}
-                          </Wrap>
+                          </Flex>
                         </Box>
                       </Center>
                     </Flex>
@@ -658,6 +762,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                     openMonitoringEditForm={handleMonitoringSheetEdit}
                     openMonitoringRow={handleMonitoringSheetRow}
                     medical_record={medical_record}
+                    refresh={refreshMonitoringSheet}
                     user={user}
                     loading={loadingMonitoringSheet}
                   />

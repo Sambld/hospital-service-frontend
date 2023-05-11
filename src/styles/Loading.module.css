@@ -1,0 +1,43 @@
+.icon {
+    width: 140px;
+    height: 140px;
+    animation: lds-heart 2s infinite;
+}
+
+@keyframes lds-heart {
+    0% {
+        top: 70px;
+        left: 70px;
+        width: 140px;
+        height: 140px;
+        opacity: 0;
+    }
+    4.9% {
+        top: 70px;
+        left: 70px;
+        width: 140px;
+        height: 140px;
+        opacity: 0;
+    }
+    50% {
+        top: 70px;
+        left: 70px;
+        width: 140px;
+        height: 140px;
+        opacity: 1;
+    }
+    80% {
+        top: 0px;
+        left: 0px;
+        width: 200px;
+        height: 200px;
+        opacity: 0;
+    }
+    100% {
+        top: 70px;
+        left: 70px;
+        width: 140px;
+        height: 140px;
+        opacity: 0;
+    }
+}

@@ -67,7 +67,7 @@ const NavBar = ({ logout, user }) => {
         <Flex justifyContent={'space-between'} p={{ base: '5px', lg: '10px' }}>
             <HStack color="#374083">
                 <FaShieldVirus fontSize='40px'/>
-                <Text fontSize={{ base: 'md', lg: '3xl' }}>Infectious diseases</Text>
+                <Text fontSize={{ base: 'md', lg: '3xl' }}>Infectious Diseases</Text>
             </HStack>
             <Spacer />
 

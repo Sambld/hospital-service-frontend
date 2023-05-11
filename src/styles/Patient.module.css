@@ -1,0 +1,12 @@
+.table td,
+.tableRed td {
+    padding-left: 0px !important;
+}
+
+.table td:first-child {
+    width: 30% !important;
+}
+
+.tableRed td:first-child {
+    width: 50% !important;
+}

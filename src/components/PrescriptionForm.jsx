@@ -64,12 +64,27 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh }) => {
         event.preventDefault();
         setLoading(true);
         try {
-            MedicinesAdd().then(() => {
+
+            usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/prescriptions', {
+                name: formData.name,
+            }).then(async (res) => {
+
+                MedicinesAdd(res.data.id).then(() => {
+                    setLoading(false);
+                    closeAndRefresh(
+                        {
+                            title: 'Monitoring Sheet created successfully.',
+                            status: 'success',
+                        }
+                    )
+                })
+            }).catch((err) => {
                 setLoading(false);
                 closeAndRefresh(
                     {
-                        title: 'Monitoring Sheet created successfully.',
-                        status: 'success',
+                        title: 'Error',
+                        description: err.message,
+                        status: 'error',
                     }
                 )
             })
@@ -78,13 +93,13 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh }) => {
         }
     };
 
-    const MedicinesAdd = async () => {
+    const MedicinesAdd = async (prescription_id) => {
         try {
             const progressUnit = 100 / formData.medicines.length;
             const promises = [];
             console.log(progressUnit)
             formData.medicines.map((medicine) => {
-                const promise = usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/medicine-requests', {
+                const promise = usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/prescriptions/' + prescription_id + '/medicine-requests', {
                     medicine_id: medicine.value,
                     quantity: medicine.quantity,
                 }).then(async (res) => {
@@ -145,6 +160,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                 const options = res.data.map((medicine) => ({
                     value: medicine.id,
                     label: medicine.name,
+                    old_quantity: medicine.quantity,
                 }));
                 setOptions(options);
                 callback(options);
@@ -156,10 +172,26 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh }) => {
 
     return (
         <Form onSubmit={handleSubmit}>
+            <FormControl id='name' isRequired>
+                <FormLabel>Title</FormLabel>
+                <Input
+                    type="text"
+                    name="name"
+                    value={formData.name || ''}
+                    onChange={(event) => {
+                        event.persist();
+                        setFormData((prevFormData) => ({
+                            ...prevFormData,
+                            name: event.target.value,
+                        }));
+                    }}
+                />
+            </FormControl>
             <Divider mt='10px' mb='10px' />
             {/* choose medicines */}
             <Box>
-                <Text textAlign='center' fontSize={25}>Medicines List</Text>
+
+                <Text mb={5} textAlign='center' fontSize={25}>Medicines List</Text>
                 <Box border='2px' borderColor='gray.300' boxShadow='md' p={1} mb={3} maxH='30vh' overflow='auto'>
                     <Table variant="unstyled" size="sm" >
                         <Tbody>
@@ -224,6 +256,20 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh }) => {
 
                 </FormControl>
             </Box>
+            {selectedMedicine && (
+                <Box
+                    mt={3}
+                    border='2px'
+                    borderColor='gray.300'
+                    borderRadius={5}
+                    boxShadow='md'
+                    bg='gray.50'
+                    p={2}
+                >
+                    <Text fontSize={13}> Name: {selectedMedicine ? selectedMedicine.label : ''}</Text>
+                    <Text fontSize={13}> Quantity: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
+                </Box>
+            )}
             {loading && (
                 <Box
                     position='relative'

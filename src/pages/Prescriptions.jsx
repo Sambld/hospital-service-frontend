@@ -34,6 +34,8 @@ import {
     Center,
     Spinner,
     Textarea,
+    Heading,
+    Select,
 } from "@chakra-ui/react";
 import { FaUserMd } from "react-icons/fa";
 import { AiFillFile, AiOutlineClockCircle } from "react-icons/ai";
@@ -52,6 +54,7 @@ const Prescriptions = () => {
     const [PastPrescriptions, setPastPrescriptions] = useState([])
 
     const [PrescriptionDetail, setPrescriptionDetail] = useState(null)
+    const [SelectedPrescription, setSelectedPrescription] = useState(0)
 
     const [rejectSelecteItem, setRejectSelecteItem] = useState(null)
     const [review, setReview] = useState(null)
@@ -64,6 +67,7 @@ const Prescriptions = () => {
     const [PastLoading, setPastLoading] = useState(false)
 
     const [reviewLoading, setReviewLoading] = useState(false)
+    const [AllActionLoading, setAllActionLoading] = useState(false)
 
     const [singleButtonLoading, setSingleButtonLoading] = useState(
         {
@@ -103,7 +107,7 @@ const Prescriptions = () => {
         setPendingPagination(null)
         setPendingLoading(true)
 
-        useLoader(`/medicine-requests?status=open&page=${searchParams.get('page') || 1}`)
+        useLoader(`/prescriptions?status=open&page=${searchParams.get('page') || 1}`)
             .then(res => {
                 setPendingLoading(false)
                 const { data, ...pagination } = res;
@@ -119,7 +123,7 @@ const Prescriptions = () => {
         setPastPrescriptions([])
         setPastPagination(null)
         setPastLoading(true)
-        useLoader(`/medicine-requests?status=closed&page=${searchParams.get('page') || 1}`)
+        useLoader(`/prescriptions?status=closed&page=${searchParams.get('page') || 1}`)
             .then(res => {
                 setPastLoading(false)
                 const { data, ...pagination } = res;
@@ -140,17 +144,17 @@ const Prescriptions = () => {
                 await changeMedicineRequestStatus(MainInfo, rejectSelecteItem, 'Rejected', {
                     status: 'Rejected',
                 })
-                if(MainInfo.medicine_requests.filter(medicine => medicine.status.toLowerCase() === 'pending').length === 1){
-                    onClose();
-                    setPrescriptions(null);
-                    getPendingPrescriptions();
-                }
+                // if (MainInfo.medicine_requests.filter(medicine => medicine.status.toLowerCase() === 'pending').length === 1) {
+                //     onClose();
+                //     setPrescriptions(null);
+                //     getPendingPrescriptions();
+                // }
             }
             setReviewLoading(false)
             setRejectSelecteItem(null)
             onReviewClose();
             setReview(null);
-            
+
         } catch (err) {
             toast({
                 title: "There was an error",
@@ -159,6 +163,7 @@ const Prescriptions = () => {
                 duration: 5000,
                 isClosable: true,
             });
+            setReviewLoading(false)
         }
     }
 
@@ -166,16 +171,17 @@ const Prescriptions = () => {
 
     const changeAllMedicineRequestStatus = async (MainInfo, message) => {
         let error = false;
-        for (const medicine of MainInfo.medicine_requests.filter(medicine => medicine.status.toLowerCase() === 'pending')) {
+        setAllActionLoading(true)
+        for (const medicine of PrescriptionDetail.prescriptions[SelectedPrescription].medicine_requests.filter(medicine => medicine.status.toLowerCase() === 'pending')) {
             try {
-                await changeMedicineRequestStatus(MainInfo, medicine, message, null, true);
+                await changeMedicineRequestStatus(PrescriptionDetail, medicine, message, null, true);
             } catch (err) {
                 error = true;
             }
         }
         if (!error) {
-            setPrescriptions(null);
-            getPendingPrescriptions();
+            // setPrescriptions(null);
+            // getPendingPrescriptions();
             toast({
                 title: "Prescription Completed",
                 description: "The prescription has been completed",
@@ -183,7 +189,7 @@ const Prescriptions = () => {
                 duration: 5000,
                 isClosable: true,
             });
-            onClose();
+            // onClose();
         } else {
             toast({
                 title: "There was an error",
@@ -193,20 +199,40 @@ const Prescriptions = () => {
                 isClosable: true,
             });
         }
+        setAllActionLoading(false)
         onReviewClose();
         setReview(null);
     }
     const changeMedicineRequestStatus = async (MainInfo, MedInfo, message, loading = null, stopNotification = false) => {
         try {
             if (loading) setSingleButtonLoading({ index: loading.index, status: loading.status, isLoading: true });
-            const res = await axios.put(`/patients/${MainInfo.patient_id}/medical-records/${MainInfo.medical_record_id}/medicine-requests/${MedInfo.id}`, { status: message, review: message === 'Rejected' ? review : null });
+            const res = await axios.put(`/patients/${MainInfo.patient_id}/medical-records/${MainInfo.id}/prescriptions/${MedInfo.prescription_id}/medicine-requests/${MedInfo.id}`, { status: message, review: message === 'Rejected' ? review : null });
             if (loading) setSingleButtonLoading({ index: loading.index, status: loading.status, isLoading: false });
-            setPrescriptionDetail(prevState => {
-                return {
-                    ...prevState,
-                    medicine_requests: prevState.medicine_requests.map(item => item.id === MedInfo.id ? { ...item, status: message } : item)
-                };
-            });
+
+            setPrescriptionDetail((prev) => (
+                {
+                    ...prev,
+                    prescriptions: prev.prescriptions.map((item, index) => {
+                        if (index === SelectedPrescription) {
+                            return {
+                                ...item,
+                                medicine_requests: item.medicine_requests.map(medicine => {
+                                    if (medicine.id === MedInfo.id) {
+                                        return {
+                                            ...medicine,
+                                            status: message,
+                                            review: message === 'Rejected' ? review : null
+                                        }
+                                    }
+                                    return medicine;
+                                })
+                            }
+                        }
+                        return item;
+                    })
+                }
+            ))
+
             if (!stopNotification) {
                 toast({
                     title: `Medicine ${message}`,
@@ -215,10 +241,10 @@ const Prescriptions = () => {
                     duration: 5000,
                     isClosable: true
                 });
-                const pendingMedicines = PrescriptionDetail.medicine_requests.filter(item => item.status.toLowerCase() === 'pending');
+                const pendingMedicines = PrescriptionDetail.prescriptions[SelectedPrescription].medicine_requests.filter(item => item.status.toLowerCase() === 'pending');
                 if (pendingMedicines.length === 1) {
-                    setPrescriptions(null);
-                    getPendingPrescriptions();
+                    // setPrescriptions(null);
+                    // getPendingPrescriptions();
                     toast({
                         title: "Prescription Completed",
                         description: "The prescription has been completed",
@@ -226,14 +252,12 @@ const Prescriptions = () => {
                         duration: 5000,
                         isClosable: true
                     });
-                    onClose();
                 }
             }
             return Promise.resolve();
         } catch (err) {
             if (loading) setSingleButtonLoading({ index: loading.index, status: loading.status, isLoading: false });
             const response = JSON.parse(err.request.response);
-            console.log(response);
             if (response.message) {
                 toast({
                     title: response.message,
@@ -247,7 +271,12 @@ const Prescriptions = () => {
     }
     const handlePrescriptionDetail = (info) => {
         setPrescriptionDetail(info)
+        setSelectedPrescription(0)
         onOpen();
+    }
+
+    const handleSelectPrescription = (index) => {
+        setSelectedPrescription(parseInt(index))
     }
 
     const handleTabsChange = (index) => {
@@ -262,6 +291,19 @@ const Prescriptions = () => {
         }
     }
 
+    const handleClose = () => {
+        setPrescriptionDetail(null)
+        setSelectedPrescription(0)
+
+        setPrescriptions(null);
+        if (tabIndex === 0) {
+            getPendingPrescriptions();
+        } else if (tabIndex === 1) {
+            getPastPrescriptions();
+        }
+        onClose();
+    }
+
     const handlePagination = (e) => {
         if (searchParams.get('status')) {
             navigate('/prescriptions?status=' + searchParams.get('status') + '&page=' + e)
@@ -273,15 +315,15 @@ const Prescriptions = () => {
     return (
         <Box bg='white' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
             <Tabs index={tabIndex} variant='unstyled' colorScheme='green' onChange={handleTabsChange} isFitted>
-                <TabList bg='gray.300' p='3px' borderRadius='3xl'>
+                <TabList bg='gray.300' p='3px' borderRadius='md'>
                     <Tab
-                        borderRadius='3xl'
+                        borderRadius='md'
                         _selected={{ color: 'white', bg: 'blue.500' }}
                     >
                         Pending Requests
                     </Tab>
                     <Tab
-                        borderRadius='3xl'
+                        borderRadius='md'
                         _selected={{ color: 'white', bg: 'green.500' }}
                     >
                         Past Requests
@@ -296,7 +338,7 @@ const Prescriptions = () => {
                                         <Box borderRadius='md' boxShadow='md' overflow='hidden'>
                                             <Flex alignItems='center' bg='blue.500' p={3} color='white' borderTopRadius='md' gap={1}>
                                                 <Icon as={MdSick} fontSize='20px' mr='5px' />
-                                                <Text>{item.patient}</Text>
+                                                <Text>{item.patient.first_name + " " + item.patient.last_name}</Text>
                                             </Flex>
                                             <Flex justifyContent='flex-start' alignItems='center' gap={3} p={3}>
                                                 <Avatar
@@ -304,24 +346,9 @@ const Prescriptions = () => {
                                                     size={'md'}
                                                     icon={<FaUserMd fontSize='20px' />}
                                                 />
-                                                <Text>{item.doctor}</Text>
+                                                <Text>{item.assigned_doctor.first_name + " " + item.assigned_doctor.last_name}</Text>
                                             </Flex>
                                             <Flex justifyContent='space-between' bg='gray.100' borderBottomRadius='md' pt='1px' gap='1px'>
-
-                                                {/* <Button
-                                                    bg='white'
-                                                    leftIcon={<IoClose color="red.700" />}
-                                                    colorScheme='red'
-                                                    borderRadius={0}
-                                                    border={0}
-                                                    variant='outline'
-                                                    p='10px'
-                                                    px={5}
-                                                    w='50%'
-                                                    onClick={() => changeAllMedicineRequestStatus(item, 'Rejected')}
-                                                >
-                                                    <Text mr='5px' fontSize={15} fontWeight='normal'>Reject</Text>
-                                                </Button> */}
                                                 <Button
                                                     bg='white'
                                                     leftIcon={<AiFillFile color='blue.700' />}
@@ -368,7 +395,7 @@ const Prescriptions = () => {
                                         <Box borderRadius='md' boxShadow='md' overflow='hidden'>
                                             <Flex alignItems='center' bg='blue.500' p={3} color='white' borderTopRadius='md' gap={1}>
                                                 <Icon as={MdSick} fontSize='20px' mr='5px' />
-                                                <Text>{item.patient}</Text>
+                                                <Text>{item.patient.first_name + " " + item.patient.last_name}</Text>
                                             </Flex>
                                             <Flex justifyContent='flex-start' alignItems='center' gap={3} p={3}>
                                                 <Avatar
@@ -376,9 +403,24 @@ const Prescriptions = () => {
                                                     size={'md'}
                                                     icon={<FaUserMd fontSize='20px' />}
                                                 />
-                                                <Text>{item.doctor}</Text>
+                                                <Text>{item.assigned_doctor.first_name + " " + item.assigned_doctor.last_name}</Text>
                                             </Flex>
                                             <Flex justifyContent='space-between' bg='gray.100' borderBottomRadius='md' pt='1px' gap='1px'>
+
+                                                {/* <Button
+                                                    bg='white'
+                                                    leftIcon={<IoClose color="red.700" />}
+                                                    colorScheme='red'
+                                                    borderRadius={0}
+                                                    border={0}
+                                                    variant='outline'
+                                                    p='10px'
+                                                    px={5}
+                                                    w='50%'
+                                                    onClick={() => changeAllMedicineRequestStatus(item, 'Rejected')}
+                                                >
+                                                    <Text mr='5px' fontSize={15} fontWeight='normal'>Reject</Text>
+                                                </Button> */}
                                                 <Button
                                                     bg='white'
                                                     leftIcon={<AiFillFile color='blue.700' />}
@@ -395,7 +437,6 @@ const Prescriptions = () => {
                                                 </Button>
                                             </Flex>
                                         </Box>
-
                                     </GridItem>
                                 ))}
                         </Grid>
@@ -420,94 +461,113 @@ const Prescriptions = () => {
                     </TabPanel>
                 </TabPanels>
             </Tabs>
-            <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
+            <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={handleClose}>
                 <ModalOverlay />
                 {PrescriptionDetail && (
-                    <ModalContent maxW='800px'>
-                        <ModalHeader>Medical Record #{PrescriptionDetail.medical_record_id} Prescription </ModalHeader>
+                    <ModalContent maxW='800px' p={3}>
+                        <ModalHeader>Medical Record #{PrescriptionDetail.id} Prescription </ModalHeader>
                         <ModalCloseButton />
                         <ModalBody>
                             {/* doctor name */}
                             <Flex justifyContent='flex-start' alignItems='center' gap={3} mb={2}>
                                 <FaUserMd fontSize='20px' />
-                                <Text>{PrescriptionDetail.doctor}</Text>
+                                <Text>{PrescriptionDetail.assigned_doctor.first_name + " " + PrescriptionDetail.assigned_doctor.last_name}</Text>
                             </Flex>
                             {/* time */}
                             <Flex justifyContent='flex-start' alignItems='center' gap={3}>
                                 <MdSick fontSize='20px' />
-                                <Text>{PrescriptionDetail.patient} #{PrescriptionDetail.patient_id}</Text>
+                                <Text>{PrescriptionDetail.patient.first_name + " " + PrescriptionDetail.patient.last_name} #{PrescriptionDetail.patient_id}</Text>
                             </Flex>
                             <Divider mt={3} mb={3} />
-                            <Box maxH='50vh' overflow='auto'>
-                                <Table variant='simple' colorScheme='blackAlpha'>
-                                    <Thead>
-                                        <Tr>
-                                            <Th>Medicine</Th>
-                                            <Th>Quantity</Th>
-                                            {!PrescriptionDetail.all_requests_responded_to && <Th>Remains</Th>}
-                                            <Th>Action</Th>
-                                        </Tr>
-                                    </Thead>
-                                    {PrescriptionDetail.medicine_requests && PrescriptionDetail.medicine_requests
-                                        .filter(
-                                            (item) => PrescriptionDetail.all_requests_responded_to ? true : item.status.toLowerCase() == 'pending'
-                                        )
-                                        .map((item, index) => (
-                                            <Tbody key={index}>
-                                                <Tr>
-                                                    <Td>{item.medicine.name}</Td>
-                                                    <Td>{item.quantity}</Td>
-                                                    {!PrescriptionDetail.all_requests_responded_to && <Td>{item.medicine.quantity}</Td>}
-                                                    <Td>
-                                                        {!PrescriptionDetail.all_requests_responded_to && item.status.toLowerCase() == 'pending' && (
-                                                            <>
-                                                                <IconButton
-                                                                    mr={2}
-                                                                    aria-label='Accept'
-                                                                    icon={<CheckIcon />}
-                                                                    colorScheme='green'
-                                                                    isLoading={
-                                                                        singleButtonLoading.isLoading &&
-                                                                        singleButtonLoading.index == index &&
-                                                                        singleButtonLoading.status == 'Approved'
-                                                                    }
-                                                                    onClick={() => changeMedicineRequestStatus(PrescriptionDetail, item, 'Approved', {
-                                                                        index,
-                                                                        status: 'Approved',
-                                                                    })}
-                                                                />
+                            <Text mb={2} fontSize='20px' fontWeight='bold'>Selected Prescription</Text>
+                            <Select onChange={(e) => handleSelectPrescription(e.target.value)}>
+                                {PrescriptionDetail.prescriptions.length > 0 && PrescriptionDetail.prescriptions.map((item, index) => (
+                                    <option key={index} value={index}>{item.name} #{item.id}</option>
 
-                                                                <IconButton
-                                                                    aria-label='Decline'
-                                                                    icon={<CloseIcon />}
-                                                                    colorScheme='red'
-                                                                    isLoading={
-                                                                        singleButtonLoading.isLoading &&
-                                                                        singleButtonLoading.index == index &&
-                                                                        singleButtonLoading.status == 'Rejected'
-                                                                    }
-                                                                    onClick={(event) => {
-                                                                        setRejectSelecteItem(item);
-                                                                        onReviewOpen();
-                                                                    }}
-                                                                />
-                                                            </>
-                                                        )}
-                                                        {PrescriptionDetail.all_requests_responded_to && item.status.toLowerCase() == 'approved' && (
-                                                            <Tag colorScheme='green'>Accepted</Tag>
-                                                        )}
-                                                        {PrescriptionDetail.all_requests_responded_to && item.status.toLowerCase() == 'rejected' && (
-                                                            <Tag colorScheme='red'>Rejected</Tag>
-                                                        )}
-                                                    </Td>
-                                                </Tr>
-                                            </Tbody>
-                                        ))}
-                                </Table>
-                            </Box>
+                                ))}
+                            </Select>
+                            <Divider mt={3} mb={3} />
+                            {PrescriptionDetail.prescriptions[SelectedPrescription] && (
+                                <Box maxH='50vh' overflow='auto'>
+                                    <Text mb={2} fontSize='20px' fontWeight='bold'>Prescription Detail</Text>
+                                    <Table variant='simple' colorScheme='blackAlpha'>
+                                        <Thead>
+                                            <Tr>
+                                                <Th w='300px'>Medicine</Th>
+                                                <Th>Quantity</Th>
+                                                <Th>Remains</Th>
+                                                <Th></Th>
+                                            </Tr>
+                                        </Thead>
+                                        <Tbody>
+                                            {PrescriptionDetail.prescriptions[SelectedPrescription].medicine_requests.length > 0 && PrescriptionDetail.prescriptions[SelectedPrescription].medicine_requests
+                                                .map((item, index) => (
+                                                    <Tr key={index}>
+                                                        <Td>{item.medicine.name}</Td>
+                                                        <Td>{item.quantity}</Td>
+                                                        <Td>{item.medicine.quantity}</Td>
+                                                        <Td>
+                                                            {item.status.toLowerCase() === 'pending' ? (
+                                                                <>
+                                                                    <IconButton
+                                                                        mr={2}
+                                                                        aria-label='Accept'
+                                                                        icon={<CheckIcon />}
+                                                                        colorScheme='green'
+                                                                        isLoading={
+                                                                            singleButtonLoading.isLoading &&
+                                                                            singleButtonLoading.index == index &&
+                                                                            singleButtonLoading.status == 'Approved'
+                                                                        }
+                                                                        onClick={() => changeMedicineRequestStatus(PrescriptionDetail, item, 'Approved', {
+                                                                            index,
+                                                                            status: 'Approved',
+                                                                        })}
+                                                                    />
+
+                                                                    <IconButton
+                                                                        aria-label='Decline'
+                                                                        icon={<CloseIcon />}
+                                                                        colorScheme='red'
+                                                                        isLoading={
+                                                                            singleButtonLoading.isLoading &&
+                                                                            singleButtonLoading.index == index &&
+                                                                            singleButtonLoading.status == 'Rejected'
+                                                                        }
+                                                                        onClick={(event) => {
+                                                                            setRejectSelecteItem(item);
+                                                                            onReviewOpen();
+                                                                        }}
+                                                                    />
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    {item.status.toLowerCase() == 'approved' && (
+                                                                        <Tag w='100%' h='40px' colorScheme='green'>
+                                                                            <Text w='100%' textAlign='center' fontSize='15px' fontWeight='bold'>
+                                                                                Accepted
+                                                                            </Text>
+                                                                        </Tag>
+                                                                    )}
+                                                                    {item.status.toLowerCase() == 'rejected' && (
+                                                                        <Tag w='100%' h='40px' colorScheme='red'>
+                                                                            <Text w='100%' textAlign='center' fontSize='15px' fontWeight='bold'>
+                                                                                Rejected
+                                                                            </Text>
+                                                                        </Tag>
+                                                                    )}
+                                                                </>
+                                                            )}
+                                                        </Td>
+                                                    </Tr>
+                                                ))}
+                                        </Tbody>
+                                    </Table>
+                                </Box>
+                            )}
 
                         </ModalBody>
-                        {!PrescriptionDetail.all_requests_responded_to && (
+                        {!AllActionLoading && PrescriptionDetail.prescriptions[SelectedPrescription] && PrescriptionDetail.prescriptions[SelectedPrescription]?.medicine_requests.filter((item) => item.status.toLowerCase() === 'pending').length > 0 && (
                             <ModalFooter gap={5}>
                                 <Button
                                     bg='white'
@@ -517,6 +577,7 @@ const Prescriptions = () => {
                                     p='10px'
                                     px={5}
                                     w='50%'
+                                    isLoading={AllActionLoading}
                                     onClick={() => onReviewOpen()}
                                 >
                                     <Text mr='5px' fontSize={15} fontWeight='normal'>Reject All</Text>
@@ -528,11 +589,18 @@ const Prescriptions = () => {
                                     p='10px'
                                     px={5}
                                     w='50%'
+                                    isLoading={AllActionLoading}
                                     onClick={() => changeAllMedicineRequestStatus(PrescriptionDetail, 'Approved')}
                                 >
                                     <Text mr='5px' fontSize={15} fontWeight='normal'>Accept All</Text>
                                 </Button>
                             </ModalFooter>
+                        )}
+
+                        {AllActionLoading && (
+                            <Flex justifyContent='center' alignItems='center' h='72px'>
+                                <Spinner />
+                            </Flex>
                         )}
 
                     </ModalContent>
@@ -544,7 +612,7 @@ const Prescriptions = () => {
                     <ModalHeader>Review Prescription</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <Textarea placeholder='Write your review here' value={review} onChange={(event) => setReview(event.target.value)} />
+                        <Textarea placeholder='Write your review here' value={review || ''} onChange={(event) => setReview(event.target.value)} />
                     </ModalBody>
                     <ModalFooter>
                         <Button

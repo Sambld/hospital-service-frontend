@@ -2,12 +2,19 @@ import { Badge, Box, Flex, Select, Table, TableContainer, Tbody, Td, Th, Thead, 
 import { useEffect, useState } from "react";
 import { AiFillCaretLeft, AiFillCaretRight, AiFillPrinter } from "react-icons/ai";
 
-import "../styles/MonitoringSheet.css";
+import styles from "../styles/MonitoringSheet.css";
+import { BiRefresh } from "react-icons/bi";
+import { IoTodayOutline } from "react-icons/io5";
 
-const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm, openMonitoringEditForm, openMonitoringRow, loading, user }) => {
-    const [selected, setSelected] = useState(7);
+const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm, openMonitoringEditForm, openMonitoringRow, loading, user, refresh }) => {
+    const [selected, setSelected] = useState(1);
     const [currentDay, setCurrentDay] = useState(0);
     const toast = useToast();
+
+    useEffect(() => {
+        getToday();
+    }, [data]);
+
 
     const formatDate = (date) => {
         let date_ = new Date(date);
@@ -18,6 +25,14 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
         return `${year}-${month}-${day}`;
     };
 
+    const getToday = () => {
+        if (data && data.length > 0) {
+            const today = formatDate(new Date());
+            const todayIndex = data.findIndex(item => formatDate(item.filling_date) == today);
+            const diffDays = todayIndex == -1 ? 0 : todayIndex;
+            setCurrentDay(diffDays);
+        }
+    }
     const currentDateMonitoringSheet = () => {
         const currentDate = formatDate(new Date())
         console.log(currentDate)
@@ -39,6 +54,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
 
     const handleAddMoreRows = () => {
         let date = new Date(data[data.length - 1].filling_date);
+        console.log(date)
         date.setDate(date.getDate() + 1);
         openMonitoringEditForm(date)
     }
@@ -54,7 +70,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                     >
                         <Flex justify='flex-start' gap={2}>
                             {
-                                user.role === 'doctor' &&
+                                user.role === 'doctor' && !medical_record.patient_leaving_date &&
                                 (
                                     <Button colorScheme='gray' onClick={handleAddMoreRows}>
                                         Add More Rows
@@ -62,7 +78,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                 )
                             }
                             {
-                                user.role == 'nurse' &&
+                                user.role == 'nurse' && !medical_record.patient_leaving_date &&
                                 (
                                     <Button colorScheme='teal' onClick={currentDateMonitoringSheet}>
                                         Apply For Today
@@ -71,18 +87,18 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                             }
                             <Button
                                 colorScheme='blue'
-                                onClick={
-                                    () => toast({
-                                        title: "TODO",
-                                        description: "print monitoring sheet",
-                                        status: 'warning',
-                                        duration: 3000,
-                                        isClosable: true,
-                                    })
-                                }
+                                onClick={() => getToday()}
                             >
-                                <AiFillPrinter fontSize={20} />
-                                <Text ml={2}>Print</Text>
+                                <IoTodayOutline fontSize={20} />
+                                <Text ml={2}>Today</Text>
+                            </Button>
+                            <Button
+                                colorScheme='blackAlpha'
+                                bg='gray.600'
+                                leftIcon={<BiRefresh size={25} />}
+                                onClick={refresh}
+                            >
+                                Refresh
                             </Button>
 
                         </Flex>
@@ -120,11 +136,11 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                         </Flex>
                     </Flex>
                     <TableContainer gap={5}>
-                        <Table mb={5} border='2px' borderColor='gray.600' borderRadius="md">
+                        <Table mb={5} border='2px' borderColor='gray.600' borderRadius="md" className={styles.table}>
                             <Thead>
                                 <Tr>
                                     <Th border='2px' w='150px'>Examination</Th>
-                                    {data.slice(currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
+                                    {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
                                         <Th
                                             key={index}
                                             bg={item.filling_date == formatDate(new Date()) ? 'gray.500' : 'white'}
@@ -133,7 +149,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                             borderColor='gray.600'
                                             textAlign='center'
                                             onClick={() => {
-                                                if (user.role === 'nurse') {
+                                                if (user.role === 'nurse' || user.role === 'doctor') {
                                                     openMonitoringRow(item.id);
                                                 }
                                             }}
@@ -149,7 +165,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                             <Tbody >
                                 <Tr>
                                     <Td border='2px'>urine (ml)</Td>
-                                    {data.slice(currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
+                                    {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
                                         <Td
                                             key={index}
                                         >
@@ -159,7 +175,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                 </Tr>
                                 <Tr>
                                     <Td border='2px'>T.A (mmHg)</Td>
-                                    {data.slice(currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
+                                    {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
                                         <Td
                                             key={index}
 
@@ -170,7 +186,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                 </Tr>
                                 {/* <Tr>
                                     <Td>PULSE (bpm)</Td>
-                                    {data.slice(currentDay, selected > 0 ? selected + currentDay : data.length).map((item,index) => (
+                                    {data.slice(selected == 0 ? 0 :currentDay, selected > 0 ? selected + currentDay : data.length).map((item,index) => (
                                         <Td 
                                         key={index}
                                         >
@@ -180,7 +196,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                 </Tr> */}
                                 <Tr>
                                     <Td border='2px'>temperature (°C)</Td>
-                                    {data.slice(currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
+                                    {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
                                         <Td
                                             key={index}
 
@@ -191,7 +207,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                 </Tr>
                                 <Tr>
                                     <Td border='2px'>weight (kg)</Td>
-                                    {data.slice(currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
+                                    {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
                                         <Td
                                             key={index}
                                         >
@@ -205,7 +221,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                     <Th py={3} color='white' fontSize={20} colSpan={selected > 0 ? selected + 1 : data.length + 1}>
                                         Treatments
                                     </Th>
-                                    {/* {data.slice(currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
+                                    {/* {data.slice(selected == 0 ? 0 :currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
                                         <Th
                                             key={index}
                                             bg={item.filling_date == formatDate(new Date()) ? 'teal' : 'white'}
@@ -219,19 +235,20 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                     ))} */}
 
                                 </Tr>
-                                {treatments && treatments.map((item, index) => (
+                                {treatments && (selected == 1 ? data[currentDay].treatments : treatments).map((item, index) => (
                                     <Tr key={index}>
-                                        <Td
-                                            border='2px'
-                                        >
-                                            {item}
-                                        </Td>
-                                        {data.slice(currentDay, selected > 0 ? selected + currentDay : data.length).map((item2, index) => (
+                                            <Td
+                                                border='2px'
+                                            >
+                                                {typeof item === 'object' ? (item.name) : item}
+                                            </Td>
+
+                                        {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item2, index) => (
                                             <Td
                                                 key={index}
                                             >
                                                 {item2.filled_by_id ?
-                                                    item2.treatments && item2.treatments.some((treatment) => treatment.name === item) ? <Badge colorScheme='green'>check</Badge> : <Badge colorScheme='red'>-</Badge>
+                                                    item2.treatments && item2.treatments.some((treatment) => treatment.name === (typeof item === 'object' ? (item.name) : item)) ? <Badge colorScheme='green'>check</Badge> : <Badge colorScheme='red'>-</Badge>
                                                     :
                                                     <Badge colorScheme='blue'>-</Badge>
                                                 }
@@ -240,6 +257,8 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
 
                                     </Tr>
                                 ))}
+
+
                             </Tbody>
                         </Table>
                     </TableContainer>
