@@ -73,7 +73,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                     setLoading(false);
                     closeAndRefresh(
                         {
-                            title: 'Monitoring Sheet created successfully.',
+                            title: 'Prescription created successfully.',
                             status: 'success',
                         }
                     )

@@ -39,12 +39,17 @@ import {
   AlertDialogFooter,
   AlertDialogContent,
   AlertDialogOverlay,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
 } from "@chakra-ui/react";
 
 // Icons
 import { DeleteIcon, EditIcon, SearchIcon, AddIcon } from "@chakra-ui/icons";
 import { BsFillTrashFill } from "react-icons/bs";
-import { AiOutlineCheck } from "react-icons/ai";
+import { AiFillPrinter, AiOutlineCheck } from "react-icons/ai";
 
 
 // Hooks
@@ -64,6 +69,10 @@ import PrescriptionForm from "./PrescriptionForm";
 
 // Styles
 import styles from "../styles/MedicalRecord.module.css";
+import MonitoringSheetStyles from "../styles/MonitoringSheet.module.css";
+
+// Services
+import axios from "./axios";
 
 
 const MedicalRecord = ({ medical_record, user, editRecord }) => {
@@ -86,6 +95,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const [MonitoringSheetEditInfo, setMonitoringSheetEditInfo] = useState(null)
 
   const [Prescriptions, setPrescriptions] = useState([]);
+  const [PrescriptionDownloaded, setPrescriptionDownloaded] = useState(null);
 
 
   const [deleteLoading, setDeleteLoading] = useState(false)
@@ -94,6 +104,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const [loadingMonitoringSheet, setLoadingMonitoringSheet] = useState(false)
   const [loadingMonitoringSheetRow, setLoadingMonitoringSheetRow] = useState(false)
   const [loadingPrescription, setLoadingPrescription] = useState(false)
+  const [loadingPrescriptionDownload, setLoadingPrescriptionDownload] = useState(false)
 
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
   const { isOpen: isOpenExamination, onOpen: onOpenExamination, onClose: onCloseExamination } = useDisclosure()
@@ -123,28 +134,54 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       let anchor = window.location.hash
       switch (anchor) {
         case '#examination':
-          setTabIndex(1)
-          handleExamination(medical_record.id)
+          if (user.role !== 'doctor') {
+            NotAuthorized()
+          } else {
+            setTabIndex(1)
+            handleExamination(medical_record.id)
+          }
+
           break;
         case '#observation':
-          setTabIndex(2)
-          handleObservation(medical_record.id)
+          if (user.role !== 'doctor') {
+            NotAuthorized()
+          } else {
+            setTabIndex(2)
+            handleObservation(medical_record.id)
+          }
+
           break;
         case '#monitoring':
           setTabIndex(3)
           handleMonitoringSheet(medical_record.id)
           break;
         case '#prescription':
-          setTabIndex(4)
-          handlePrescription(medical_record.id)
+          if (user.role !== 'doctor') {
+            NotAuthorized()
+          } else {
+            setTabIndex(4)
+            handlePrescription(medical_record.id)
+          }
+
           break;
         default:
           setTabIndex(0)
           break;
       }
+      ReloadTabContent()
     }
-  }, [medical_record])
+  }, [medical_record, tabIndex])
 
+  const NotAuthorized = () => {
+    toast({
+      title: "You are not authorized to view this page",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    })
+    window.location.hash = ''
+    setTabIndex(0)
+  }
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString();
   };
@@ -213,7 +250,6 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     setDeleteLoading(true)
     useDelete('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id)
       .then((data) => {
-        setDeleteLoading(false)
         toast({
           title: data.message,
           status: data.status,
@@ -223,7 +259,6 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         window.location = '/patients/' + medical_record.patient_id
       })
       .catch((error) => {
-        setDeleteLoading(false)
         toast({
           title: error.message,
           status: 'error',
@@ -231,6 +266,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
           isClosable: true,
         })
         onDeleteClose()
+      })
+      .finally(() => {
+        setDeleteLoading(false)
       })
   }
 
@@ -241,8 +279,18 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     setLoadingExamination(true)
     useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/examinations')
       .then((data) => {
-        setLoadingExamination(false)
         setExamination(data.data || [])
+      })
+      .catch((err) => {
+        toast({
+          title: err.response.data.message,
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        })
+      })
+      .finally(() => {
+        setLoadingExamination(false)
       })
   }
   const handleDeleteExaminationConfirm = (Exam) => {
@@ -255,7 +303,6 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const handleDeleteExamination = (examination) => {
     setDeleteLoading(true);
     useDelete('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/examinations/' + examination.id).then((res) => {
-      setDeleteLoading(false);
       handleExaminationActions(
         {
           title: 'Examination deleted successfully.',
@@ -263,7 +310,6 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         }
       )
     }).catch((err) => {
-      setDeleteLoading(false);
       handleExaminationActions(
         {
           title: err.response.data.message,
@@ -271,6 +317,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         }
       )
     })
+      .finally(() => {
+        setDeleteLoading(false)
+      })
   };
 
   const handleExaminationActions = (message) => {
@@ -298,8 +347,18 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     setLoadingObservation(true)
     useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/observations')
       .then((data) => {
-        setLoadingObservation(false)
         setObservations(data.data || [])
+      })
+      .catch((err) => {
+        toast({
+          title: err.response.data.message,
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        })
+      })
+      .finally(() => {
+        setLoadingObservation(false)
       })
   }
   const handleObservationAdd = (message) => {
@@ -337,6 +396,17 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
 
         setMonitoringSheetData(monitoringSheetData)
       })
+      .catch((err) => {
+        toast({
+          title: err.response.data.message,
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        })
+      })
+      .finally(() => {
+        setLoadingMonitoringSheet(false)
+      })
   }
 
   const handleMonitoringSheetEdit = (startDate) => {
@@ -365,8 +435,18 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     setLoadingMonitoringSheetRow(true)
     useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + data)
       .then((data) => {
-        setLoadingMonitoringSheetRow(false)
         setMonitoringSheetRow(data.data)
+      })
+      .catch((err) => {
+        toast({
+          title: err.response.data.message,
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        })
+      })
+      .finally(() => {
+        setLoadingMonitoringSheetRow(false)
       })
     onOpenMonitoringSheetRow()
   }
@@ -382,10 +462,20 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const handlePrescription = () => {
     setPrescriptions([])
     setLoadingPrescription(true)
-    useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/medicine-requests')
+    useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/prescriptions')
       .then((data) => {
+        setPrescriptions(data.reverse() || [])
+      })
+      .catch((err) => {
+        toast({
+          title: err.response.data.message,
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        })
+      })
+      .finally(() => {
         setLoadingPrescription(false)
-        setPrescriptions(data.data || [])
       })
   }
   const handlePrescriptionAdd = (message) => {
@@ -402,6 +492,36 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     handlePrescription()
   }
 
+  const handlePrintPrescription = async (prescription) => {
+    try {
+      setLoadingPrescriptionDownload(true);
+      setPrescriptionDownloaded(prescription.id)
+      const response = await axios.get(`http://127.0.0.1:8000/api/patients/${medical_record.patient_id}/medical-records/${medical_record.id}/prescriptions/${prescription.id}/pdf`, {
+        responseType: 'blob', // Set the response type to 'blob' to receive binary data
+      });
+      // Create a temporary link element
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+
+      // Set the download attribute with the desired file name
+      link.setAttribute('download', 'prescription.pdf');
+
+      // Append the link to the document body and trigger the download
+      document.body.appendChild(link);
+      link.click();
+
+
+      // Clean up by removing the temporary link
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error downloading prescription:', error);
+    } finally {
+      setLoadingPrescriptionDownload(false);
+      setPrescriptionDownloaded(null)
+    }
+  }
+
 
   return (
     <Box
@@ -414,36 +534,33 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
           <Tabs isFitted variant='unstyled' color='blue.900' mb={5} index={tabIndex} onChange={handleTabsChange}>
             <TabList mb='1em' bg='gray.300' borderRadius={10}>
               <Tab borderLeftRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}>Information</Tab>
-              {user.id == medical_record.user_id && (
-                <>
-                  <Tab
-                    _selected={{ color: 'white', bg: 'blue.500' }}
-                    onClick={ReloadTabContent}
-                  >
-                    Examination
-                  </Tab>
-                  <Tab
-                    _selected={{ color: 'white', bg: 'blue.500' }}
-                    onClick={ReloadTabContent}
-                  >
-                    Observation
-                  </Tab>
-                </>
-              )}
+              <Tab
+                _selected={{ color: 'white', bg: 'blue.500' }}
+                onClick={ReloadTabContent}
+                isDisabled={user.id == medical_record.user_id ? false : true}
+              >
+                Examination
+              </Tab>
+              <Tab
+                _selected={{ color: 'white', bg: 'blue.500' }}
+                onClick={ReloadTabContent}
+                isDisabled={user.id == medical_record.user_id ? false : true}
+              >
+                Observation
+              </Tab>
               <Tab
                 _selected={{ color: 'white', bg: 'blue.500' }}
                 onClick={ReloadTabContent}
               >
                 Monitoring Sheet
               </Tab>
-              {user.id == medical_record.user_id && (
-                <Tab
-                  borderRightRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}
-                  onClick={ReloadTabContent}
-                >
-                  Prescriptions
-                </Tab>
-              )}
+              <Tab
+                borderRightRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}
+                onClick={ReloadTabContent}
+                isDisabled={user.id == medical_record.user_id ? false : true}
+              >
+                Prescriptions
+              </Tab>
             </TabList>
             <TabPanels>
               {/*  Info Tab */}
@@ -646,7 +763,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
               </TabPanel>
 
               {/*  Observation Tab */}
-              <TabPanel>
+              <TabPanel p={0}>
                 {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
                   <Flex justify='flex-end' mb='15px'>
                     <Button colorScheme='green' onClick={onOpenObservation} mr={3}>
@@ -663,7 +780,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                           left="50%"
                           height="calc(100% + 15px)"
                           border="1px solid"
-                          borderColor={'gray.300'}
+                          borderColor={'blue.900'}
                           top="0px"
 
                         ></Box>
@@ -698,34 +815,44 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                         <Box
                           gap={0}
                           pos="relative"
-
+                          boxShadow='2px 2px 8px black'
+                          borderRadius={10}
                           _before={{
                             content: `""`,
                             w: '0',
                             h: '0',
-                            borderColor: `transparent #cbd5e0 transparent transparent`,
+                            borderColor: `transparent #1a365d transparent transparent`,
                             borderStyle: 'solid',
                             borderWidth: '15px 15px 15px 0',
                             position: 'absolute',
                             left: '-15px',
                             top: 'calc(50% - 15px)',
-                            display: 'block'
+                            display: 'block',
                           }}>
-                          <Box bg='gray.300' p={2} w='50%'>
+                          <Box bg='blue.900' p={2} w='100%' borderTopRadius={10} overflow='hidden'>
                             <Text
                               textAlign='center'
                               fontWeight='bold'
                               fontSize='xl'
-                              color='blue.700'
+                              color='gray.200'
+                              textShadow='2px 2px 8px black'
                             >
                               {obs.name}
                             </Text>
                           </Box>
 
-                          <Flex flexWrap='wrap'>
+                          <Flex p='5px' gap='5px' maxW='780px' bg='blue.900' flexWrap='wrap' borderBottomRadius={10} overflow='hidden'>
                             {obs.images && obs.images.map((img, index) => (
-                              <Box key={index} bg='gray.300' p={2}>
-                                <Image src={'http://localhost:8000/storage/images/' + img.path} boxSize='150px' />
+                              <Box
+                                key={index}
+                                p={2}
+                                bgImage={'http://localhost:8000/storage/images/' + img.path}
+                                bgSize='cover'
+                                bgPosition='center'
+                                boxSize='150px'
+                                borderRadius={10}
+                                boxShadow='2px 2px 8px black'
+                              >
                               </Box>
                             ))}
                           </Flex>
@@ -772,70 +899,89 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
               {/* Prescription */}
               {user.id == medical_record.user_id && (
                 <TabPanel p={0}>
-                  <Table variant="simple">
-                    <Thead bg='gray.200'>
-                      <Tr>
-                        <Th>Medicine</Th>
-                        <Th>Quantity</Th>
-                        <Th>Date of Prescription</Th>
-                        <Th>
-                          <Text>status</Text>
-                        </Th>
-                        <Th>
-                          <Text>Review</Text>
-                        </Th>
-                        <Th display='flex' justifyContent='flex-end'>
-                          {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
-                            <IconButton
-                              borderRadius='100%'
-                              size='sm'
-                              color='white'
-                              bg='gray.400'
-                              onClick={onOpenPrescriptionForm}
-                              icon={<AddIcon />} />
-                          )}
-                        </Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
-                      {Prescriptions && Prescriptions.map((pres, index) => (
-                        <Tr key={index}>
-                          <Td>{pres.medicine.name}</Td>
-                          <Td>{pres.quantity}</Td>
-                          <Td>{changeFormat(pres.created_at)}</Td>
-                          <Td>
-                            {pres.status.toLowerCase() === 'pending' && (
-                              <Badge colorScheme='yellow'>Pending</Badge>
-                            )}
-                            {pres.status.toLowerCase() === 'approved' && (
-                              <Badge colorScheme='green'>Approved</Badge>
-                            )}
-                            {pres.status.toLowerCase() === 'rejected' && (
-                              <Badge colorScheme='red'>Rejected</Badge>
-                            )}
-                          </Td>
-                          <Td colSpan='2'>
-                            <Text>
-                              {pres.review ? pres.review : 'No Review'}
-                            </Text>
-                          </Td>
-                        </Tr>
-                      ))}
-                      {!loadingPrescription && Prescriptions.length === 0 && (
-                        <Tr><Td colSpan={4} p={5}><Text textAlign='center' fontWeight='bold' fontSize='lg'>No Prescription</Text></Td></Tr>
-                      )}
-                    </Tbody>
-                  </Table>
-                  {loadingPrescription && (
-                    <Center p='10px'>
-                      <Spinner thickness='5px'
-                        speed='0.65s'
-                        emptyColor='gray.200'
-                        color='gray.500'
-                        size='md' />
-                    </Center>
-                  )}
+                  <Box>
+                    <Flex justify='flex-end' mb='15px'>
+                      <Button colorScheme='green' onClick={onOpenPrescriptionForm} mr={3}>
+                        <Text>Add Prescription</Text>
+                      </Button>
+                    </Flex>
+                  </Box>
+                  <Box p={2} bg='gray.50' boxShadow='lg' borderRadius='lg' border='2px' borderColor='gray.300' >
 
+                    {loadingPrescription ? (
+                      <Center p='10px'>
+                        <Spinner thickness='5px'
+                          speed='0.65s'
+                          emptyColor='gray.200'
+                          color='gray.500'
+                          size='md' />
+                      </Center>
+                    ) : (
+                      <Accordion border='4px' borderColor='gray.300' allowMultiple>
+                        {Prescriptions && Prescriptions.map((pres, index) => (
+                          <AccordionItem key={index} >
+                            <AccordionButton>
+                              <Box flex="1" textAlign="left">
+                                <Text fontWeight='bold' fontSize='xl'>{pres.name} #{pres.id}</Text>
+                              </Box>
+                              <AccordionIcon />
+                            </AccordionButton>
+                            <AccordionPanel pb={4}>
+                              <Table variant="simple" className={MonitoringSheetStyles.table}>
+                                <Thead bg='gray.200'>
+                                  <Tr>
+                                    <Th>Medicine</Th>
+                                    <Th>Quantity</Th>
+                                    <Th>Date of Prescription</Th>
+                                    <Th>
+                                      <Text>status</Text>
+                                    </Th>
+                                    <Th>
+                                      <Text>Review</Text>
+                                    </Th>
+                                  </Tr>
+                                </Thead>
+                                <Tbody>
+                                  {pres.medicine_requests && pres.medicine_requests.map((med, index) => (
+                                    <Tr key={index}>
+                                      <Td>{med.medicine.name}</Td>
+                                      <Td>{med.quantity}</Td>
+                                      <Td>{changeFormat(med.created_at)}</Td>
+                                      <Td>
+                                        {med.status === 'Pending' && (
+                                          <Badge colorScheme="yellow">Pending</Badge>
+                                        )}
+                                        {med.status === 'Approved' && (
+                                          <Badge colorScheme="green">Approved</Badge>
+                                        )}
+                                        {med.status === 'Rejected' && (
+                                          <Badge colorScheme="red">Rejected</Badge>
+                                        )}
+                                      </Td>
+                                      <Td>
+                                        {med.review && (
+                                          <Badge colorScheme="green">Reviewed</Badge>
+                                        )}
+                                        {!med.review && (
+                                          <Badge colorScheme="red">Not Reviewed</Badge>
+                                        )}
+                                      </Td>
+                                    </Tr>
+                                  ))}
+                                </Tbody>
+                              </Table>
+                              {/* print pdf */}
+                              <Button w='100%' colorScheme='teal' onClick={() => handlePrintPrescription(pres)} isLoading={loadingPrescriptionDownload && PrescriptionDownloaded == pres.id}>
+                                <AiFillPrinter fontSize='20px' />
+                                <Text ml={2}>Print</Text>
+                              </Button>
+                            </AccordionPanel>
+                          </AccordionItem>
+                        ))}
+
+                      </Accordion>
+                    )}
+                  </Box>
                 </TabPanel>
               )}
             </TabPanels>

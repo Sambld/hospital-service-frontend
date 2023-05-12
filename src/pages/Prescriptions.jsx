@@ -37,7 +37,7 @@ import {
     Heading,
     Select,
 } from "@chakra-ui/react";
-import { FaUserMd } from "react-icons/fa";
+import { FaPrescriptionBottleAlt, FaUserMd } from "react-icons/fa";
 import { AiFillFile, AiOutlineClockCircle } from "react-icons/ai";
 import { IoClose, IoCheckmarkSharp } from "react-icons/io5";
 import { MdSick } from "react-icons/md";
@@ -329,85 +329,28 @@ const Prescriptions = () => {
                         Past Requests
                     </Tab>
                 </TabList>
-                <TabPanels>
-                    <TabPanel>
-                        <Grid templateColumns={{ base: '1f', lg: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)' }} gap={6}>
-                            {PendingPrescriptions && PendingPrescriptions
-                                .map((item, index) => (
-                                    <GridItem key={index}>
-                                        <Box borderRadius='md' boxShadow='md' overflow='hidden'>
-                                            <Flex alignItems='center' bg='blue.500' p={3} color='white' borderTopRadius='md' gap={1}>
-                                                <Icon as={MdSick} fontSize='20px' mr='5px' />
-                                                <Text>{item.patient.first_name + " " + item.patient.last_name}</Text>
-                                            </Flex>
-                                            <Flex justifyContent='flex-start' alignItems='center' gap={3} p={3}>
-                                                <Avatar
-                                                    bg='red'
-                                                    size={'md'}
-                                                    icon={<FaUserMd fontSize='20px' />}
-                                                />
-                                                <Text>{item.assigned_doctor.first_name + " " + item.assigned_doctor.last_name}</Text>
-                                            </Flex>
-                                            <Flex justifyContent='space-between' bg='gray.100' borderBottomRadius='md' pt='1px' gap='1px'>
-                                                <Button
-                                                    bg='white'
-                                                    leftIcon={<AiFillFile color='blue.700' />}
-                                                    colorScheme='blue'
-                                                    borderRadius={0}
-                                                    border={0}
-                                                    variant='outline'
-                                                    p='10px'
-                                                    px={5}
-                                                    w='100%'
-                                                    onClick={() => handlePrescriptionDetail(item)}
-                                                >
-                                                    <Text mr='5px' fontSize={15} fontWeight='normal'>Detail</Text>
-                                                </Button>
-                                            </Flex>
-                                        </Box>
-                                    </GridItem>
-                                ))}
-                        </Grid>
-                        {PendingLoading && <Center p='10px'>
-                            <Spinner thickness='4px'
-                                speed='0.65s'
-                                emptyColor='gray.200'
-                                color='blue.500'
-                                size='xl' />
-                        </Center>}
+                <Box dispaly='flex' justifyContent='center' alignItems='center' p='10px'>
+                    {
+                        <>
+                            <Grid templateColumns={{ base: '1f', lg: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)' }} gap={6}>
+                                {(tabIndex == 0 ? PendingPrescriptions : PastPrescriptions)
+                                    .map((item, index) => (
+                                        <GridItem key={index}>
+                                            <Box borderRadius='md' boxShadow='md' overflow='hidden'>
+                                                <Flex alignItems='center' bg='blue.500' p={3} color='white' borderTopRadius='md' gap={1}>
+                                                    <Icon as={FaPrescriptionBottleAlt} fontSize='20px' mr='5px' />
+                                                    <Text>Prescription</Text>
+                                                    <Tag colorScheme='gray' ml='auto'>{item.prescriptions.length}</Tag>
+                                                </Flex>
+                                                <Flex justifyContent='flex-start' flexDirection='column' gap={3} p={3}>
+                                                    <Text>Medical Record <Tag colorScheme='blue'>#{item.id}</Tag></Text>
+                                                    <Text>Doctor: {item.assigned_doctor.first_name + " " + item.assigned_doctor.last_name}</Text>
+                                                    <Text>Patient: {item.patient.first_name + " " + item.patient.last_name}</Text>
+                                                    <Text>Description: {item.condition_description}</Text>
+                                                </Flex>
+                                                <Flex justifyContent='space-between' bg='gray.100' borderBottomRadius='md' pt='1px' gap='1px'>
 
-                        {PendingPrescriptions && PendingPrescriptions.length === 0 && !PendingLoading &&
-                            <Flex justifyContent='center' alignItems='center' h='100px'>
-                                <Text fontSize='20px' fontWeight='bold'>No Pending Prescriptions</Text>
-                            </Flex>
-                        }
-                        {PendingPagination && PendingPagination.last_page > 1 &&
-                            <Flex justifyContent='center' alignItems='center' h='100px'>
-                                <Pagination pagination={PendingPagination} action={handlePagination} />
-                            </Flex>
-                        }
-                    </TabPanel>
-                    <TabPanel>
-                        <Grid templateColumns={{ base: '1f', lg: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)' }} gap={6}>
-                            {PastPrescriptions && PastPrescriptions
-                                .map((item, index) => (
-                                    <GridItem key={index}>
-                                        <Box borderRadius='md' boxShadow='md' overflow='hidden'>
-                                            <Flex alignItems='center' bg='blue.500' p={3} color='white' borderTopRadius='md' gap={1}>
-                                                <Icon as={MdSick} fontSize='20px' mr='5px' />
-                                                <Text>{item.patient.first_name + " " + item.patient.last_name}</Text>
-                                            </Flex>
-                                            <Flex justifyContent='flex-start' alignItems='center' gap={3} p={3}>
-                                                <Avatar
-                                                    bg='red'
-                                                    size={'md'}
-                                                    icon={<FaUserMd fontSize='20px' />}
-                                                />
-                                                <Text>{item.assigned_doctor.first_name + " " + item.assigned_doctor.last_name}</Text>
-                                            </Flex>
-                                            <Flex justifyContent='space-between' bg='gray.100' borderBottomRadius='md' pt='1px' gap='1px'>
-
-                                                {/* <Button
+                                                    {/* <Button
                                                     bg='white'
                                                     leftIcon={<IoClose color="red.700" />}
                                                     colorScheme='red'
@@ -421,51 +364,53 @@ const Prescriptions = () => {
                                                 >
                                                     <Text mr='5px' fontSize={15} fontWeight='normal'>Reject</Text>
                                                 </Button> */}
-                                                <Button
-                                                    bg='white'
-                                                    leftIcon={<AiFillFile color='blue.700' />}
-                                                    colorScheme='blue'
-                                                    borderRadius={0}
-                                                    border={0}
-                                                    variant='outline'
-                                                    p='10px'
-                                                    px={5}
-                                                    w='100%'
-                                                    onClick={() => handlePrescriptionDetail(item)}
-                                                >
-                                                    <Text mr='5px' fontSize={15} fontWeight='normal'>Detail</Text>
-                                                </Button>
-                                            </Flex>
-                                        </Box>
-                                    </GridItem>
-                                ))}
-                        </Grid>
-                        {PastLoading && <Center p='10px'>
-                            <Spinner thickness='4px'
-                                speed='0.65s'
-                                emptyColor='gray.200'
-                                color='blue.500'
-                                size='xl' />
-                        </Center>}
-
-                        {PastPrescriptions && PastPrescriptions.length === 0 && !PastLoading &&
-                            <Flex justifyContent='center' alignItems='center' h='100px'>
-                                <Text fontSize='20px' fontWeight='bold'>No Past Prescriptions</Text>
-                            </Flex>
-                        }
-                        {PastPagination && PastPagination.last_page > 1 &&
-                            <Flex justifyContent='center' alignItems='center' h='100px'>
-                                <Pagination pagination={PastPagination} action={handlePagination} />
-                            </Flex>
-                        }
-                    </TabPanel>
-                </TabPanels>
+                                                    <Button
+                                                        bg='white'
+                                                        leftIcon={<AiFillFile color='blue.700' />}
+                                                        colorScheme='blue'
+                                                        borderRadius={0}
+                                                        border={0}
+                                                        variant='outline'
+                                                        p='10px'
+                                                        px={5}
+                                                        w='100%'
+                                                        onClick={() => handlePrescriptionDetail(item)}
+                                                    >
+                                                        <Text mr='5px' fontSize={15} fontWeight='normal'>Detail</Text>
+                                                    </Button>
+                                                </Flex>
+                                            </Box>
+                                        </GridItem>
+                                    ))}
+                            </Grid>
+                            {(tabIndex == 0 ? PendingLoading : PastLoading) && <Center p='10px'>
+                                <Spinner thickness='4px'
+                                    speed='0.65s'
+                                    emptyColor='gray.200'
+                                    color='blue.500'
+                                    size='xl' />
+                            </Center>}
+                            {(tabIndex == 0 ? PendingPrescriptions : PastPrescriptions) && (tabIndex == 0 ? PendingPrescriptions : PastPrescriptions).length === 0 && !(tabIndex == 0 ? PendingLoading : PastLoading) &&
+                                <Flex justifyContent='center' alignItems='center' h='100px'>
+                                    <Text fontSize='20px' fontWeight='bold'>No {tabIndex == 0 ? 'Pending' : 'Past'} Prescriptions</Text>
+                                </Flex>
+                            }
+                            {(tabIndex == 0 ? PendingPrescriptions : PastPrescriptions) && (tabIndex == 0 ? PendingPrescriptions : PastPrescriptions).last_page > 1 &&
+                                <Flex justifyContent='center' alignItems='center' h='100px'>
+                                    <Pagination pagination={(tabIndex == 0 ? PendingPrescriptions : PastPrescriptions)} action={handlePagination} />
+                                </Flex>
+                            }
+                        </>
+                    }
+                </Box>
             </Tabs>
+
+
             <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={handleClose}>
                 <ModalOverlay />
                 {PrescriptionDetail && (
                     <ModalContent maxW='800px' p={3}>
-                        <ModalHeader>Medical Record #{PrescriptionDetail.id} Prescription </ModalHeader>
+                        <ModalHeader>Medical Record #{PrescriptionDetail.id} Prescriptions </ModalHeader>
                         <ModalCloseButton />
                         <ModalBody>
                             {/* doctor name */}
@@ -494,8 +439,8 @@ const Prescriptions = () => {
                                         <Thead>
                                             <Tr>
                                                 <Th w='300px'>Medicine</Th>
-                                                <Th>Quantity</Th>
-                                                <Th>Remains</Th>
+                                                <Th textAlign='center'>Quantity</Th>
+                                                {tabIndex == 0 && ( <Th textAlign='center'>Available</Th>)}
                                                 <Th></Th>
                                             </Tr>
                                         </Thead>
@@ -504,8 +449,8 @@ const Prescriptions = () => {
                                                 .map((item, index) => (
                                                     <Tr key={index}>
                                                         <Td>{item.medicine.name}</Td>
-                                                        <Td>{item.quantity}</Td>
-                                                        <Td>{item.medicine.quantity}</Td>
+                                                        <Td textAlign='center'>{item.quantity}</Td>
+                                                        {tabIndex == 0 && ( <Td textAlign='center'>{item.medicine.quantity}</Td>)}
                                                         <Td>
                                                             {item.status.toLowerCase() === 'pending' ? (
                                                                 <>

@@ -2,7 +2,7 @@ import { Badge, Box, Flex, Select, Table, TableContainer, Tbody, Td, Th, Thead, 
 import { useEffect, useState } from "react";
 import { AiFillCaretLeft, AiFillCaretRight, AiFillPrinter } from "react-icons/ai";
 
-import styles from "../styles/MonitoringSheet.css";
+import styles from "../styles/MonitoringSheet.module.css";
 import { BiRefresh } from "react-icons/bi";
 import { IoTodayOutline } from "react-icons/io5";
 

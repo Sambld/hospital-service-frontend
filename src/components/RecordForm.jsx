@@ -31,7 +31,7 @@ import useLoader from '../hooks/useLoader';
 
 const SummaryItem = ({ label, children }) => (
     <HStack>
-        <Text pt='2' fontSize='lg' fontWeight="bold">{label}:</Text>
+        <Text w='230px' pt='2' fontSize='lg' fontWeight="bold">{label}:</Text>
         <Text pl='10' pt='2' fontSize='lg'>{children}</Text>
     </HStack>
 );

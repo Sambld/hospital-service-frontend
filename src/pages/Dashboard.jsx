@@ -501,17 +501,17 @@ const Dashboard = () => {
                                         <Tbody>
 
                                             {data && data?.data.map((item, index) => (
-                                                <Tr key={index} bg={(item.patient.gender == 'Male') ? 'blue.50' : 'pink.50'}>
-                                                    <Td>{item.patient.first_name}</Td>
-                                                    <Td>{item.patient.last_name}</Td>
-                                                    <Td>{item.bed_number}</Td>
+                                                <Tr key={index} bg={(item?.patient?.gender == 'Male') ? 'blue.50' : 'pink.50'}>
+                                                    <Td>{item?.patient?.first_name}</Td>
+                                                    <Td>{item?.patient?.last_name}</Td>
+                                                    <Td>{item?.bed_number}</Td>
                                                     <Td>
-                                                        <NavLink w='100%' to={'/patients/' + item.patient.id + "?med=" + item.id + (user?.role === 'nurse' ? "#monitoring" : '')}style={{'display':'block','borderRadius':'5px'}}>
+                                                        <NavLink w='100%' to={'/patients/' + item?.patient?.id + "?med=" + item?.id + (user?.role === 'nurse' ? "#monitoring" : '')}style={{'display':'block','borderRadius':'5px'}}>
                                                             <Button
                                                                 leftIcon={<AiFillFolderOpen />}
                                                                 variant='outline'
                                                                 w='100%'
-                                                                colorScheme={(item.patient.gender == 'Male') ? 'blue' : 'pink'}
+                                                                colorScheme={(item?.patient?.gender == 'Male') ? 'blue' : 'pink'}
                                                             >
                                                                 Open
                                                             </Button>

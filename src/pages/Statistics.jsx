@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Flex, Grid, GridItem, Heading, Icon, Input, Select, Spacer, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, useToast } from "@chakra-ui/react";
+import { Box, Button, Center, Divider, Flex, Grid, GridItem, Heading, Icon, Input, Select, Spacer, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, useToast } from "@chakra-ui/react";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -19,10 +19,36 @@ import { BsTable } from "react-icons/bs";
 import { FiBarChart2 } from "react-icons/fi";
 import useLoader from "../hooks/useLoader";
 import { useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
+import AsyncSelect from 'react-select/async';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Title, Tooltip, Legend);
 
+const StatisticsItems = (user) => {
+    let items = [];
+    try {
+        if (user.role === 'doctor') {
+            items.push([['Patient', 'pt'], ['gender']]);
+            items.push([['Medical Record', 'mr'], ['Inpatient', 'Outpatient', 'Diagnosis']]);
+        } else if (user.role === 'nurse') {
+            items.push([['Monitoring Sheet', 'ms'], ['Filled']]);
+        } else if (user.role === 'pharmacist') {
+            items.push([['Medicines', 'md'], ['Quantity']]);
+        }
+
+        return items;
+    } catch { return items; }
+}
+
 const Statistics = () => {
+    const user = useOutletContext();
+
+    // Data
+    const [TimeType, setTimeType] = useState(['day', 'week', 'month', 'year']);
+    const [statisticsType, setStatisticsType] = useState(StatisticsItems(user));
+    const [selectedMedicine, setSelectedMedicine] = useState(null);
+    const [options, setOptions] = useState([]);
+
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -32,26 +58,26 @@ const Statistics = () => {
     const [ToDate, setToDate] = useState('');
 
     const [CurrentTimeType, setCurrentTimeType] = useState('week');
-    const [CurrentStatisticsType, setCurrentStatisticsType] = useState('pt');
-    const [CurrentSubStatisticsType, setCurrentSubStatisticsType] = useState('gender')
+    const [CurrentStatisticsType, setCurrentStatisticsType] = useState(statisticsType[0][0][1]);
+    const [CurrentSubStatisticsType, setCurrentSubStatisticsType] = useState(statisticsType[0][1][0]);
 
     const toast = useToast();
 
 
-    // Data
-    const [TimeType, setTimeType] = useState(['day', 'week', 'month', 'year']);
-    const [statisticsType, setStatisticsType] = useState([
-        [['Patient', 'pt'], ['gender']],
-        [['Medical Record', 'mr'], ['Inpatient', 'Outpatient', 'Diagnosis']],
-        [['Monitoring Sheet', 'ms'], ['status']],
-        [['Medicines', 'md'], ['used']]
-    ])
+
+
+    useEffect(() => {
+        setData(null);
+        refresh();
+    }, [CurrentStatisticsType, CurrentSubStatisticsType, selectedMedicine]);
 
     useEffect(() => {
         refresh();
-    }, [CurrentTimeType, CurrentStatisticsType, CurrentSubStatisticsType])
+    }, [CurrentTimeType]);
+
 
     const refresh = () => {
+        setLoading(true);
         handleStatisticsType();
     }
 
@@ -76,21 +102,20 @@ const Statistics = () => {
     }
 
     const handlePatient = () => {
-        setLoading(true);
         useLoader(`/patients/statistics?of=gender&type=${CurrentTimeType}`)
             .then((res) => {
                 calculatePiePercentage(handleMessingDateOfData(res));
-                setLoading(false);
             })
             .catch((err) => {
                 showToast('Error', err.response.data.message, 'error');
+            })
+            .finally(() => {
                 setLoading(false);
             })
     }
 
 
     const handleMedicalRecord = () => {
-        setLoading(true);
         useLoader(`/medical-records/statistics?of=${CurrentSubStatisticsType}&type=${CurrentTimeType}`)
             .then((res) => {
                 calculatePiePercentage(handleMessingDateOfData(res));
@@ -100,10 +125,12 @@ const Statistics = () => {
                 showToast('Error', err.response.data.message, 'error');
                 setLoading(false);
             })
+            .finally(() => {
+                setLoading(false);
+            })
     }
 
     const handleMonitoringSheet = () => {
-        setLoading(true);
         useLoader(`/monitoring-sheets/statistics?of=${CurrentSubStatisticsType}&type=${CurrentTimeType}`)
             .then((res) => {
                 calculatePiePercentage(handleMessingDateOfData(res));
@@ -113,19 +140,28 @@ const Statistics = () => {
                 showToast('Error', err.response.data.message, 'error');
                 setLoading(false);
             })
+            .finally(() => {
+                setLoading(false);
+            })
     }
 
     const handleMedicines = () => {
-        setLoading(true);
-        useLoader(`/medicines/statistics?of=${CurrentSubStatisticsType}&type=${CurrentTimeType}`)
-            .then((res) => {
-                calculatePiePercentage(handleMessingDateOfData(res));
-                setLoading(false);
-            })
-            .catch((err) => {
-                showToast('Error', err.response.data.message, 'error');
-                setLoading(false);
-            })
+        if (selectedMedicine) {
+            useLoader(`/medicines/statistics?of=${CurrentSubStatisticsType}&type=${CurrentTimeType}${selectedMedicine?.value ? `&id=${selectedMedicine?.value}` : ''}`)
+                .then((res) => {
+                    calculatePiePercentage(handleMessingDateOfData(res));
+                    setLoading(false);
+                })
+                .catch((err) => {
+                    showToast('Error', err.response.data.message, 'error');
+                    setLoading(false);
+                })
+                .finally(() => {
+                    setLoading(false);
+                })
+        } else {
+            setLoading(false);
+        }
     }
 
     const showToast = (title, description, status) => {
@@ -246,6 +282,27 @@ const Statistics = () => {
         setData(data);
     }
 
+    const loadOptions = (inputValue, callback) => {
+        if (options.length > 0) {
+            callback(
+                options.filter((i) =>
+                    i.label.toLowerCase().includes(inputValue.toLowerCase())
+                )
+            )
+        } else {
+            useLoader(`/medicines?q=${inputValue}&np`).then((res) => {
+                const options = res.data.map((medicine) => ({
+                    value: medicine.id,
+                    label: medicine.name,
+                    old_quantity: medicine.quantity,
+                }));
+                setOptions(options);
+                callback(options);
+            })
+        }
+
+    };
+
     return (
         <Box>
             <Text
@@ -259,7 +316,7 @@ const Statistics = () => {
             <Grid templateColumns={{ base: '1fr', xl: "repeat(3, 1fr)" }} gap={5}>
                 <GridItem w='100%' colSpan={2} >
                     <Flex overflow='hidden' pl={5} justifyContent='space-between'>
-                        <Flex bg="white" borderTopRadius="10px" p={3} mb={0} boxShadow="md" zIndex={4} gap={2}>
+                        <Flex bg="white" borderTopRadius="10px" p={3} mb={0} boxShadow="md" gap={2}>
                             <Select
                                 w='200px'
                                 variant='filled'
@@ -298,7 +355,6 @@ const Statistics = () => {
                                 p={3}
                                 mb={0}
                                 boxShadow="md"
-                                zIndex={4}
                                 onClick={refresh}
                                 isLoading={loading}
                             >
@@ -311,7 +367,6 @@ const Statistics = () => {
                                 p={3}
                                 mb={0}
                                 boxShadow="md"
-                                zIndex={4}
                                 isDisabled={!IsChart}
                                 onClick={() => setIsChart(false)}
                             >
@@ -324,7 +379,6 @@ const Statistics = () => {
                                 p={3}
                                 mb={0}
                                 boxShadow="md"
-                                zIndex={4}
                                 isDisabled={IsChart}
                                 onClick={() => setIsChart(true)}
                             >
@@ -334,14 +388,26 @@ const Statistics = () => {
 
                         </Box>
                     </Flex>
-
-                    <Box maxH='450px' w='100%' bg="white" borderRadius="10px" p={5} boxShadow="md" zIndex={5} overflow='auto'>
-                        {data && IsChart ? (
+                    {CurrentStatisticsType === 'md' && (
+                        <Box display='flex' flexDir='column' gap={3} p={2} bg='white'>
+                            <AsyncSelect
+                                placeholder="Select Medicines"
+                                name='medicineSearch'
+                                loadOptions={loadOptions}
+                                value={selectedMedicine}
+                                onChange={(value) => setSelectedMedicine(value)}
+                                defaultOptions
+                                zIndex={2}
+                            />
+                        </Box>
+                    )}
+                    <Box maxH='450px' w='100%' bg="white" borderBottomRadius="10px" p={5} boxShadow="md" zIndex={5} overflow='auto'>
+                        {data ? IsChart ? (
                             <Bar
                                 data={{
-                                    labels: [...data?.lineChart?.labels],
+                                    labels: [...data?.lineChart?.labels || []],
                                     datasets: [
-                                        ...data?.lineChart?.datasets
+                                        ...data?.lineChart?.datasets || []
                                     ],
                                 }}
                                 height={450}
@@ -402,10 +468,26 @@ const Statistics = () => {
                                     </Tbody>
                                 </Table>
                             </Box>
+                        ) : loading ? (
+                            <Center>
+                                <Spinner
+                                    thickness="4px"
+                                    speed="0.65s"
+                                    emptyColor="gray.200"
+                                    color="gray.500"
+                                    size="xl"
+                                />
+                            </Center>
+                        ) : (
+                            <Box>
+                                <Text textAlign='center' fontSize={20} color='gray.500'>
+                                    No Data
+                                </Text>
+                            </Box>
                         )}
                     </Box>
                     <Box w='100%' mt={5} display='flex' flexWrap='wrap' justifyContent='center' alignItems='center' gap={5}>
-                        {data && (
+                        {/* {data && (
                             <Box
                                 p={5}
                                 boxShadow='md'
@@ -416,17 +498,17 @@ const Statistics = () => {
                                 borderRadius='xl'
                                 flexBasis='30%'
                             >
-                                <Heading size="md"  textShadow='2px 2px 8px #000'>
+                                <Heading size="md" textShadow='2px 2px 8px #000'>
                                     {data?.lineChart?.totalCount ? 'Total Count' : '...'}
                                 </Heading>
                                 <Box p={5} display='flex' alignItems='center' justifyContent='flex-end'>
-                                    {loading ? <Spinner /> : <Text  textShadow='2px 2px 8px #000' textAlign='right' fontSize={40}>{data?.lineChart?.totalCount}</Text>}
+                                    {loading ? <Spinner /> : <Text textShadow='2px 2px 8px #000' textAlign='right' fontSize={40}>{data?.lineChart?.totalCount}</Text>}
                                 </Box>
 
 
                             </Box>
-                        )}
-                        {data && data?.pieChart && (
+                        )} */}
+                        {data && data?.pieChart?.labels && data?.pieChart?.labels.length > 1 && (
                             data?.pieChart?.labels.map((item, index) => (
                                 <Box
                                     key={index}
@@ -507,9 +589,14 @@ const Statistics = () => {
                             </Flex>
                         </Box>
 
-                        {data && data?.pieChart && data?.pieChart?.labels.length > 1 &&
+                        {data && data?.pieChart && data?.pieChart?.labels.length > 1 ? (
                             <Flex bg="white" borderRadius="10px" p={5} boxShadow="md" justifyContent='center' alignItems='center' flexDirection='column'>
+                                <Text fontSize={20} fontWeight="bold" color="gray.500">
+                                    Total Count
+                                </Text>
+                                {loading ? <Spinner color='gray.500' m='18px' /> : <Text color="gray.500" fontSize={40} fontWeight="bold">{data?.lineChart?.totalCount}</Text>}
 
+                                <Divider mb={2} />
                                 <Doughnut
                                     data={{
                                         labels: [...data?.pieChart?.labels],
@@ -543,7 +630,33 @@ const Statistics = () => {
                                 </Flex>
 
                             </Flex>
-                        }
+                        ) : !loading ? (
+                            <Box
+                                p={2}
+                                boxShadow='md'
+                                borderWidth="1px"
+                                bgGradient='linear(to-l, #d01414, #803535)'
+                                bg='gray.500'
+                                color='white'
+                                borderRadius='xl'
+                                textAlign='center'
+                            >
+                                <Text fontSize={20} fontWeight="bold">
+                                    Total Count
+                                </Text>
+                                {loading ? <Spinner m='15px' /> : <Text fontSize={40} fontWeight="bold">{data?.lineChart?.totalCount}</Text>}
+                                {/* <Heading size="md" textShadow='2px 2px 8px #000' textAlign='center'>
+                                    {data?.lineChart?.totalCount ? 'Total Count' : '...'}
+                                </Heading>
+                                <Box p={2} display='flex' alignItems='center' justifyContent='center'>
+                                    {loading ? <Spinner /> : <Text textShadow='2px 2px 8px #000' textAlign='center' fontSize={40}>{data?.lineChart?.totalCount}</Text>}
+                                </Box> */}
+
+
+                            </Box>
+                        ) : null}
+
+
                     </Flex>
                 </GridItem>
 

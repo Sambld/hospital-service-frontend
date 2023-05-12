@@ -22,7 +22,7 @@ import styles from "../styles/Loading.module.css";
 
 const RootLayout = () => {
     const { user, setUser, deleteUser } = useUser();
-    const [loadingUserInformation, setLoadingUserInformation] = useState(true);
+    const [loadingUserInformation, setLoadingUserInformation] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
     const toast = useToast();
@@ -43,69 +43,65 @@ const RootLayout = () => {
     }
 
     useEffect(() => {
-        // if (location.pathname == '/') {
-        //     if(user?.role === 'administrator') {
-        //         navigate('/staff')
-        //     }
-        // }
+        try {
+            if (user) {
+                if (location.pathname.includes('medical-records')) {
+                    if (!user || user?.role != 'doctor') {
+                        goHomePage();
+                        toast({
+                            title: "You don't have permission to access this page",
+                            status: "error",
+                            duration: 5000,
+                            isClosable: true,
+                        })
+                    }
+                } else if (location.pathname.includes('patients')) {
+                    if (!user || user?.role != 'doctor' && user?.role != 'nurse') {
+                        goHomePage();
+                        toast({
+                            title: "You don't have permission to access this page",
+                            status: "error",
+                            duration: 5000,
+                            isClosable: true,
+                        })
+                    }
+                } else if (location.pathname.includes('staff')) {
+                    if (!user || user?.role != 'administrator') {
+                        goHomePage();
+                        toast({
+                            title: "You don't have permission to access this page",
+                            status: "error",
+                            duration: 5000,
+                            isClosable: true,
+                        })
+                    }
+                } else if (location.pathname.includes('prescription') || location.pathname.includes('medicines')) {
+                    if (!user || user?.role != 'pharmacist') {
+                        goHomePage();
+                        toast({
+                            title: "You don't have permission to access this page",
+                            status: "error",
+                            duration: 5000,
+                            isClosable: true,
+                        })
 
-        if (location.pathname.includes('medical-records')) {
-            if (!user || user?.role != 'doctor') {
-                goHomePage();
-                toast({
-                    title: "You don't have permission to access this page",
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                })
+                    }
+                } else if (location.pathname.includes('statistics')) {
+                    if (!user || user?.role != 'doctor' && user?.role != 'nurse' && user?.role != 'pharmacist') {
+                        goHomePage();
+                        toast({
+                            title: "You don't have permission to access this page",
+                            status: "error",
+                            duration: 5000,
+                            isClosable: true,
+                        })
+                    }
+                }
             }
-        }
-        if (location.pathname.includes('patients')) {
-            if (!user || user?.role != 'doctor' && user?.role != 'nurse') {
-                goHomePage();
-                toast({
-                    title: "You don't have permission to access this page",
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                })
-            }
-        }
-        if (location.pathname.includes('staff')) {
-            if (!user || user?.role != 'administrator') {
-                goHomePage();
-                toast({
-                    title: "You don't have permission to access this page",
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                })
-            }
+        } catch (err) {
+            console.log(err)
         }
 
-        if (location.pathname.includes('prescription') || location.pathname.includes('medicines')) {
-            if (!user || user?.role != 'pharmacist') {
-                goHomePage();
-                toast({
-                    title: "You don't have permission to access this page",
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                })
-
-            }
-        }
-        if (location.pathname.includes('statistics')) {
-            if (!user || user?.role != 'doctor' && user?.role != 'nurse' && user?.role != 'pharmacist') {
-                goHomePage();
-                toast({
-                    title: "You don't have permission to access this page",
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                })
-            }
-        }
     }, [location.pathname])
     useEffect(() => {
         // CHECK IF USER EXISTS
@@ -165,16 +161,16 @@ const RootLayout = () => {
 
     return (
         <Box>
-            { loadingUserInformation &&
-            <Box w='100%' h='100vh' display='flex' justifyContent='center' alignItems='center' position='absolute' zIndex='1000'>
-                <Box position='absolute' top='0' left='0' w='100%' h='100%' bg='white' opacity='0.8'>
+            {loadingUserInformation &&
+                <Box w='100%' h='100vh' display='flex' justifyContent='center' alignItems='center' position='absolute' zIndex='1000'>
+                    <Box position='absolute' top='0' left='0' w='100%' h='100%' bg='white' opacity='0.8'>
 
+                    </Box>
+                    <FaShieldVirus fontSize='150px' color='#374083' className={styles.icon} />
+                    <Text fontSize='40px' position='absolute' bottom='0' color='#374083' fontWeight='bold' textShadow='1px 1px 4px #000'>
+                        Infectious Diseases
+                    </Text>
                 </Box>
-                <FaShieldVirus fontSize='150px' color='#374083' className={styles.icon} />
-                <Text fontSize='40px' position='absolute' bottom='0' color='#374083' fontWeight='bold' textShadow='1px 1px 4px #000'>
-                    Infectious Diseases
-                </Text>
-            </Box>
             }
             <Grid
                 templateAreas={`"nav nav"
@@ -190,7 +186,7 @@ const RootLayout = () => {
                 {user && <GridItem h='calc(100vh - 71px)' mt='-3px' bg='white' area={'side'} >
                     <SideBar user={user} />
                 </GridItem>}
-                <GridItem pl='2' maxH='calc(100vh - 75px)' p={5} overflow='auto' area={'main'}>
+                <GridItem pl='2' maxH='calc(100vh - 75px)' p={5} overflow='auto' area={'main'} style={{ overflowY: 'auto', 'scrollbarGutter': 'stable' }}>
                     <Outlet context={user} />
                 </GridItem>
             </Grid>

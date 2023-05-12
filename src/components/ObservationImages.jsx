@@ -1,6 +1,6 @@
 import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, Flex, Grid, GridItem, HStack, Image, Text, useDisclosure } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import { AiFillPrinter, AiFillSave } from "react-icons/ai";
+import { AiFillEye, AiFillPrinter, AiFillSave } from "react-icons/ai";
 import { BsCaretLeftFill, BsCaretRightFill } from "react-icons/bs";
 import { RiDeleteBinLine } from "react-icons/ri";
 import axios from "./axios";
@@ -115,16 +115,16 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
                 <Flex justifyContent='flex-end' gap={2}>
                     {/* Download image */}
                     <Button
-                        bg='green.500'
+                        bg='blue.500'
                         color='white'
                         borderRadius={5}
                         onClick={() => downloadImage(Observation.images[current].path)}
                     >
-                        <AiFillSave fontSize={20} />
-                        <Text ml={2}>Save</Text>
+                        <AiFillEye fontSize={20} />
+                        <Text ml={2}>View Full Size</Text>
                     </Button>
                     {/* Print image */}
-                    <Button
+                    {/* <Button
                         bg='blue.500'
                         color='white'
                         borderRadius={5}
@@ -132,9 +132,9 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
                     >
                         <AiFillPrinter fontSize={20} />
                         <Text ml={2}>Print</Text>
-                    </Button>
+                    </Button> */}
                     {/* Print all images */}
-                    <Button
+                    {/* <Button
                         bg='blue.500'
                         color='white'
                         borderRadius={5}
@@ -142,7 +142,7 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
                     >
                         <AiFillPrinter fontSize={20} />
                         <Text ml={2}>Print All</Text>
-                    </Button>
+                    </Button> */}
                     {/* Delete Observation */}
                     <Button
                         bg='red.500'
