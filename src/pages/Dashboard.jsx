@@ -63,19 +63,32 @@ const Dashboard = () => {
         if (infoLoading) return
         setTabIndex(index)
         if (index === 1) {
-            setData((prev) => ({
-                ...prev,
-                column: ['Medicine', 'Quantity'],
-                data: []
-            }))
-            getPendingMedicalRequests(selectedDate, true)
+            if (user.role === 'doctor') {
+                getLatestUpdate()
+            } else if (user.role === 'nurse') {
+                getLastestFillingMonitoringSheet()
+            } else if (user.role === 'pharmacist') {
+                setData((prev) => ({
+                    ...prev,
+                    column: ['Medicine', 'Quantity'],
+                    data: []
+                }))
+                getPendingMedicalRequests(selectedDate, true)
+            }
+
         } else {
-            setData((prev) => ({
-                ...prev,
-                column: ['Medicine', 'Quantity', 'status'],
-                data: []
-            }))
-            getPendingMedicalRequests(selectedDate)
+            if (user.role === 'doctor') {
+                getActiveMedicalRecords()
+            } else if (user.role === 'nurse') {
+                getTodayAvailableMonitoringSheet()
+            } else if (user.role === 'pharmacist') {
+                setData((prev) => ({
+                    ...prev,
+                    column: ['Medicine', 'Quantity', 'status'],
+                    data: []
+                }))
+                getPendingMedicalRequests(selectedDate)
+            }
         }
     }
 
@@ -91,10 +104,15 @@ const Dashboard = () => {
             getUserCount()
         } else if (user.role === 'doctor') {
             getPatientCount()
-            getActiveMedicalRecords()
+            if (tabIndex === 0) {
+                getActiveMedicalRecords()
+            }
+            else {
+                getLatestUpdate()
+            }
         } else if (user.role === 'nurse') {
             getPatientCount()
-            getTodayFillingMonitoringSheet()
+            getTodayAvailableMonitoringSheet()
         } else if (user.role === 'pharmacist') {
             if (tabIndex === 1) {
                 getPendingMedicalRequests(selectedDate, true)
@@ -116,6 +134,8 @@ const Dashboard = () => {
             })
     }
 
+
+    // Administator Functions
     const getUserCount = () => {
         setInfoLoading(true)
         useLoader('/users?count=true')
@@ -133,17 +153,33 @@ const Dashboard = () => {
                 setUserCount(0)
             })
     }
-    const getTodayFillingMonitoringSheet = () => {
 
-        setInfoLoading(true)
-        useLoader('/monitoring-sheets/today-available')
+    // Doctor Functions
+    const getLatestUpdate = () => {
+        useLoader('/monitoring-sheets/latest-updates')
             .then(res => {
                 console.log(res)
                 setInfoLoading(false)
+                const data = res.map((item) => {
+                    const link = '/something';
+                    const text = 'Open';
+                    const ColorScheme = 'blue';
+                    const Icon = <AiFillFolderOpen />;
+                    return [
+                        `Medical Record #${item.record_id}`,
+                        `${item.filled_by.first_name} ${item.filled_by.last_name}`,
+                        [
+                            link,
+                            text,
+                            ColorScheme,
+                            Icon
+                        ]
+                    ]
+                })
                 setData({
-                    headerTitle: 'Today Filling Monitoring Sheet',
-                    column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
-                    data: res,
+                    headerTitle: 'Lastest Monitoring Sheet Updates',
+                    column: ['Medical Record', 'filled by', 'Action'],
+                    data: data,
                     count: res.length
                 })
             })
@@ -156,17 +192,33 @@ const Dashboard = () => {
                     count: 0
                 })
             })
-
     }
     const getActiveMedicalRecords = () => {
         setInfoLoading(true)
         useLoader('/medical-records?doctorId=' + user.id + '&isActive=true')
             .then(res => {
                 setInfoLoading(false)
+                const data = res.map((item) => {
+                    const link = `/patients/${item.patient.id}?med=${item.id}`;
+                    const text = 'Open';
+                    const ColorScheme = (item.patient.gender == 'Male') ? 'blue' : 'pink';
+                    const Icon = <AiFillFolderOpen />;
+                    return [
+                        item.patient.first_name,
+                        item.patient.last_name,
+                        item.bed_number,
+                        [
+                            link,
+                            text,
+                            ColorScheme,
+                            Icon
+                        ]
+                    ]
+                })
                 setData({
                     headerTitle: 'Active Medical Records',
                     column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
-                    data: res,
+                    data: data,
                     count: res.length
                 })
             })
@@ -181,6 +233,93 @@ const Dashboard = () => {
             })
 
     }
+
+    // Nurse Functions
+    const getTodayAvailableMonitoringSheet = () => {
+        setInfoLoading(true)
+        useLoader('/monitoring-sheets/today-available')
+            .then(res => {
+                setInfoLoading(false)
+                const data = res.map((item) => {
+                    const link = `/patients/${item.medical_record.patient.id}?med=${item.record_id}#monitoring`;
+                    const text = 'Open';
+                    const ColorScheme = (item.medical_record.patient.gender == 'Male') ? 'blue' : 'pink';
+                    const Icon = <AiFillFolderOpen />;
+                    return [
+                        item.medical_record.patient.first_name,
+                        item.medical_record.patient.last_name,
+                        item.medical_record.bed_number,
+                        [
+                            link,
+                            text,
+                            ColorScheme,
+                            Icon
+                        ]
+                    ]
+                })
+                console.log(data)
+                setData({
+                    headerTitle: 'Today Available Monitoring Sheet',
+                    column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
+                    data: data,
+                    count: res.length
+                })
+            })
+            .catch(err => {
+                setInfoLoading(false)
+                setData({
+                    headerTitle: '',
+                    column: [],
+                    data: [],
+                    count: 0
+                })
+            })
+    }
+
+    const getLastestFillingMonitoringSheet = () => {
+        setInfoLoading(true)
+        useLoader('/monitoring-sheets/my-latest-filled')
+            .then(res => {
+                
+                setInfoLoading(false)
+                const data = res.map((item) => {
+                    const link = `/patients/${item.medical_record.patient.id}?med=${item.record_id}#monitoring`;
+                    const text = 'Open';
+                    const ColorScheme = (item.medical_record.patient.gender == 'Male') ? 'blue' : 'pink';
+                    const Icon = <AiFillFolderOpen />;
+                    return [
+                        item.medical_record.patient.first_name,
+                        item.medical_record.patient.last_name,
+                        item.medical_record.bed_number,
+                        [
+                            link,
+                            text,
+                            ColorScheme,
+                            Icon
+                        ]
+                    ]
+                })
+                console.log(data)
+                setData({
+                    headerTitle: 'Lastest Filled Monitoring Sheet',
+                    column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
+                    data: data,
+                    count: res.length
+                })
+            })
+            .catch(err => {
+                setInfoLoading(false)
+                setData({
+                    headerTitle: '',
+                    column: [],
+                    data: [],
+                    count: 0
+                })
+            })
+
+    }
+
+    
 
     const getPendingMedicalRequests = (date, count = false) => {
         let SearchDate = date.toISOString().split('T')[0]
@@ -474,6 +613,48 @@ const Dashboard = () => {
                                         icon={<BiRefresh size={25} />}
                                     />
                                 </Box>
+                                <Tabs isFitted variant='unstyled' bg='blue.800' color="gray.400" index={tabIndex} onChange={handleTabsChange}>
+                                    <TabList>
+                                        <Tab _selected={{ color: 'white' }}>
+                                            <VStack spacing={0}>
+                                                {user?.role === 'doctor' && (
+                                                    <>
+                                                        <BsFileEarmarkMedical size={23} />
+                                                        <Text fontSize={15}>
+                                                            Medical Records
+                                                        </Text>
+                                                    </>
+                                                )}
+                                                {user?.role === 'nurse' && (
+                                                    <>
+                                                        <BsFileEarmarkMedical size={23} />
+                                                        <Text fontSize={15}>
+                                                            Today Available
+                                                        </Text>
+                                                    </>
+                                                )}
+                                            </VStack>
+                                        </Tab>
+                                        <Tab _selected={{ color: 'white' }}>
+                                            <VStack spacing={0}>
+                                                {user?.role === 'doctor' && (
+                                                    <>
+                                                        <HiOutlineDocumentText size={23} />
+                                                        <Text fontSize={15}>Latest Update</Text>
+                                                    </>
+                                                )}
+                                                {user?.role === 'nurse' && (
+                                                    <>
+                                                        <BsFileEarmarkMedical size={23} />
+                                                        <Text fontSize={15}>
+                                                            Today Available
+                                                        </Text>
+                                                    </>
+                                                )}
+                                            </VStack>
+                                        </Tab>
+                                    </TabList>
+                                </Tabs>
                                 <Box
                                     shadow="md"
                                     bg='white'
@@ -481,7 +662,7 @@ const Dashboard = () => {
                                     maxH='500px'
                                     overflowY='auto'
                                 >
-                                    <Table  variant='simple'  colorScheme='blackAlpha'>
+                                    <Table variant='simple' colorScheme='blackAlpha'>
                                         <Thead
                                             bg='#fafafa'
                                             color='white'
@@ -499,24 +680,19 @@ const Dashboard = () => {
                                             </Tr>
                                         </Thead>
                                         <Tbody>
-
                                             {data && data?.data.map((item, index) => (
-                                                <Tr key={index} bg={(item?.patient?.gender == 'Male') ? 'blue.50' : 'pink.50'}>
-                                                    <Td>{item?.patient?.first_name}</Td>
-                                                    <Td>{item?.patient?.last_name}</Td>
-                                                    <Td>{item?.bed_number}</Td>
+                                                <Tr key={index}>
+                                                    {item.slice(0, -1).map((item2, index2) => (
+                                                        <Td key={index2}>{item2}</Td>
+                                                    ))}
                                                     <Td>
-                                                        <NavLink w='100%' to={'/patients/' + item?.patient?.id + "?med=" + item?.id + (user?.role === 'nurse' ? "#monitoring" : '')}style={{'display':'block','borderRadius':'5px'}}>
-                                                            <Button
-                                                                leftIcon={<AiFillFolderOpen />}
-                                                                variant='outline'
-                                                                w='100%'
-                                                                colorScheme={(item?.patient?.gender == 'Male') ? 'blue' : 'pink'}
-                                                            >
-                                                                Open
+                                                        <NavLink w='100%' to={item.at(-1)[0]} style={{ display: 'block', borderRadius: '5px' }}>
+                                                            <Button leftIcon={item.at(-1)[3] || null} variant='outline' w='100%' colorScheme={item.at(-1)[2]}>
+                                                                {item.at(-1)[1]}
                                                             </Button>
                                                         </NavLink>
                                                     </Td>
+
                                                 </Tr>
                                             ))}
                                         </Tbody>

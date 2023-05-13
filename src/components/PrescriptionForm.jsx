@@ -424,6 +424,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                                             icon={<CloseIcon />}
                                             color="red.500"
                                             colorScheme='red'
+                                            isDisabled={!medicine.editable}
                                             borderRadius={5}
                                             variant='outline'
                                             onClick={() => handleMedicineRemove(medicine)}
