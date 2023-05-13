@@ -73,6 +73,7 @@ import MonitoringSheetStyles from "../styles/MonitoringSheet.module.css";
 
 // Services
 import axios from "./axios";
+import { FaPlus } from "react-icons/fa";
 
 
 const MedicalRecord = ({ medical_record, user, editRecord }) => {
@@ -96,6 +97,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
 
   const [Prescriptions, setPrescriptions] = useState([]);
   const [PrescriptionDownloaded, setPrescriptionDownloaded] = useState(null);
+  const [PrescriptionEditMode, setPrescriptionEditMode] = useState(false)
+  const [PrescriptionEditInfo, setPrescriptionEditInfo] = useState(null)
+
 
 
   const [deleteLoading, setDeleteLoading] = useState(false)
@@ -114,6 +118,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const { isOpen: isOpenObservationImages, onOpen: onOpenObservationImages, onClose: onCloseObservationImages } = useDisclosure()
   const { isOpen: isOpenMonitoringSheetRow, onOpen: onOpenMonitoringSheetRow, onClose: onCloseMonitoringSheetRow } = useDisclosure()
   const { isOpen: isOpenPrescriptionForm, onOpen: onOpenPrescriptionForm, onClose: onClosePrescriptionForm } = useDisclosure()
+
 
   useEffect(() => {
     setExamination([])
@@ -479,18 +484,26 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       })
   }
   const handlePrescriptionAdd = (message) => {
-    if (message?.status === 'success') {
-      onClosePrescriptionForm()
-    }
+    onClosePrescriptionForm()
 
     toast({
       title: message.title,
+      description: message?.description,
       status: message.status,
       duration: 9000,
       isClosable: true,
     })
     handlePrescription()
+    setPrescriptionEditMode(false)
+    setPrescriptionEditInfo(null)
   }
+  const handlePrescriptionEdit = (prescription) => {
+    setPrescriptionEditMode(true)
+    setPrescriptionEditInfo(prescription)
+    onOpenPrescriptionForm()
+  }
+
+
 
   const handlePrintPrescription = async (prescription) => {
     try {
@@ -522,6 +535,12 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     }
   }
 
+  const handlePrescriptionFormClose = () => {
+    setPrescriptionEditMode(false)
+    setPrescriptionEditInfo(null)
+    handlePrescription()
+    onClosePrescriptionForm()
+  }
 
   return (
     <Box
@@ -916,7 +935,8 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                           color='gray.500'
                           size='md' />
                       </Center>
-                    ) : (
+                    ) : Prescriptions.length > 0 ? (
+
                       <Accordion border='4px' borderColor='gray.300' allowMultiple>
                         {Prescriptions && Prescriptions.map((pres, index) => (
                           <AccordionItem key={index} >
@@ -927,14 +947,27 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                               <AccordionIcon />
                             </AccordionButton>
                             <AccordionPanel pb={4}>
-                              <Table variant="simple" className={MonitoringSheetStyles.table}>
+                              <Box display='flex' justifyContent='flex-end' mb={2} gap='10px'>
+                                {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
+                                  <Button colorScheme='green' onClick={() => handlePrescriptionEdit(pres)}>
+                                    <EditIcon fontSize='20px' />
+                                    <Text ml={2}>Edit</Text>
+                                  </Button>
+                                )}
+                                <Button w='100px' colorScheme='teal' onClick={() => handlePrintPrescription(pres)} isLoading={loadingPrescriptionDownload && PrescriptionDownloaded == pres.id}>
+                                  <AiFillPrinter fontSize='20px' />
+                                  <Text ml={2}>Print</Text>
+                                </Button>
+                              </Box>
+
+                              <Table variant="simple" colorScheme='blackAlpha' className={MonitoringSheetStyles.table} border='2px' borderColor='gray.300'>
                                 <Thead bg='gray.200'>
                                   <Tr>
                                     <Th>Medicine</Th>
                                     <Th>Quantity</Th>
                                     <Th>Date of Prescription</Th>
                                     <Th>
-                                      <Text>status</Text>
+                                      <Text textAlign='center'>status</Text>
                                     </Th>
                                     <Th>
                                       <Text>Review</Text>
@@ -970,16 +1003,18 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                                   ))}
                                 </Tbody>
                               </Table>
-                              {/* print pdf */}
-                              <Button w='100%' colorScheme='teal' onClick={() => handlePrintPrescription(pres)} isLoading={loadingPrescriptionDownload && PrescriptionDownloaded == pres.id}>
-                                <AiFillPrinter fontSize='20px' />
-                                <Text ml={2}>Print</Text>
-                              </Button>
+
                             </AccordionPanel>
                           </AccordionItem>
                         ))}
 
                       </Accordion>
+                    ) : (
+                      <Box>
+                        <Text fontSize='xl' fontWeight='bold' textAlign='center'>
+                          No Prescription Found
+                        </Text>
+                      </Box>
                     )}
                   </Box>
                 </TabPanel>
@@ -1076,16 +1111,18 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         </Modal>
 
         {/* prescription modal */}
-        <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenPrescriptionForm} onClose={onClosePrescriptionForm}>
+        <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenPrescriptionForm} onClose={handlePrescriptionFormClose}>
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent maxW='1000px'>
             <ModalHeader>Prescription</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={5} pt={0}>
-              <PrescriptionForm medical_record={medical_record} closeModal={onClosePrescriptionForm} closeAndRefresh={handlePrescriptionAdd} />
+              <PrescriptionForm medical_record={medical_record} closeModal={handlePrescriptionFormClose} closeAndRefresh={handlePrescriptionAdd} EditMode={PrescriptionEditMode} prescription={PrescriptionEditInfo} />
             </ModalBody>
           </ModalContent>
         </Modal>
+
+        {/* prescription view modal */}
 
 
       </Box>

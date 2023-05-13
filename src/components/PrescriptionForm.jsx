@@ -28,27 +28,52 @@ import {
     IconButton,
     Heading,
     Select,
-    Progress
+    Progress,
+    useToast,
+    useDisclosure,
+    AlertDialog,
+    AlertDialogOverlay,
+    AlertDialogContent,
+    AlertDialogBody,
+    AlertDialogFooter
 } from '@chakra-ui/react';
 import { Form } from 'react-router-dom';
 import usePost from '../hooks/usePost';
 import AsyncSelect from 'react-select/async';
 
 import { AiOutlinePlus } from 'react-icons/ai';
-import { CloseIcon } from '@chakra-ui/icons';
+import { CloseIcon, EditIcon } from '@chakra-ui/icons';
 import useLoader from '../hooks/useLoader';
+import usePut from '../hooks/usePut';
+import useDelete from '../hooks/useDelete';
 
-const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh }) => {
+const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMode, prescription }) => {
     const [formData, setFormData] = useState({
-        medicines: [],
+        name: prescription ? prescription.name : '',
+        medicines: prescription ? prescription.medicine_requests.map((medicine) => {
+            return {
+                value: medicine.medicine.id,
+                label: medicine.medicine.name,
+                quantity: medicine.quantity,
+                old_quantity: medicine.medicine.quantity,
+                medicine_request_id: medicine.id,
+                editable: medicine.status.toLowerCase() === 'pending' ? true : false,
+            };
+        }) : [],
     });
 
     const [options, setOptions] = useState([]);
     const [selectedMedicine, setSelectedMedicine] = useState(null);
     const [Quantity, setQuantity] = useState(1);
 
+    const [selectedDeleteMedicine, setSelectedDeleteMedicine] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+    const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
+
     const [uploadProgress, setUploadProgress] = useState(0);
     const [loading, setLoading] = useState(false);
+
+    const toast = useToast();
 
     const formatDate = (date) => {
         let date_ = new Date(date);
@@ -60,8 +85,18 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh }) => {
         const seconds = date_.getUTCSeconds().toString().padStart(2, '0'); // pad seconds with leading zero if less than 10
         return `${year}/${month}/${day}`;
     };
+
     const handleSubmit = (event) => {
         event.preventDefault();
+        if (EditMode) {
+            handleEdit(event);
+        } else {
+            handleAdd(event);
+        }
+    };
+
+
+    const handleAdd = (event) => {
         setLoading(true);
         try {
 
@@ -93,28 +128,128 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh }) => {
         }
     };
 
+    const handleEdit = (event) => {
+        setLoading(true);
+        try {
+            usePut('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/prescriptions/' + prescription.id, {
+                name: formData.name,
+            }).then(async (res) => {
+                MedicinesEdit(prescription.id).then(() => {
+                    setLoading(false);
+                    closeAndRefresh(
+                        {
+                            title: 'Prescription updated successfully.',
+                            status: 'success',
+                        }
+                    )
+                }).catch((err) => {
+                    console.log('hihihihi')
+                    setLoading(false);
+                    closeAndRefresh({
+                        title: 'Error',
+                        description: 'Error updating medicines.',
+                        status: 'error',
+                        duration: 5000,
+                        isClosable: true,
+                    })
+                })
+            }).catch((err) => {
+                setLoading(false);
+                closeAndRefresh(
+                    {
+                        title: 'Error',
+                        description: err.response.data.message,
+                        status: 'error',
+                    }
+                )
+            })
+        } catch (err) {
+            console.log(err)
+        }
+    };
+
+    const MedicinesEdit = async (prescription_id) => {
+        try {
+            const progressUnit = 100 / formData.medicines.length;
+            const promises = [];
+            const error = false;
+            formData.medicines.map((medicine) => {
+                if (prescription.medicine_requests.find((med) => med.medicine.id == medicine.value && med.quantity != medicine.quantity)) {
+                    const promise = usePut('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/prescriptions/' + prescription_id + '/medicine-requests/' + medicine.medicine_request_id, {
+                        medicine_id: medicine.value,
+                        quantity: medicine.quantity,
+                    }).then((res) => {
+                        setUploadProgress((prev) => prev + progressUnit);
+                    }).catch((err) => {
+                        toast({
+                            title: 'Error',
+                            description: err.response.data.message,
+                            status: 'error',
+                            duration: 5000,
+                            isClosable: true,
+                        })
+
+                        error = true;
+                    });
+                    promises.push(promise);
+                } else if (!prescription.medicine_requests.find((med) => med.medicine.id === medicine.value)) {
+                    const promise = usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/prescriptions/' + prescription_id + '/medicine-requests', {
+                        medicine_id: medicine.value,
+                        quantity: medicine.quantity,
+                    }).then((res) => {
+                        setUploadProgress((prev) => prev + progressUnit);
+                    }).catch((err) => {
+                        toast({
+                            title: 'Error',
+                            description: err.response.data.message,
+                            status: 'error',
+                            duration: 5000,
+                            isClosable: true,
+                        })
+                        error = true;
+                    });
+                    promises.push(promise);
+                }
+            });
+            await Promise.all(promises);
+            if (!error) {
+                return Promise.resolve();
+            }
+            return Promise.reject();
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    };
+
+    const MedicinesDelete = async (med) => {
+        try {
+            return await useDelete('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/prescriptions/' + prescription.id + '/medicine-requests/' + med)
+                .then((res) => {
+                    return Promise.resolve();
+                })
+                .catch((err) => {
+                    return Promise.reject(err);
+                })
+
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }
+
     const MedicinesAdd = async (prescription_id) => {
         try {
             const progressUnit = 100 / formData.medicines.length;
             const promises = [];
-            console.log(progressUnit)
             formData.medicines.map((medicine) => {
                 const promise = usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/prescriptions/' + prescription_id + '/medicine-requests', {
                     medicine_id: medicine.value,
                     quantity: medicine.quantity,
                 }).then(async (res) => {
-                    if (res.data) {
-                        setUploadProgress((prevUploadProgress) => prevUploadProgress + progressUnit);
-                    } else {
-                        closeAndRefresh(
-                            {
-                                title: 'Error',
-                                description: res.message,
-                                status: 'error',
-                            }
-                        )
-                    }
-                });
+                    setUploadProgress((prevUploadProgress) => prevUploadProgress + progressUnit);
+                })
+                    .catch((err) => {
+                        Promise.reject(err);
+                    })
                 promises.push(promise);
             })
             await Promise.all(promises);
@@ -132,20 +267,72 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh }) => {
             ...selectedMedicine,
             quantity: Quantity,
         };
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            medicines: [...prevFormData.medicines.filter((medicine) => medicine.value !== selectedMedicine.value), medicine]
-        }));
+        if (formData.medicines.find((med) => med.value === selectedMedicine.value)) {
+            setFormData((prevFormData) => {
+                const medicineIndex = prevFormData.medicines.findIndex((medicine) => medicine.value === selectedMedicine.value);
+                const updatedMedicines = [...prevFormData.medicines];
+                updatedMedicines.splice(medicineIndex, 1, medicine);
+
+                return {
+                    ...prevFormData,
+                    medicines: updatedMedicines
+                };
+            });
+
+        } else {
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                medicines: [...prevFormData.medicines, medicine],
+            }));
+        }
         setSelectedMedicine(null);
         setQuantity(1);
     };
 
-    const removeMedicine = (med) => {
-        event.preventDefault();
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            medicines: prevFormData.medicines.filter((medicine) => medicine.value !== med.value),
-        }));
+    const handleMedicineRemove = (med) => {
+        setSelectedDeleteMedicine(med);
+        onDeleteOpen();
+    }
+
+
+    const removeMedicine = () => {
+        if (EditMode && prescription.medicine_requests.find((medicine) => medicine.medicine.id === selectedDeleteMedicine.value)) {
+            setDeleteLoading(true);
+            MedicinesDelete(selectedDeleteMedicine.medicine_request_id)
+                .then(() => {
+                    toast(
+                        {
+                            title: 'Medicine removed successfully.',
+                            status: 'success',
+                        }
+                    )
+                    setFormData((prevFormData) => ({
+                        ...prevFormData,
+                        medicines: prevFormData.medicines.filter((medicine) => medicine.value !== selectedDeleteMedicine.value),
+                    }));
+                })
+                .catch((err) => {
+                    console.log(err)
+                    toast(
+                        {
+                            title: 'Error',
+                            description: err.message,
+                            status: 'error',
+                        }
+                    )
+                })
+                .finally(() => {
+                    setDeleteLoading(false);
+                    onDeleteClose();
+                })
+        } else {
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                medicines: prevFormData.medicines.filter((medicine) => medicine.value !== selectedDeleteMedicine.value),
+            }));
+            onDeleteClose();
+        }
+
     };
 
     const loadOptions = (inputValue, callback) => {
@@ -161,6 +348,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                     value: medicine.id,
                     label: medicine.name,
                     old_quantity: medicine.quantity,
+                    editable: true,
                 }));
                 setOptions(options);
                 callback(options);
@@ -192,25 +380,56 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh }) => {
             <Box>
 
                 <Text mb={5} textAlign='center' fontSize={25}>Medicines List</Text>
-                <Box border='2px' borderColor='gray.300' boxShadow='md' p={1} mb={3} maxH='30vh' overflow='auto'>
-                    <Table variant="unstyled" size="sm" >
+                <Box border='2px' borderColor='gray.200' boxShadow='md' p={1} mb={3} maxH='30vh' overflow='auto'>
+                    <Table variant="simple" size="md" colorScheme='blackAlpha'>
+                        <Thead>
+                            <Tr>
+                                <Th fontSize={13}>Name</Th>
+                                <Th fontSize={13}>Quantity</Th>
+                                {EditMode && <Th fontSize={13} w='40px'>Edit</Th>}
+                                <Th fontSize={13} w='40px'>Remove</Th>
+                            </Tr>
+                        </Thead>
                         <Tbody>
-                            {formData.medicines.length === 0 && <Tr><Td textAlign='center'>No medicines added yet</Td></Tr>}
+                            {formData.medicines.length === 0 && <Tr><Td colSpan={4} textAlign='center'>No medicines added yet</Td></Tr>}
                             {formData.medicines.map((medicine) => (
-                                <Tr bg='gray.50' key={medicine.value}>
-                                    <Td fontSize={13}>Name: {medicine.label}</Td>
-                                    <Td fontSize={13}>Quantity: {medicine.quantity}</Td>
-                                    <Td display='flex' p={2} justifyContent='flex-end'>
+                                <Tr key={medicine.value} bg={EditMode ? prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) ? 'gray.50' : 'green.50' : 'gray.50'}>
+                                    <Td fontSize={13}>
+                                        {EditMode ? !prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) && <Text color='green.700'>New !</Text> : ""}
+                                        {medicine.label}
+                                    </Td>
+                                    <Td fontSize={13}>{medicine.quantity}</Td>
+                                    {EditMode &&
+                                        <Td>
+
+                                            <IconButton
+                                                aria-label="Edit"
+                                                icon={<EditIcon />}
+                                                color="green.500"
+                                                colorScheme='green'
+                                                borderRadius={5}
+                                                isDisabled={!medicine.editable}
+                                                variant="outline"
+                                                onClick={() => {
+                                                    setSelectedMedicine(medicine);
+                                                    setQuantity(medicine.quantity);
+                                                }}
+                                            />
+
+                                        </Td>
+                                    }
+                                    <Td display='flex' justifyContent='center'>
                                         <IconButton
                                             aria-label="Remove"
                                             icon={<CloseIcon />}
-                                            color="gray.500"
-                                            colorScheme='gray'
+                                            color="red.500"
+                                            colorScheme='red'
                                             borderRadius={5}
-                                            variant="ghost"
-                                            onClick={() => removeMedicine(medicine)}
+                                            variant='outline'
+                                            onClick={() => handleMedicineRemove(medicine)}
                                         />
                                     </Td>
+
                                 </Tr>
                             ))}
                         </Tbody>
@@ -245,7 +464,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                         </NumberInput>
                         <IconButton
                             aria-label="Add"
-                            icon={<AiOutlinePlus />}
+                            icon={formData.medicines.find((medicine) => medicine.value === selectedMedicine?.value) ? <EditIcon /> : <AiOutlinePlus />}
                             colorScheme="gray"
                             borderRadius={5}
                             variant="outline"
@@ -295,11 +514,31 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                 </Button>
                 <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" >
                     {/* add icon */}
-                    <AiOutlinePlus />
-                    <Text ml="5px" >Add</Text>
+                    {EditMode ? <EditIcon /> : <AiOutlinePlus />}
+                    <Text ml="5px" >{EditMode ? 'Update' : 'Add'}</Text>
                 </Button>
             </Flex>
-        </Form>)
+            <AlertDialog isOpen={isDeleteOpen} onClose={onDeleteClose} isCentered>
+                <AlertDialogOverlay>
+                    <AlertDialogContent maxW='300px' p={5}>
+
+                        <AlertDialogBody textAlign='center'>
+                            <Text fontSize='lg' fontWeight='bold'>Are you sure?</Text>
+                        </AlertDialogBody>
+
+                        <AlertDialogFooter justifyContent='center'>
+                            <Button onClick={onDeleteClose}>
+                                Cancel
+                            </Button>
+                            <Button colorScheme='red' onClick={removeMedicine} ml={3} isLoading={deleteLoading}>
+                                Delete
+                            </Button>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialogOverlay>
+            </AlertDialog>
+        </Form>
+    );
 }
 
 export default PrescriptionForm;
