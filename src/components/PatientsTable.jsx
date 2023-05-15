@@ -26,7 +26,6 @@ import { AiFillFolderOpen } from 'react-icons/ai'
 const PatientsTable = ({ initValue, patients, count, search }) => {
     return (
         <>
-            <Text fontSize='sm' color='gray.500' p='10px' align='right'>{count ? count  : patients ? '0' : '-' } Patients</Text>
             <Table variant='simple' colorScheme='blackAlpha'>
                 <Thead>
                     <Tr bg='#fafafa'>
@@ -42,7 +41,10 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                         </Th>
                         <Th>Phone Number</Th>
                         <Th>birth Info</Th>
-                        <Th w='200px'></Th>
+                        <Th w='200px'>
+                            <Text fontSize='sm' color='gray.500' p='10px' align='right'>{count ? count : patients ? '0' : '-'} Patients</Text>
+
+                        </Th>
                     </Tr>
                 </Thead>
                 <Tbody>
@@ -56,14 +58,14 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                                     icon={(patient.gender == 'Male') ? <BsGenderMale size={25} /> : <BsGenderFemale size={25} />}
                                 />
                             </Td>
-                            <Td><Text fontWeight='normal' fontSize={{base:'sm',lg:'lg'}}>{patient.first_name + " " + patient.last_name}</Text></Td>
-                            <Td fontSize={{base:'sm',lg:'lg'}}>{patient.phone_number}</Td>
-                            <Td fontSize={{base:'sm',lg:'lg'}}>
-                                <Text fontSize={{base:'sm',lg:'lg'}}>{patient.birth_date}</Text>
-                                <Text fontSize={{base:'xs',lg:'sm'}} color='gray.500'>{patient.place_of_birth}</Text>
+                            <Td><Text fontWeight='normal' fontSize={{ base: 'sm', lg: 'lg' }}>{patient.first_name + " " + patient.last_name}</Text></Td>
+                            <Td fontSize={{ base: 'sm', lg: 'lg' }}>{patient.phone_number}</Td>
+                            <Td fontSize={{ base: 'sm', lg: 'lg' }}>
+                                <Text fontSize={{ base: 'sm', lg: 'lg' }}>{patient.birth_date}</Text>
+                                <Text fontSize={{ base: 'xs', lg: 'sm' }} color='gray.500'>{patient.place_of_birth}</Text>
                             </Td>
                             <Td p={1}>
-                                <NavLink to={patient.id.toString()} style={{'display':'block','borderRadius':'5px'}}>
+                                <NavLink to={patient.id.toString()} style={{ 'display': 'block', 'borderRadius': '5px' }}>
                                     <Button colorScheme={(patient.gender == 'Male') ? 'blue' : 'pink'} w='100%' p={0}>
                                         <AiFillFolderOpen size={20} />
                                         <Text ml={1}>Open</Text>

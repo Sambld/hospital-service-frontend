@@ -195,7 +195,6 @@ const Patients = () => {
     }
     return (
         <Box>
-
             <Flex mr={3}>
                 <Breadcrumb fontSize={{ base: "md", lg: '3xl' }}>
                     <BreadcrumbItem>
@@ -241,7 +240,7 @@ const Patients = () => {
                 {/* <Button colorScheme='blue' variant='outline' fontWeight='normal'>CREATE NEW RECORD</Button> */}
             </Flex>
 
-            <Box bg='white' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
+            <Box bg='white' m='10px' p='10px' pb={2} border='2px' borderColor='gray.200' borderRadius='2xl' overflow='hidden'>
                 {outlet ? <Outlet context={{ setPatient, user, handleRecordEdit }} /> : (
                     <>
                         <PatientsTable initValue={searchParams.get('q') || ''} patients={data?.data} search={handleSearch} count={data?.total} />

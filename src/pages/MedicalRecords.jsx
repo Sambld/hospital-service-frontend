@@ -96,7 +96,7 @@ const MedicalRecords = () => {
     return (
         <Box>
             <Heading>Medical Records</Heading>
-            <Box bg='white' w='100%' m='10px' p='20px' border='2px' borderColor='gray.200' borderRadius='2xl'>
+            <Box bg='white' w='100%' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
                 <Text fontSize='sm' color='gray.500' p='10px' align='right'>Showing {data && data.data.length} of {data && data.total} Medical Records</Text>
 
                 <Box p='10px' mb='10px' w='100%' display='flex' justifyContent='space-between' gap={2}>

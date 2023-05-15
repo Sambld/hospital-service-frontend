@@ -22,7 +22,7 @@ import styles from "../styles/Loading.module.css";
 
 const RootLayout = () => {
     const { user, setUser, deleteUser } = useUser();
-    const [loadingUserInformation, setLoadingUserInformation] = useState(false);
+    const [loadingUserInformation, setLoadingUserInformation] = useState(true);
     const navigate = useNavigate();
     const location = useLocation();
     const toast = useToast();
@@ -110,9 +110,7 @@ const RootLayout = () => {
                 setLoadingUserInformation(true)
                 axios.get('/user')
                     .then(res => {
-                        if (res.data === null) {
-                            throw Error('User not found')
-                        } else {
+                        if (user.role != res.data.role) {
                             setUser({
                                 "user": res.data,
                                 "access_token": axios.defaults.headers.common['Authorization'].split(' ')[1]
@@ -142,7 +140,7 @@ const RootLayout = () => {
         }
         // 
 
-    }, [])
+    }, [user])
 
     // if (loadingUserInformation) {
     //     return (

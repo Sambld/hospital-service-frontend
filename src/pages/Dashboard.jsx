@@ -28,14 +28,19 @@ import {
 
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { AiFillFolderOpen, AiOutlineSend } from "react-icons/ai";
-import { MdOutlineMarkUnreadChatAlt } from 'react-icons/md'
-import { BiRefresh } from 'react-icons/bi'
 import { Form, NavLink, useOutletContext } from "react-router-dom";
 import useLoader from "../hooks/useLoader";
 import Calendar from '../components/Calendar';
-import { BsFileEarmarkMedical } from "react-icons/bs";
+
+
+
+// Icons
 import { HiOutlineDocumentText, HiOutlineEmojiSad } from "react-icons/hi";
+import { BsFileEarmarkMedical } from "react-icons/bs";
+import { AiFillFolderOpen, AiOutlineMedicineBox } from "react-icons/ai";
+import { BiRefresh } from 'react-icons/bi';
+import { FaNotesMedical, FaClock } from 'react-icons/fa';
+import { RiCalendarCheckLine, RiFileList2Line, RiChatCheckLine } from 'react-icons/ri';
 
 
 const Dashboard = () => {
@@ -64,8 +69,18 @@ const Dashboard = () => {
         setTabIndex(index)
         if (index === 1) {
             if (user.role === 'doctor') {
+                setData((prev) => ({
+                    ...prev,
+                    column: ['Medical Record', 'filled by', 'Action'],
+                    data: []
+                }))
                 getLatestUpdate()
             } else if (user.role === 'nurse') {
+                setData((prev) => ({
+                    ...prev,
+                    column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
+                    data: []
+                }))
                 getLastestFillingMonitoringSheet()
             } else if (user.role === 'pharmacist') {
                 setData((prev) => ({
@@ -78,8 +93,18 @@ const Dashboard = () => {
 
         } else {
             if (user.role === 'doctor') {
+                setData((prev) => ({
+                    ...prev,
+                    column: ['first name', 'last name', 'bed number', 'Action'],
+                    data: []
+                }))
                 getActiveMedicalRecords()
             } else if (user.role === 'nurse') {
+                setData((prev) => ({
+                    ...prev,
+                    column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
+                    data: []
+                }))
                 getTodayAvailableMonitoringSheet()
             } else if (user.role === 'pharmacist') {
                 setData((prev) => ({
@@ -112,13 +137,18 @@ const Dashboard = () => {
             }
         } else if (user.role === 'nurse') {
             getPatientCount()
-            getTodayAvailableMonitoringSheet()
-        } else if (user.role === 'pharmacist') {
-            if (tabIndex === 1) {
-                getPendingMedicalRequests(selectedDate, true)
+            if (tabIndex === 0) {
+                getTodayAvailableMonitoringSheet()
             }
             else {
+                getLastestFillingMonitoringSheet()
+            }
+        } else if (user.role === 'pharmacist') {
+            if (tabIndex === 0) {
                 getPendingMedicalRequests(selectedDate)
+            }
+            else {
+                getPendingMedicalRequests(selectedDate, true)
             }
 
         }
@@ -156,12 +186,12 @@ const Dashboard = () => {
 
     // Doctor Functions
     const getLatestUpdate = () => {
+        setInfoLoading(true)
         useLoader('/monitoring-sheets/latest-updates')
             .then(res => {
-                console.log(res)
                 setInfoLoading(false)
                 const data = res.map((item) => {
-                    const link = '/something';
+                    const link = `/patients/${item.medical_record.patient_id}?med=${item.record_id}#monitoring`;
                     const text = 'Open';
                     const ColorScheme = 'blue';
                     const Icon = <AiFillFolderOpen />;
@@ -176,12 +206,12 @@ const Dashboard = () => {
                         ]
                     ]
                 })
-                setData({
+                setData((prevFormData) => ({
+                    ...prevFormData,
                     headerTitle: 'Lastest Monitoring Sheet Updates',
                     column: ['Medical Record', 'filled by', 'Action'],
                     data: data,
-                    count: res.length
-                })
+                }))
             })
             .catch(err => {
                 setInfoLoading(false)
@@ -257,7 +287,6 @@ const Dashboard = () => {
                         ]
                     ]
                 })
-                console.log(data)
                 setData({
                     headerTitle: 'Today Available Monitoring Sheet',
                     column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
@@ -280,7 +309,7 @@ const Dashboard = () => {
         setInfoLoading(true)
         useLoader('/monitoring-sheets/my-latest-filled')
             .then(res => {
-                
+
                 setInfoLoading(false)
                 const data = res.map((item) => {
                     const link = `/patients/${item.medical_record.patient.id}?med=${item.record_id}#monitoring`;
@@ -299,7 +328,6 @@ const Dashboard = () => {
                         ]
                     ]
                 })
-                console.log(data)
                 setData({
                     headerTitle: 'Lastest Filled Monitoring Sheet',
                     column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
@@ -319,16 +347,15 @@ const Dashboard = () => {
 
     }
 
-    
-
+    // Pharmacist Functions
     const getPendingMedicalRequests = (date, count = false) => {
-        let SearchDate = date.toISOString().split('T')[0]
+        let SearchDate = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
         setInfoLoading(true)
-        useLoader('/medicine-requests?status=open&count=true')
+        useLoader('/medicine-requests?status=Approved&count=true')
             .then(res => {
                 setData((prev) => ({
                     ...prev,
-                    headerTitle: 'Pending Medical Requests',
+                    headerTitle: 'Pending Prescription',
                     count: res.count
                 }))
             })
@@ -423,7 +450,7 @@ const Dashboard = () => {
                             >
                                 <Heading size="md" mb={3} textAlign='center'>administrator Number</Heading>
                                 <Flex justifyContent='center'>
-                                    {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[0]}</Text>}
+                                    {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[0] || '0'}</Text>}
                                 </Flex>
                             </Box>
                         </GridItem>
@@ -439,7 +466,7 @@ const Dashboard = () => {
                             >
                                 <Heading size="md" mb={3} textAlign='center'>Doctor Number</Heading>
                                 <Flex justifyContent='center'>
-                                    {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[1]}</Text>}
+                                    {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[1] || '0'}</Text>}
                                 </Flex>
                             </Box>
                         </GridItem>
@@ -455,7 +482,7 @@ const Dashboard = () => {
                             >
                                 <Heading size="md" mb={3} textAlign='center'>Nurse Number</Heading>
                                 <Flex justifyContent='center'>
-                                    {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[2]}</Text>}
+                                    {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[2] || '0'}</Text>}
                                 </Flex>
                             </Box>
                         </GridItem>
@@ -471,7 +498,7 @@ const Dashboard = () => {
                             >
                                 <Heading size="md" mb={3} textAlign='center'>Pharmacist Number</Heading>
                                 <Flex justifyContent='center'>
-                                    {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[3]}</Text>}
+                                    {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[3] || '0'}</Text>}
                                 </Flex>
                             </Box>
                         </GridItem>
@@ -481,7 +508,7 @@ const Dashboard = () => {
             ) : (
                 <Grid
                     templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
-                    templateAreas={{ base: ` "content" "state" `, md: `"content content state"` }}
+                    templateAreas={{ base: `"state" "content"`, md: `"content content state"` }}
                     gap={6}>
                     <GridItem area={'state'}>
                         {/* Calendar */}
@@ -500,10 +527,10 @@ const Dashboard = () => {
                             borderRadius='xl'
                         >
                             <Heading size="md">
-                                {data?.headerTitle ? data.headerTitle : '...'}
+                            Pending Prescription
                             </Heading>
                             <Box p={5} display='flex' alignItems='center' justifyContent='flex-end'>
-                                {infoLoading ? <Spinner /> : <Text textAlign='right' fontSize={40}>{data.count}</Text>}
+                                <Text textAlign='right' fontSize={40}>{data.count || 0}</Text>
                             </Box>
 
 
@@ -522,7 +549,7 @@ const Dashboard = () => {
                                 >
                                     <Heading size="md">Patient Number</Heading>
                                     <Box p={5} display='flex' alignItems='center' justifyContent='flex-end'>
-                                        {infoLoading ? <Spinner /> : <Text textAlign='right' fontSize={40}>{patientCount}</Text>}
+                                        <Text textAlign='right' fontSize={40}>{patientCount || 0}</Text>
                                     </Box>
                                 </Box>
                             )}
@@ -619,16 +646,16 @@ const Dashboard = () => {
                                             <VStack spacing={0}>
                                                 {user?.role === 'doctor' && (
                                                     <>
-                                                        <BsFileEarmarkMedical size={23} />
-                                                        <Text fontSize={15}>
+                                                        <FaNotesMedical size={23} />
+                                                        <Text pt={1} fontSize={15}>
                                                             Medical Records
                                                         </Text>
                                                     </>
                                                 )}
                                                 {user?.role === 'nurse' && (
                                                     <>
-                                                        <BsFileEarmarkMedical size={23} />
-                                                        <Text fontSize={15}>
+                                                        <RiCalendarCheckLine size={23} />
+                                                        <Text pt={1} fontSize={15}>
                                                             Today Available
                                                         </Text>
                                                     </>
@@ -639,15 +666,17 @@ const Dashboard = () => {
                                             <VStack spacing={0}>
                                                 {user?.role === 'doctor' && (
                                                     <>
-                                                        <HiOutlineDocumentText size={23} />
-                                                        <Text fontSize={15}>Latest Update</Text>
+                                                        <FaClock size={23} />
+                                                        <Text pt={1} fontSize={15}>
+                                                            Latest Update
+                                                        </Text>
                                                     </>
                                                 )}
                                                 {user?.role === 'nurse' && (
                                                     <>
-                                                        <BsFileEarmarkMedical size={23} />
-                                                        <Text fontSize={15}>
-                                                            Today Available
+                                                        <RiFileList2Line size={23} />
+                                                        <Text pt={1} fontSize={15}>
+                                                            Latest Filling
                                                         </Text>
                                                     </>
                                                 )}
@@ -733,14 +762,14 @@ const Dashboard = () => {
                                         <TabList>
                                             <Tab _selected={{ color: 'white' }}>
                                                 <VStack spacing={0}>
-                                                    <BsFileEarmarkMedical size={23} />
-                                                    <Text fontSize={15}>Requests</Text>
+                                                    <RiChatCheckLine size={23} />
+                                                    <Text pt={1} fontSize={15}>Requests</Text>
                                                 </VStack>
                                             </Tab>
                                             <Tab _selected={{ color: 'white' }}>
                                                 <VStack spacing={0}>
-                                                    <HiOutlineDocumentText size={23} />
-                                                    <Text fontSize={15}>Medicine Count</Text>
+                                                    <AiOutlineMedicineBox size={23} />
+                                                    <Text pt={1} fontSize={15}>Medicine Count</Text>
                                                 </VStack>
                                             </Tab>
                                         </TabList>
@@ -763,7 +792,7 @@ const Dashboard = () => {
                                                 <Tr>
                                                     {data && data?.column.map((item, index) =>
                                                     (
-                                                        <Th key={index}>{item}</Th>
+                                                        <Th key={index}  w='70%'>{item}</Th>
                                                     )
                                                     )}
                                                 </Tr>

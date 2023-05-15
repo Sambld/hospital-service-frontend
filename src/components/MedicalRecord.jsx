@@ -55,6 +55,7 @@ import { AiFillPrinter, AiOutlineCheck } from "react-icons/ai";
 // Hooks
 import useLoader from "../hooks/useLoader";
 import useDelete from "../hooks/useDelete";
+
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -66,6 +67,7 @@ import MonitoringSheet from "./MonitoringSheet";
 import MonitoringSheetForm from "./MonitoringSheetForm";
 import MonitoringSheetRow from "./MonitoringSheetRow";
 import PrescriptionForm from "./PrescriptionForm";
+import MandatoryDeclarationForm from "./mandatory-declaration/MandatoryDeclarationForm";
 
 // Styles
 import styles from "../styles/MedicalRecord.module.css";
@@ -100,6 +102,8 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const [PrescriptionEditMode, setPrescriptionEditMode] = useState(false)
   const [PrescriptionEditInfo, setPrescriptionEditInfo] = useState(null)
 
+  const [MandatoryDeclaration, setMandatoryDeclaration] = useState(null)
+  const [MandatoryDeclarationEditMode, setMandatoryDeclarationEditMode] = useState(false)
 
 
   const [deleteLoading, setDeleteLoading] = useState(false)
@@ -109,6 +113,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const [loadingMonitoringSheetRow, setLoadingMonitoringSheetRow] = useState(false)
   const [loadingPrescription, setLoadingPrescription] = useState(false)
   const [loadingPrescriptionDownload, setLoadingPrescriptionDownload] = useState(false)
+  const [loadingMandatoryDeclaration, setLoadingMandatoryDeclaration] = useState(true)
 
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
   const { isOpen: isOpenExamination, onOpen: onOpenExamination, onClose: onCloseExamination } = useDisclosure()
@@ -118,7 +123,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const { isOpen: isOpenObservationImages, onOpen: onOpenObservationImages, onClose: onCloseObservationImages } = useDisclosure()
   const { isOpen: isOpenMonitoringSheetRow, onOpen: onOpenMonitoringSheetRow, onClose: onCloseMonitoringSheetRow } = useDisclosure()
   const { isOpen: isOpenPrescriptionForm, onOpen: onOpenPrescriptionForm, onClose: onClosePrescriptionForm } = useDisclosure()
-
+  const { isOpen: isOpenMandatoryDeclaration, onOpen: onOpenMandatoryDeclaration, onClose: onCloseMandatoryDeclaration } = useDisclosure()
 
   useEffect(() => {
     setExamination([])
@@ -128,6 +133,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     setTreatments([])
     setMonitoringSheetEditInfo(null)
     setPrescriptions([])
+
+
+    handleMandatoryDeclaration()
 
     // handleExamination(medical_record.id)
     // handleObservation(medical_record.id)
@@ -143,7 +151,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
             NotAuthorized()
           } else {
             setTabIndex(1)
-            handleExamination(medical_record.id)
+            handleExamination()
           }
 
           break;
@@ -152,20 +160,20 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
             NotAuthorized()
           } else {
             setTabIndex(2)
-            handleObservation(medical_record.id)
+            handleObservation()
           }
 
           break;
         case '#monitoring':
           setTabIndex(3)
-          handleMonitoringSheet(medical_record.id)
+          handleMonitoringSheet()
           break;
         case '#prescription':
           if (user.role !== 'doctor') {
             NotAuthorized()
           } else {
             setTabIndex(4)
-            handlePrescription(medical_record.id)
+            handlePrescription()
           }
 
           break;
@@ -220,12 +228,12 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     switch (tabIndex) {
       case 1:
         if (Examination.length == 0) {
-          handleExamination(medical_record.id)
+          handleExamination()
         }
         break;
       case 2:
         if (Observations.length == 0) {
-          handleObservation(medical_record.id)
+          handleObservation()
         }
         break;
       case 3:
@@ -236,11 +244,11 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
           setTreatments([])
           setMonitoringSheetEditInfo(null)
         }
-        handleMonitoringSheet(medical_record.id)
+        handleMonitoringSheet()
         break;
       case 4:
         setPrescriptions([])
-        handlePrescription(medical_record.id)
+        handlePrescription()
         break;
     }
 
@@ -542,6 +550,33 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     onClosePrescriptionForm()
   }
 
+  // Mandatory Declaration
+
+  const handleMandatoryDeclaration = () => {
+    setMandatoryDeclaration(null)
+    setLoadingMandatoryDeclaration(true)
+    useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/mandatory-declaration')
+      .then((data) => {
+        setMandatoryDeclaration(data.data || null)
+      })
+      .finally(() => {
+        setLoadingMandatoryDeclaration(false)
+      })
+  }
+
+  const handleMandatoryDeclarationAdd = (message) => {
+    onCloseMandatoryDeclaration()
+    toast({
+      title: message.title,
+      description: message?.description,
+      status: message.status,
+      duration: 9000,
+      isClosable: true,
+    })
+    handleMandatoryDeclaration()
+    setMandatoryDeclarationEditMode(false)
+  }
+
   return (
     <Box
       borderRadius="lg"
@@ -682,7 +717,6 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                   )}
                 </Box>
 
-
                 <Box
                   mt={3}
                   p="6"
@@ -694,13 +728,56 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                   flexDirection='column'
                   alignItems='center'
                 >
-                  <Text fontWeight="bold" textAlign='center'>
-                    Mandatory declaration has not been created yet.
-                  </Text>
-                  <Button colorScheme="blue" mt={3} >
-                    Create Now
-                  </Button>
+                  {!loadingMandatoryDeclaration ?
+                    MandatoryDeclaration ? (
+                      <>
+                        <Box w='100%' display='flex' justifyContent='space-between' alignItems='center' mb={3}>
+                          <Text fontWeight="bold" textAlign='left' fontSize={20}>
+                            Mandatory Declaration
+                          </Text>
+                          {user.id == medical_record.user_id && (
+                            <Button colorScheme="blue" mt={3} onClick={() => {
+                              setMandatoryDeclarationEditMode(true)
+                              onOpenMandatoryDeclaration()
+                            }}>
+                              Edit
+                            </Button>
+                          )}
+                        </Box>
+                        <Table variant='simple' colorScheme='blackAlpha' >
+                          <Thead>
+                            <Tr bg='gray.200'>
+                              <Th><Text>Declaration Date</Text></Th>
+                              <Th><Text>Diagnosis</Text></Th>
+                              <Th><Text>Detailed Diagnosis</Text></Th>
+                            </Tr>
+                          </Thead>
+                          <Tbody>
+                            <Tr>
+                              <Td><Text>{formatDate(MandatoryDeclaration.created_at)}</Text></Td>
+                              <Td><Text>{MandatoryDeclaration.diagnosis}</Text></Td>
+                              <Td><Text>{MandatoryDeclaration.detail}</Text></Td>
+                            </Tr>
+                          </Tbody>
+                        </Table>
+
+                      </>
+                    ) : (
+                      <>
+                        <Text fontWeight="bold" textAlign='center'>
+                          Mandatory declaration has not been created yet.
+                        </Text>
+                        <Button colorScheme="blue" mt={3} onClick={onOpenMandatoryDeclaration}>
+                          Create Now
+                        </Button>
+                      </>
+                    )
+
+                    : (
+                      <Spinner />
+                    )}
                 </Box>
+
 
               </TabPanel>
 
@@ -1122,7 +1199,17 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
           </ModalContent>
         </Modal>
 
-        {/* prescription view modal */}
+        {/* mandatory declaration modal */}
+        <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenMandatoryDeclaration} onClose={onCloseMandatoryDeclaration}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Mandatory Declaration</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={5} pt={0}>
+              <MandatoryDeclarationForm medical_record={medical_record} closeModal={onCloseMandatoryDeclaration} closeAndRefresh={handleMandatoryDeclarationAdd} EditMode={MandatoryDeclarationEditMode} mandatory_declaration={MandatoryDeclaration} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
 
 
       </Box>

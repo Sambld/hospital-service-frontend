@@ -401,7 +401,7 @@ const Statistics = () => {
                             />
                         </Box>
                     )}
-                    <Box maxH='450px' w='100%' bg="white" borderBottomRadius="10px" p={5} boxShadow="md" zIndex={5} overflow='auto'>
+                    <Box maxH='450px' w='100%' bg="white" borderBottomRadius="10px" borderTopRadius={CurrentStatisticsType === 'md' ? 0 : '10px'} p={5} boxShadow="md" zIndex={5} overflow='auto'>
                         {data ? IsChart ? (
                             <Bar
                                 data={{
