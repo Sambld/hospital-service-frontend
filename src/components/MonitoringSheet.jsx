@@ -81,7 +81,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                 user.role == 'nurse' && !medical_record.patient_leaving_date &&
                                 (
                                     <Button colorScheme='teal' onClick={currentDateMonitoringSheet}>
-                                        Apply For Today
+                                        Fill For Today
                                     </Button>
                                 )
                             }

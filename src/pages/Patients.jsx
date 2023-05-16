@@ -44,7 +44,10 @@ const Patients = () => {
     const outlet = useOutlet()
     const user = useOutletContext()
     const [data, setData] = useState(null)
+    const [rerender, setRerender] = useState(false)
+
     const [patient, setPatient] = useState(null)
+    const [patientEditMode, setPatientEditMode] = useState(false)
 
     const toast = useToast()
 
@@ -154,8 +157,12 @@ const Patients = () => {
         })
         if (message?.redirect) {
             setData(null)
-            navigate(message.redirect)
-            useLoader(message.redirect).then(res => setData(res.data))
+            if (message.redirect === location.pathname + location.search) {
+                window.location.reload()
+            }else{
+                navigate(message.redirect)
+                useLoader(message.redirect).then(res => setData(res.data))
+            }
         }
     }
 
@@ -173,12 +180,18 @@ const Patients = () => {
         if (message?.redirect) {
             setData(null)
             if (message.redirect === location.pathname + location.search) {
-                location.reload()
+                window.location.reload()
             } else {
                 navigate(message.redirect)
                 useLoader(message.redirect).then(res => setData(res.data))
             }
         }
+    }
+
+    const handlePatientEdit = (initialData) => {
+        setPatient(initialData)
+        setPatientEditMode(true)
+        onPatientOpen()
     }
 
     const handleRecordEdit = (initialData) => {
@@ -241,7 +254,7 @@ const Patients = () => {
             </Flex>
 
             <Box bg='white' m='10px' p='10px' pb={2} border='2px' borderColor='gray.200' borderRadius='2xl' overflow='hidden'>
-                {outlet ? <Outlet context={{ setPatient, user, handleRecordEdit }} /> : (
+                {(outlet && !rerender) ? <Outlet context={{ setPatient, user, handleRecordEdit, handlePatientEdit }} /> : (
                     <>
                         <PatientsTable initValue={searchParams.get('q') || ''} patients={data?.data} search={handleSearch} count={data?.total} />
                         {
@@ -272,7 +285,7 @@ const Patients = () => {
                     <ModalHeader>Add Patient</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <PatientForm closeModal={onPatientClose} closeAndRefresh={handlePatientAdd} />
+                        <PatientForm closeModal={onPatientClose} closeAndRefresh={handlePatientAdd} EditMode={patientEditMode} PatientInformation={patient} />
                     </ModalBody>
                 </ModalContent>
             </Modal>

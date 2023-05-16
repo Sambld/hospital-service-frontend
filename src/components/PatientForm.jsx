@@ -10,32 +10,44 @@ import {
     GridItem,
     Flex,
     Text,
+    useToast,
 } from '@chakra-ui/react';
 import { Form } from 'react-router-dom';
 import { BsPersonAdd } from 'react-icons/bs';
 import usePost from '../hooks/usePost';
+import { EditIcon } from '@chakra-ui/icons';
+import usePut from '../hooks/usePut';
 
-const PatientForm = ({ closeModal, closeAndRefresh }) => {
+const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation }) => {
     const [formData, setFormData] = useState({
-        first_name: '',
-        last_name: '',
-        birth_date: '',
-        place_of_birth: '',
-        gender: 'Male',
-        address: '',
-        nationality: '',
-        phone_number: '',
-        family_situation: '',
-        emergency_contact_name: '',
-        emergency_contact_number: '',
+        first_name: PatientInformation?.first_name || '',
+        last_name: PatientInformation?.last_name || '',
+        birth_date: PatientInformation?.birth_date || '',
+        place_of_birth: PatientInformation?.place_of_birth || '',
+        gender: PatientInformation?.gender || 'Male',
+        address: PatientInformation?.address ||  '',
+        nationality: PatientInformation?.nationality || '',
+        phone_number: PatientInformation?.phone_number || '',
+        family_situation: PatientInformation?.family_situation || '',
+        emergency_contact_name: PatientInformation?.emergency_contact_name || '',
+        emergency_contact_number: PatientInformation?.emergency_contact_number || '',
     });
     const [loading, setLoading] = useState(false);
-    
+
+    const taost = useToast();
+
+
     const handleSubmit = (event) => {
         event.preventDefault();
+        if (EditMode) {
+            handleEdit();
+        } else {
+            handleAdd();
+        }
+    };
+    const handleAdd = () => {
         setLoading(true);
         usePost('/patients', formData).then((res) => {
-            setLoading(false);
             closeAndRefresh(
                 {
                     title: 'Patient created successfully.',
@@ -44,15 +56,61 @@ const PatientForm = ({ closeModal, closeAndRefresh }) => {
                 }
             )
         }).catch((err) => {
+            if(err?.response?.status == 0) {
+                return taost({
+                    title: 'An error occurred.',
+                    description: 'Please check your internet connection.',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                })
+            }
+            taost({
+                title: err?.response?.data?.message || 'An error occurred.',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            })
+        })
+        .finally(() => {
+            setLoading(false);
+        })
+    };
+
+    const handleEdit = () => {
+        setLoading(true);
+        usePut('/patients/' + PatientInformation.id, formData).then((res) => {
             setLoading(false);
             closeAndRefresh(
                 {
-                    title: err.response.data.message,
-                    status: 'error',
+                    title: 'Patient updated successfully.',
+                    status: 'success',
+                    redirect: '/patients/' + res.patient.id,
                 }
             )
+        }).catch((err) => {
+            if(err?.response?.status == 0) {
+                return taost({
+                    title: 'An error occurred.',
+                    description: 'Please check your internet connection.',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                })
+            }
+            taost({
+                title: err?.response?.data?.message || 'An error occurred.',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            })
+        })
+        .finally(() => {
+            setLoading(false);
         })
     };
+
+
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -113,8 +171,8 @@ const PatientForm = ({ closeModal, closeAndRefresh }) => {
                             value={formData.gender}
                             onChange={handleChange}
                         >
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
                         </Select>
                     </FormControl>
                 </GridItem>
@@ -149,7 +207,7 @@ const PatientForm = ({ closeModal, closeAndRefresh }) => {
                         />
                     </FormControl>
 
-                    <FormControl mb={3} id="family_situation" isRequired>
+                    <FormControl mb={3} id="family_situation">
                         <FormLabel>Family Situation</FormLabel>
                         <Input
                             type="text"
@@ -159,7 +217,7 @@ const PatientForm = ({ closeModal, closeAndRefresh }) => {
                         />
                     </FormControl>
 
-                    <FormControl mb={3} id="emergency_contact_name" isRequired>
+                    <FormControl mb={3} id="emergency_contact_name">
                         <FormLabel>Emergency Contact Name</FormLabel>
                         <Input
                             type="text"
@@ -169,7 +227,7 @@ const PatientForm = ({ closeModal, closeAndRefresh }) => {
                         />
                     </FormControl>
 
-                    <FormControl mb={3} id="emergency_contact_number" isRequired>
+                    <FormControl mb={3} id="emergency_contact_number">
                         <FormLabel>Emergency Contact Phone Number</FormLabel>
                         <Input
                             type="tel"
@@ -185,10 +243,12 @@ const PatientForm = ({ closeModal, closeAndRefresh }) => {
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
                     Close
                 </Button>
-                <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" >
+                <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText={EditMode ? 'Updating' : 'Adding'}>
                     {/* add icon */}
-                    <BsPersonAdd />
-                    <Text ml="5px" >Add</Text>
+                    { EditMode ? <EditIcon /> :<BsPersonAdd /> }
+                    <Text ml="5px" >
+                        {EditMode ? 'Update' : 'Add'}
+                    </Text>
                 </Button>
             </Flex>
         </Form>)
