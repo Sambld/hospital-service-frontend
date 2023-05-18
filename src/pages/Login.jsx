@@ -45,6 +45,7 @@ async function loginUser(data) {
 const Login = ({ setUser }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -73,6 +74,16 @@ const Login = ({ setUser }) => {
       setLoading(false);
     });
 
+  }
+
+  const handleForgotPassword = () => {
+    toast({
+      title: "Forgot Password",
+      description: "Please contact your administrator.",
+      status: "info",
+      duration: 9000,
+      isClosable: true,
+    })
   }
   return (
     <Box h="100vh" bgGradient="linear(to-r, blue.700, blue.900)" display="flex" justifyContent="space-between" position="relative">
@@ -196,10 +207,12 @@ const Login = ({ setUser }) => {
                 <FormControl>
                   {/* checkbox */}
                   <HStack spacing="24px" justifyContent="space-between" alignItems="center">
-                    <Checkbox colorScheme="blue">
+                    <Checkbox colorScheme="blue" value={rememberMe} onChange={({ target }) => setRememberMe(target.checked)}>
                       Remember me
                     </Checkbox>
-                    <Link color="blue.400">Forgot password?</Link>
+                    <Link color="blue.400" onClick={handleForgotPassword}>
+                      Forgot password?
+                    </Link>
                   </HStack>
 
                 </FormControl>

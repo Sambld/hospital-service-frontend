@@ -20,8 +20,14 @@ export default function useUser() {
 
     const [user, setUser] = useState(getUser());
 
-    const saveUser = userInfo => {
-        const expirationDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 1 month from now
+    const saveUser = (userInfo, rememberMe) => {
+        let expirationDate = null;
+        if (rememberMe) {
+            expirationDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 1 month from now
+        } else {
+            expirationDate = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day from now
+        }
+
         document.cookie = `user=${JSON.stringify(userInfo.user)}; expires=${expirationDate.toUTCString()}; path=/; SameSite=None; Secure`;
         document.cookie = `token=${userInfo.access_token}; expires=${expirationDate.toUTCString()}; path=/;SameSite=None; Secure`;
 

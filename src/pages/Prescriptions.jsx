@@ -389,7 +389,7 @@ const Prescriptions = () => {
                             {(tabIndex == 0 ? PendingLoading : PastLoading) && (
                                 <Box>
                                     <Grid templateColumns={{ base: '1f', lg: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)' }} gap={6}>
-                                        {[1, 2, 3].map((i) => (
+                                        {[1].map((i) => (
                                             <Box display='flex' p='0px' key={i} borderRadius='md' boxShadow='md' overflow='hidden'>
                                                 <Skeleton w='100%' h='250px'>
                                                     <Text>Loading...</Text>

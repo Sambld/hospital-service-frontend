@@ -397,7 +397,6 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     setLoadingMonitoringSheet(true)
     useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets')
       .then((data) => {
-        console.log('hello')
         setLoadingMonitoringSheet(false)
         let monitoringSheetData = data.data || []
         if (monitoringSheetData.length > 0) {

@@ -62,7 +62,7 @@ const MedicalRecords = () => {
         const BASE_URL = '/medical-records';
         const DELIMITER = '&';
 
-        console.log(`${BASE_URL}${PARAMS ? `?${PARAMS}` : ''}`)
+        // console.log(`${BASE_URL}${PARAMS ? `?${PARAMS}` : ''}`)
         return `${BASE_URL}${PARAMS ? `?${PARAMS}` : ''}`;
     };
 
