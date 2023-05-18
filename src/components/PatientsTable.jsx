@@ -15,7 +15,10 @@ import {
     Icon,
     Text,
     IconButton,
-    Button
+    Button,
+    Skeleton,
+    SkeletonCircle,
+    SkeletonText,
 } from '@chakra-ui/react';
 import { FiExternalLink } from 'react-icons/fi';
 import { NavLink } from 'react-router-dom';
@@ -77,13 +80,45 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                     {patients && patients.length == 0 && <Tr><Td colSpan='5'><Text textAlign='center' fontWeight='bold' fontSize='xl'>No Data</Text></Td></Tr>}
                 </Tbody>
             </Table>
-            {!patients && <Center p='10px'>
+            {/* {!patients && <Center p='10px'>
                 <Spinner thickness='4px'
                     speed='0.65s'
                     emptyColor='gray.200'
                     color='blue.500'
                     size='xl' />
-            </Center>}
+            </Center>} */}
+            {!patients && (
+                <Box>
+                    {[1, 2, 3, 4, 5].map((i) => (
+                        <Box display='flex' p='10px' key={i}>
+                            <Skeleton boxSize='50px' borderRadius='md'>
+                                <Text>Loading...</Text>
+                            </Skeleton>
+                            <Skeleton w='30%' ml='5' borderRadius='md'>
+                                <Text ml='5'>Loading...</Text>
+                            </Skeleton>
+                            <Skeleton w='30%' ml='5' borderRadius='md'>
+                                <Text ml='5'>Loading...</Text>
+                            </Skeleton>
+                            <Skeleton w='30%' ml='5' borderRadius='md'>
+                                <Text ml='5'>Loading...</Text>
+                            </Skeleton>
+                            <Skeleton w='20%' ml='5' borderRadius='md'>
+                                <Text ml='5'>Loading...</Text>
+                            </Skeleton>
+                        </Box>
+                    ))}
+                    <Center p='10px' gap={2}>
+                        {[1, 2, 3].map((i) => (
+                            <Skeleton key={i}>
+                                <Text p={2} ml='5'>1</Text>
+                            </Skeleton>
+                        ))}
+                    </Center>
+
+                </Box>
+
+            )}
         </>
     );
 }

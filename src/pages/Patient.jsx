@@ -33,6 +33,7 @@ import {
     AlertDialogFooter,
     AlertDialogContent,
     AlertDialogOverlay,
+    Skeleton,
 } from "@chakra-ui/react";
 
 import { NavLink, useNavigate, useOutletContext, useParams, useSearchParams } from "react-router-dom";
@@ -189,10 +190,10 @@ const Patient = () => {
                 isClosable: true,
             })
         })
-        .finally(() => {
-            setDeleteLoading(false)
-            onPatientDeleteClose()
-        })
+            .finally(() => {
+                setDeleteLoading(false)
+                onPatientDeleteClose()
+            })
 
     }
 
@@ -374,13 +375,26 @@ const Patient = () => {
                                 </Card>
                             </Box>}
                         </TableContainer>
-                        {!patient && <Center p='10px'>
-                            <Spinner thickness='4px'
-                                speed='0.65s'
-                                emptyColor='gray.200'
-                                color='blue.500'
-                                size='xl' />
-                        </Center>}
+                        {!patient && (
+                            <Box mt={5}>
+                                <Grid maxW='100%' templateColumns={{ base: '1fr', xl: 'repeat(2, 1fr)' }} gap={4}>
+                                    <Box ml={5} display='flex' flexDirection='column' justifyContent='center' gap={4}>
+                                        <Skeleton w='100%' h='450px' borderRadius='md'>
+                                            <Text>Loading...</Text>
+                                        </Skeleton>
+                                        <Skeleton w='100%' h='250px' borderRadius='md'>
+                                            <Text>Loading...</Text>
+                                        </Skeleton>
+                                    </Box>
+                                    <Box ml={5} display='flex' flexDirection='column' gap={4}>
+                                        <Skeleton w='100%' h='130px' borderRadius='md'>
+                                            <Text>Loading...</Text>
+                                        </Skeleton>
+                                    </Box>
+
+                                </Grid>
+                            </Box>
+                        )}
                     </TabPanel>
                     <TabPanel>
                         {med['ok'] && <MedicalRecord medical_record={med['data']} user={user} editRecord={handleRecordEdit} />}

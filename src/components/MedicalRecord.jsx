@@ -128,9 +128,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   useEffect(() => {
     setExamination([])
     setObservation([])
-    setMonitoringSheetData([])
-    setMonitoringSheetRow(null)
-    setTreatments([])
+    // setMonitoringSheetData([])
+    // setMonitoringSheetRow(null)
+    // setTreatments([])
     setMonitoringSheetEditInfo(null)
     setPrescriptions([])
 
@@ -221,6 +221,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   }
 
   const handleTabsChange = (index) => {
+    setLoadingExamination(true)
+    setLoadingMonitoringSheet(true)
+    setLoadingPrescription(true)
     setTabIndex(index)
   }
 
@@ -238,13 +241,16 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         break;
       case 3:
         if (MonitoringSheetData.length == 0) {
+          handleMonitoringSheet()
+
         } else {
-          setMonitoringSheetData([])
-          setMonitoringSheetRow(null)
-          setTreatments([])
-          setMonitoringSheetEditInfo(null)
+
+          // setMonitoringSheetData([])
+          // setMonitoringSheetRow(null)
+          // setTreatments([])
+          // setMonitoringSheetEditInfo(null)
         }
-        handleMonitoringSheet()
+
         break;
       case 4:
         setPrescriptions([])
@@ -391,6 +397,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     setLoadingMonitoringSheet(true)
     useLoader('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets')
       .then((data) => {
+        console.log('hello')
         setLoadingMonitoringSheet(false)
         let monitoringSheetData = data.data || []
         if (monitoringSheetData.length > 0) {

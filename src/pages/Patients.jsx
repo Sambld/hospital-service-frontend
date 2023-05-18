@@ -28,9 +28,10 @@ import {
     MenuDivider,
     Flex,
     useToast,
+    Center
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { NavLink, Outlet, useOutlet, useSearchParams, useNavigate, useOutletContext } from "react-router-dom";
+import { NavLink, Link, Outlet, useOutlet, useSearchParams, useNavigate, useOutletContext } from "react-router-dom";
 import PatientsTable from "../components/PatientsTable";
 import Pagination from '../components/Pagination'
 import useLoader from "../hooks/useLoader";
@@ -159,7 +160,7 @@ const Patients = () => {
             setData(null)
             if (message.redirect === location.pathname + location.search) {
                 window.location.reload()
-            }else{
+            } else {
                 navigate(message.redirect)
                 useLoader(message.redirect).then(res => setData(res.data))
             }
@@ -170,7 +171,7 @@ const Patients = () => {
         if (message?.status === 'success') {
             onRecordClose()
         }
-        
+
         toast({
             title: message.title,
             status: message.status,
@@ -211,15 +212,25 @@ const Patients = () => {
             <Flex mr={3}>
                 <Breadcrumb fontSize={{ base: "md", lg: '3xl' }}>
                     <BreadcrumbItem>
-                        <NavLink to='/patients' color='blue.500'>
-                            <Text fontSize={{ base: "md", lg: '3xl' }} color='#2e3149' ml='20px'>Patients</Text>
-                        </NavLink>
+                        <Link to='/patients' color='red'>
+                            <Text
+                                fontSize={{ base: "md", lg: '3xl' }}
+                                color={outlet ? 'blue.700' : 'gray.500'}
+                                ml='20px'
+                            >
+                                Patients
+                            </Text>
+                        </Link>
                     </BreadcrumbItem>
 
                     <BreadcrumbItem>
                         {outlet && (
-                            patient ? <Text fontSize={{ base: "md", lg: '3xl' }} color='#2e3149' >{patient.first_name + " " + patient.last_name}</Text> : <Spinner thickness='4px' />)
-                        }
+                            <Center h='54px' w='100%' >
+                                {
+                                patient ? <Text  fontSize={{ base: "md", lg: '3xl' }} color='#2e3149' >{patient.first_name + " " + patient.last_name}</Text> : <Spinner thickness='4px' />
+                                }
+                            </Center>
+                        )}
                         {!outlet &&
                             <Editable fontSize={{ base: 'md', lg: '3xl' }} color='#2e3149' onSubmit={handleSubmit} placeholder='ALL'>
                                 <EditablePreview ref={EditableSpanValue} />

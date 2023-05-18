@@ -1,4 +1,28 @@
-import { Box, Button, Center, Divider, Flex, Grid, GridItem, Heading, Icon, Input, Select, Spacer, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, useToast } from "@chakra-ui/react";
+import {
+    Box,
+    Button,
+    Center,
+    Divider,
+    Flex,
+    Grid,
+    GridItem,
+    Heading,
+    Icon,
+    Input,
+    Select,
+    Spacer,
+    Spinner,
+    Table,
+    Tbody,
+    Td,
+    Text,
+    Th,
+    Thead,
+    Tr,
+    useToast,
+    Breadcrumb,
+    BreadcrumbItem,
+} from "@chakra-ui/react";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -19,7 +43,7 @@ import { BsTable } from "react-icons/bs";
 import { FiBarChart2 } from "react-icons/fi";
 import useLoader from "../hooks/useLoader";
 import { useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, NavLink } from "react-router-dom";
 import AsyncSelect from 'react-select/async';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Title, Tooltip, Legend);
@@ -305,14 +329,14 @@ const Statistics = () => {
 
     return (
         <Box>
-            <Text
-                fontSize={30}
-                fontWeight="bold"
-                color="gray.500"
-                mb={5}
-            >
-                Statistics
-            </Text>
+            <Box mb={5} mt={1}>
+                <Breadcrumb fontSize={{ base: "md", lg: '3xl' }}>
+                    <BreadcrumbItem>
+                        <Text color="gray.500" fontSize={{ base: "md", lg: '3xl' }} ml='20px'>Statistics</Text>
+                    </BreadcrumbItem>
+                </Breadcrumb>
+            </Box>
+
             <Grid templateColumns={{ base: '1fr', xl: "repeat(3, 1fr)" }} gap={5}>
                 <GridItem w='100%' colSpan={2} >
                     <Flex overflow='hidden' pl={5} justifyContent='space-between'>

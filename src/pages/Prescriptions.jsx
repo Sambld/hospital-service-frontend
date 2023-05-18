@@ -36,6 +36,7 @@ import {
     Textarea,
     Heading,
     Select,
+    Skeleton,
 } from "@chakra-ui/react";
 import { FaPrescriptionBottleAlt, FaUserMd } from "react-icons/fa";
 import { AiFillFile, AiOutlineClockCircle } from "react-icons/ai";
@@ -281,10 +282,12 @@ const Prescriptions = () => {
 
     const handleTabsChange = (index) => {
         if (index === 0) {
+            setPastLoading(true)
             setPrescriptions([])
             setTabIndex(index)
             navigate('/prescriptions?status=pending')
         } else if (index === 1) {
+            setPendingLoading(true)
             setPastPrescriptions([])
             setTabIndex(index)
             navigate('/prescriptions?status=past')
@@ -383,13 +386,26 @@ const Prescriptions = () => {
                                         </GridItem>
                                     ))}
                             </Grid>
-                            {(tabIndex == 0 ? PendingLoading : PastLoading) && <Center p='10px'>
-                                <Spinner thickness='4px'
-                                    speed='0.65s'
-                                    emptyColor='gray.200'
-                                    color='blue.500'
-                                    size='xl' />
-                            </Center>}
+                            {(tabIndex == 0 ? PendingLoading : PastLoading) && (
+                                <Box>
+                                    <Grid templateColumns={{ base: '1f', lg: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)' }} gap={6}>
+                                        {[1, 2, 3].map((i) => (
+                                            <Box display='flex' p='0px' key={i} borderRadius='md' boxShadow='md' overflow='hidden'>
+                                                <Skeleton w='100%' h='250px'>
+                                                    <Text>Loading...</Text>
+                                                </Skeleton>
+                                            </Box>
+                                        ))}
+                                    </Grid>
+                                    <Center p='10px' gap={2} mt={5}>
+                                        {[1, 2, 3].map((i) => (
+                                            <Skeleton key={i}>
+                                                <Text p={2} ml='5'>1</Text>
+                                            </Skeleton>
+                                        ))}
+                                    </Center>
+                                </Box>
+                            )}
                             {(tabIndex == 0 ? PendingPrescriptions : PastPrescriptions) && (tabIndex == 0 ? PendingPrescriptions : PastPrescriptions).length === 0 && !(tabIndex == 0 ? PendingLoading : PastLoading) &&
                                 <Flex justifyContent='center' alignItems='center' h='100px'>
                                     <Text fontSize='20px' fontWeight='bold'>No {tabIndex == 0 ? 'Pending' : 'Past'} Prescriptions</Text>
@@ -440,7 +456,7 @@ const Prescriptions = () => {
                                             <Tr>
                                                 <Th w='300px'>Medicine</Th>
                                                 <Th textAlign='center'>Quantity</Th>
-                                                {tabIndex == 0 && ( <Th textAlign='center'>Available</Th>)}
+                                                {tabIndex == 0 && (<Th textAlign='center'>Available</Th>)}
                                                 <Th></Th>
                                             </Tr>
                                         </Thead>
@@ -450,7 +466,7 @@ const Prescriptions = () => {
                                                     <Tr key={index}>
                                                         <Td>{item.medicine.name}</Td>
                                                         <Td textAlign='center'>{item.quantity}</Td>
-                                                        {tabIndex == 0 && ( <Td textAlign='center'>{item.medicine.quantity}</Td>)}
+                                                        {tabIndex == 0 && (<Td textAlign='center'>{item.medicine.quantity}</Td>)}
                                                         <Td>
                                                             {item.status.toLowerCase() === 'pending' ? (
                                                                 <>

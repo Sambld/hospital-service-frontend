@@ -12,7 +12,10 @@ import {
     GridItem,
     Grid,
     Center,
-    Spinner
+    Spinner,
+    Skeleton,
+    Breadcrumb,
+    BreadcrumbItem,
 } from "@chakra-ui/react"
 
 // Icons
@@ -95,7 +98,15 @@ const MedicalRecords = () => {
     }
     return (
         <Box>
-            <Heading>Medical Records</Heading>
+            <Box mb={5} mt={1}>
+                <Breadcrumb fontSize={{ base: "md", lg: '3xl' }}>
+                    <BreadcrumbItem>
+                        <Text color="gray.500" fontSize={{ base: "md", lg: '3xl' }} ml='20px'>
+                            Medical Records
+                        </Text>
+                    </BreadcrumbItem>
+                </Breadcrumb>
+            </Box>
             <Box bg='white' w='100%' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
                 <Text fontSize='sm' color='gray.500' p='10px' align='right'>Showing {data && data.data.length} of {data && data.total} Medical Records</Text>
 
@@ -118,85 +129,85 @@ const MedicalRecords = () => {
                         onClick={getMedicalRecords}
                     />
                 </Box>
-                { showFilter &&
-                <Box bg='gray.50' border='2px' borderColor='gray.100' borderRadius={10} p='10px' mb='10px' w='100%' display='flex' flexDirection='column' gap={2}>
-                    <Box w='100%' display='flex' flexDirection='column' gap={2}>
-                        <Text fontWeight='bold' fontSize='md'>Filter By Date</Text>
-                        <Box w='100%' display='flex' justifyContent='space-between' alignItems='center' gap={2}>
+                {showFilter &&
+                    <Box bg='gray.50' border='2px' borderColor='gray.100' borderRadius={10} p='10px' mb='10px' w='100%' display='flex' flexDirection='column' gap={2}>
+                        <Box w='100%' display='flex' flexDirection='column' gap={2}>
+                            <Text fontWeight='bold' fontSize='md'>Filter By Date</Text>
                             <Box w='100%' display='flex' justifyContent='space-between' alignItems='center' gap={2}>
-                                <Text>From</Text>
-                                <Input
-                                    type='date'
-                                    bg='white'
-                                    value={searchParams.get('startDate') || ''}
-                                    onChange={(e) => handleSearchParams({ startDate: e.target.value })}
-                                />
+                                <Box w='100%' display='flex' justifyContent='space-between' alignItems='center' gap={2}>
+                                    <Text>From</Text>
+                                    <Input
+                                        type='date'
+                                        bg='white'
+                                        value={searchParams.get('startDate') || ''}
+                                        onChange={(e) => handleSearchParams({ startDate: e.target.value })}
+                                    />
+                                </Box>
+                                <Divider orientation='vertical' />
+                                <Box w='100%' display='flex' justifyContent='space-between' alignItems='center' gap={2}>
+                                    <Text>To:</Text>
+                                    <Input
+                                        type='date'
+                                        bg='white'
+                                        value={searchParams.get('endDate') || ''}
+                                        onChange={(e) => handleSearchParams({ endDate: e.target.value })}
+                                    />
+                                </Box>
                             </Box>
-                            <Divider orientation='vertical' />
-                            <Box w='100%' display='flex' justifyContent='space-between' alignItems='center' gap={2}>
-                                <Text>To:</Text>
-                                <Input
-                                    type='date'
-                                    bg='white'
-                                    value={searchParams.get('endDate') || ''}
-                                    onChange={(e) => handleSearchParams({ endDate: e.target.value })}
-                                />
+                        </Box>
+                        <Box w='100%' display='flex' flexDirection='column' gap={2}>
+                            <Text fontWeight='bold' fontSize='md'>Filter By Status</Text>
+                            <Box w='100%' display='flex' gap={2}>
+                                <Button
+                                    bg={searchParams.get('status') != 'active' && searchParams.get('status') != 'close' ? 'gray.600' : 'gray.50'}
+                                    color={searchParams.get('status') != 'active' && searchParams.get('status') != 'close' ? 'white' : null}
+                                    onClick={() => handleSearchParams({ status: 'all' })}
+                                >
+                                    All
+                                </Button>
+                                <Button
+                                    bg={searchParams.get('status') === 'active' ? 'green.600' : 'gray.50'}
+                                    color={searchParams.get('status') === 'active' ? 'white' : null}
+                                    onClick={() => handleSearchParams({ status: 'active' })}
+                                >
+                                    Active
+                                </Button>
+                                <Button
+                                    bg={searchParams.get('status') === 'close' ? 'red.600' : 'gray.50'}
+                                    color={searchParams.get('status') === 'close' ? 'white' : null}
+                                    onClick={() => handleSearchParams({ status: 'close' })}
+                                >
+                                    Close
+                                </Button>
                             </Box>
                         </Box>
-                    </Box>
-                    <Box w='100%' display='flex' flexDirection='column' gap={2}>
-                        <Text fontWeight='bold' fontSize='md'>Filter By Status</Text>
-                        <Box w='100%' display='flex' gap={2}>
-                            <Button
-                                bg={searchParams.get('status') != 'active' && searchParams.get('status') != 'close' ? 'gray.600' : 'gray.50'}
-                                color={searchParams.get('status') != 'active' && searchParams.get('status') != 'close' ? 'white' : null}
-                                onClick={() => handleSearchParams({ status: 'all' })}
-                            >
-                                All
-                            </Button>
-                            <Button
-                                bg={searchParams.get('status') === 'active' ? 'green.600' : 'gray.50'}
-                                color={searchParams.get('status') === 'active' ? 'white' : null}
-                                onClick={() => handleSearchParams({ status: 'active' })}
-                            >
-                                Active
-                            </Button>
-                            <Button
-                                bg={searchParams.get('status') === 'close' ? 'red.600' : 'gray.50'}
-                                color={searchParams.get('status') === 'close' ? 'white' : null}
-                                onClick={() => handleSearchParams({ status: 'close' })}
-                            >
-                                Close
-                            </Button>
+                        <Box w='100%' display='flex' flexDirection='column' gap={2}>
+                            <Text fontWeight='bold' fontSize='md'>Filter By Id</Text>
+                            <Box w='100%' display='flex' gap={2}>
+                                <Button
+                                    bg={searchParams.get('id') != 'all' && searchParams.get('id') != 'mineOnly' ? 'gray.600' : 'gray.50'}
+                                    color={searchParams.get('id') != 'all' && searchParams.get('id') != 'mineOnly' ? 'white' : null}
+                                    onClick={() => handleSearchParams({ id: null })}
+                                >
+                                    All
+                                </Button>
+                                <Button
+                                    bg={searchParams.get('id') === 'mineOnly' ? 'green.600' : 'gray.50'}
+                                    color={searchParams.get('id') === 'mineOnly' ? 'white' : null}
+                                    onClick={() => handleSearchParams({ id: 'mineOnly' })}
+                                >
+                                    Only Mine
+                                </Button>
+                            </Box>
                         </Box>
-                    </Box>
-                    <Box w='100%' display='flex' flexDirection='column' gap={2}>
-                        <Text fontWeight='bold' fontSize='md'>Filter By Id</Text>
-                        <Box w='100%' display='flex' gap={2}>
-                            <Button
-                                bg={searchParams.get('id') != 'all' && searchParams.get('id') != 'mineOnly' ? 'gray.600' : 'gray.50'}
-                                color={searchParams.get('id') != 'all' && searchParams.get('id') != 'mineOnly' ? 'white' : null}
-                                onClick={() => handleSearchParams({ id: null })}
-                            >
-                                All
-                            </Button>
-                            <Button
-                                bg={searchParams.get('id') === 'mineOnly' ? 'green.600' : 'gray.50'}
-                                color={searchParams.get('id') === 'mineOnly' ? 'white' : null}
-                                onClick={() => handleSearchParams({ id: 'mineOnly' })}
-                            >
-                                Only Mine
-                            </Button>
-                        </Box>
-                    </Box>
-                    {/* <IconButton
+                        {/* <IconButton
                         colorScheme='blackAlpha'
                         bg='gray.600'
                         aria-label='Refresh'
                         icon={<BiRefresh size={25} />}
                         onClick={getMedicalRecords}
                     /> */}
-                    {/* <Box w='100%' display='flex' flexDirection='column' gap={2}>
+                        {/* <Box w='100%' display='flex' flexDirection='column' gap={2}>
                         <Text fontWeight='bold' fontSize='md'>Filter By Medical Record ID</Text>
                         <Input
                             type='text'
@@ -207,7 +218,7 @@ const MedicalRecords = () => {
                     </Box> */}
 
 
-                    {/* <Button
+                        {/* <Button
                         colorScheme='blackAlpha'
                         bg='gray.600'
                         leftIcon={<BiRefresh size={25} />}
@@ -216,7 +227,7 @@ const MedicalRecords = () => {
                         Refresh
                     </Button> */}
 
-                </Box>
+                    </Box>
                 }
                 <Box>
                     <Box>
@@ -262,13 +273,33 @@ const MedicalRecords = () => {
                             ))}
                         </Grid>
                         {data?.data?.length === 0 && <Text textAlign='center' fontWeight='bold' fontSize='xl'>No Data</Text>}
-                        {loading && <Center p='10px'>
+                        {/* {loading && <Center p='10px'>
                             <Spinner thickness='5px'
                                 speed='0.65s'
                                 emptyColor='gray.200'
                                 color='gray.500'
                                 size='xl' />
-                        </Center>}
+                        </Center>} */}
+                        {loading && (
+                            <Box>
+                                <Grid templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' }} gap={6}>
+                                    {[1, 2, 3, 4].map((i) => (
+                                        <Box display='flex' p='0px' key={i} borderRadius='md' boxShadow='md' overflow='hidden'>
+                                            <Skeleton w='100%' h='200px'>
+                                                <Text>Loading...</Text>
+                                            </Skeleton>
+                                        </Box>
+                                    ))}
+                                </Grid>
+                                <Center p='10px' gap={2} mt={5}>
+                                    {[1, 2, 3].map((i) => (
+                                        <Skeleton key={i}>
+                                            <Text p={2} ml='5'>1</Text>
+                                        </Skeleton>
+                                    ))}
+                                </Center>
+                            </Box>
+                        )}
                         {
                             data && data.last_page > 1 &&
                             <Pagination pagination={data} action={handlePagination} />
@@ -276,7 +307,7 @@ const MedicalRecords = () => {
                     </Box>
                 </Box>
             </Box>
-        </Box>
+        </Box >
     );
 }
 

@@ -22,7 +22,7 @@ import {
     ModalCloseButton,
     Spinner
 } from "@chakra-ui/react";
-import { NavLink, Outlet, useNavigate, useOutletContext, useOutlet, useSearchParams } from "react-router-dom";
+import { NavLink, Link, Outlet, useNavigate, useOutletContext, useOutlet, useSearchParams } from "react-router-dom";
 
 // Hooks
 import { useEffect, useState } from "react";
@@ -158,11 +158,17 @@ const Medicines = () => {
     return (
         <Box>
             <Flex mr={3}>
-                <Breadcrumb fontSize={{ base: "md", lg: '3xl' }}>
+                <Breadcrumb fontSize={{ base: "md", lg: '3xl' }} mt={1}>
                     <BreadcrumbItem>
-                        <NavLink to='/medicines' color='blue.500'>
-                            <Text fontSize={{ base: "md", lg: '3xl' }} color='#2e3149' ml='20px'>Medicines</Text>
-                        </NavLink>
+                        <Link to='/medicines' color='blue.500'>
+                            <Text
+                                fontSize={{ base: "md", lg: '3xl' }}
+                                color={outlet ? 'blue.700' : 'gray.500'}
+                                ml='20px'
+                            >
+                                Medicines
+                            </Text>
+                        </Link>
                     </BreadcrumbItem>
 
                     {outlet && (
@@ -173,8 +179,9 @@ const Medicines = () => {
                     }
 
                 </Breadcrumb>
+
                 <Spacer />
-                {user.role== 'administrator' || user.role== 'pharmacist' &&  !outlet && (
+                {user.role == 'administrator' || user.role == 'pharmacist' && !outlet && (
                     <Menu>
                         <MenuButton w='120px' colorScheme='blue.300' bg='blue.700' color='gray.100' as={Button} rightIcon={<ChevronDownIcon />} >
                             ADD

@@ -1,13 +1,13 @@
-import { Table, Thead, Tbody, Tr, Th, Td, InputGroup, InputLeftElement, Input, Image, Spinner, Center, Box, Icon, Text, IconButton, Button } from '@chakra-ui/react';
+import { Table, Thead, Tbody, Tr, Th, Td, InputGroup, InputLeftElement, Input, Image, Spinner, Center, Box, Icon, Text, IconButton, Button, Skeleton } from '@chakra-ui/react';
 import { NavLink } from 'react-router-dom';
 import { SearchIcon } from '@chakra-ui/icons';
 import { TbMedicineSyrup } from 'react-icons/tb';
-import {AiFillFolderOpen} from 'react-icons/ai'
+import { AiFillFolderOpen } from 'react-icons/ai'
 
 const MedicinesTable = ({ initValue, medicines, count, search }) => {
     return (
         <>
-            <Text fontSize='sm' color='gray.500' p='10px' align='right'>{count ? count  : medicines ? '0' : '-' } Medicines</Text>
+            <Text fontSize='sm' color='gray.500' p='10px' align='right'>{count ? count : medicines ? '0' : '-'} Medicines</Text>
             <Table variant='simple' colorScheme='blackAlpha'>
                 <Thead>
                     <Tr bg='#fafafa'>
@@ -37,13 +37,34 @@ const MedicinesTable = ({ initValue, medicines, count, search }) => {
                     {medicines && medicines.length == 0 && <Tr><Td colSpan='5'><Text textAlign='center' fontWeight='bold' fontSize='xl'>No Data</Text></Td></Tr>}
                 </Tbody>
             </Table>
-            {!medicines && <Center p='10px'>
-                <Spinner thickness='5px'
-                    speed='0.65s'
-                    emptyColor='gray.200'
-                    color='gray.500'
-                    size='xl' />
-            </Center>}
+            {!medicines && (
+                <Box>
+                    {[1, 2, 3, 4, 5].map((i) => (
+                        <Box display='flex' p='10px' key={i}>
+                            <Skeleton w='60%' ml='5' h='50px'>
+                                <Text ml='5'>Loading...</Text>
+                            </Skeleton>
+                            <Skeleton w='10%' ml='5'>
+                                <Text ml='5'>Loading...</Text>
+                            </Skeleton>
+                            <Skeleton w='30%' ml='5'>
+                                <Text ml='5'>Loading...</Text>
+                            </Skeleton>
+                            <Skeleton w='20%' ml='5'>
+                                <Text ml='5'>Loading...</Text>
+                            </Skeleton>
+                        </Box>
+                    ))}
+                    <Center p='10px' gap={2}>
+                        {[1, 2, 3].map((i) => (
+                            <Skeleton key={i}>
+                                <Text p={2} ml='5'>1</Text>
+                            </Skeleton>
+                        ))}
+                    </Center>
+
+                </Box>
+            )}
         </>
     );
 }

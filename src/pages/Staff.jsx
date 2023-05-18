@@ -49,6 +49,7 @@ import {
     Flex,
     Avatar,
     IconButton,
+    Skeleton,
 } from "@chakra-ui/react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
@@ -218,7 +219,7 @@ const Staff = () => {
         if (message?.status === 'success') {
             onStaffClose()
         }
-        
+
         toast({
             title: message.title,
             status: message.status,
@@ -336,13 +337,24 @@ const Staff = () => {
                     }
                 </Grid>
                 {!data &&
-                    <Center p='10px'>
-                        <Spinner thickness='7px'
-                            speed='0.65s'
-                            emptyColor='gray.200'
-                            color='gray.500'
-                            size='xl' />
-                    </Center>
+                    <Box>
+                        <Grid templateColumns={{ base: '1f', lg: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)' }} gap={6}>
+                            {[1].map((i) => (
+                                <Box display='flex' p='0px' key={i} borderRadius='md' boxShadow='md' overflow='hidden'>
+                                    <Skeleton w='100%' h='200px'>
+                                        <Text>Loading...</Text>
+                                    </Skeleton>
+                                </Box>
+                            ))}
+                        </Grid>
+                        <Center p='10px' gap={2} mt={5}>
+                            {[1, 2, 3].map((i) => (
+                                <Skeleton key={i}>
+                                    <Text p={2} ml='5'>1</Text>
+                                </Skeleton>
+                            ))}
+                        </Center>
+                    </Box>
                 }
                 {data && data.data.length === 0 && (
                     <Box p='10px' display='flex' flexDirection='column' alignItems='center' justifyContent='center' gap={2}>

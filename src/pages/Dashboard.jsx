@@ -25,6 +25,7 @@ import {
     Input,
     FormControl,
     Flex,
+    Skeleton,
 
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -328,7 +329,7 @@ const Dashboard = () => {
                         ]
                     ]
                 })
-                setData((pres)=>({
+                setData((pres) => ({
                     ...pres,
                     headerTitle: 'Lastest Filled Monitoring Sheet',
                     column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
@@ -527,7 +528,7 @@ const Dashboard = () => {
                             borderRadius='xl'
                         >
                             <Heading size="md">
-                                {user?.role == "doctor" ? 'Active Medical Records' : user?.role == 'nurse' ? 'Today Available Monitoring Sheet': 'Pending Prescription'}
+                                {user?.role == "doctor" ? 'Active Medical Records' : user?.role == 'nurse' ? 'Today Available Monitoring Sheet' : 'Pending Prescription'}
                             </Heading>
                             <Box p={5} display='flex' alignItems='center' justifyContent='flex-end'>
                                 <Text textAlign='right' fontSize={40}>{data.count || 0}</Text>
@@ -830,13 +831,19 @@ const Dashboard = () => {
                         }
                         {
                             infoLoading && (
-                                <Center p='10px' bg='white' borderBottomRadius='md' boxShadow='md'>
-                                    <Spinner thickness='4px'
-                                        speed='0.65s'
-                                        emptyColor='gray.200'
-                                        color='gray.500'
-                                        size='lg' />
-                                </Center>
+                                <Box bg='white' borderBottomRadius='md' boxShadow='md'>
+                                    {[1, 2].map((i) => (
+                                        <Box display='flex' p='10px' key={i}>
+                                            <Skeleton w='100%' h='50px'>
+                                                <Text ml='5'>Loading...</Text>
+                                            </Skeleton>
+                                            <Skeleton w='30%' ml={2} h='50px'>
+                                                <Text ml='5'>Loading...</Text>
+                                            </Skeleton>
+                                        </Box>
+                                    ))}
+
+                                </Box>
                             )
                         }
                     </GridItem>

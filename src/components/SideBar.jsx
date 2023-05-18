@@ -2,6 +2,7 @@ import { HStack, List, ListIcon, ListItem, Spacer, Text } from "@chakra-ui/react
 import { NavLink } from "react-router-dom";
 import { RiFolderOpenLine, RiDashboardLine } from 'react-icons/ri'
 import { FiUsers } from 'react-icons/fi'
+import { HiOutlineUserGroup } from 'react-icons/hi'
 import { BsFileEarmarkMedical } from 'react-icons/bs'
 import { MdOutlineMedicalServices, MdOutlineSick } from 'react-icons/md'
 import { useState } from "react";
@@ -15,7 +16,7 @@ const SideBarItems = (user) => {
   ];
   try {
     if (user.role === 'administrator') {
-      items.push({ name: 'Staff', icon: <FiUsers size={23} />, link: '/staff' });
+      items.push({ name: 'Staff', icon: <HiOutlineUserGroup size={23} />, link: '/staff' });
     } else if (user.role === 'doctor') {
       items.push({ name: 'Patients', icon: <MdOutlineSick size={23} />, link: '/patients' });
       items.push({ name: 'Medical Records' , icon: <RiFolderOpenLine size={23} />, link: '/medical-records' });
