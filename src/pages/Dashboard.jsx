@@ -118,12 +118,12 @@ const Dashboard = () => {
     }
 
     const getDashboardData = () => {
-        setData({
+        setData((prev) => ({
+            ...prev,
             headerTitle: '',
             column: [],
             data: [],
-            count: 0
-        })
+        }))
 
         if (user.role === 'administrator') {
             getUserCount()
@@ -208,7 +208,7 @@ const Dashboard = () => {
                 })
                 setData((prevFormData) => ({
                     ...prevFormData,
-                    headerTitle: 'Lastest Monitoring Sheet Updates',
+                    headerTitle: 'Active Medical Records',
                     column: ['Medical Record', 'filled by', 'Action'],
                     data: data,
                 }))
@@ -328,12 +328,12 @@ const Dashboard = () => {
                         ]
                     ]
                 })
-                setData({
+                setData((pres)=>({
+                    ...pres,
                     headerTitle: 'Lastest Filled Monitoring Sheet',
                     column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
                     data: data,
-                    count: res.length
-                })
+                }))
             })
             .catch(err => {
                 setInfoLoading(false)
@@ -351,7 +351,7 @@ const Dashboard = () => {
     const getPendingMedicalRequests = (date, count = false) => {
         let SearchDate = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
         setInfoLoading(true)
-        useLoader('/medicine-requests?status=Approved&count=true')
+        useLoader('/prescriptions?status=open&count=true')
             .then(res => {
                 setData((prev) => ({
                     ...prev,
@@ -522,12 +522,12 @@ const Dashboard = () => {
                             p={5}
                             boxShadow='md'
                             borderWidth="1px"
-                            bgGradient='linear(to-l, #d01414, #803535)'
+                            bgGradient='linear(to-l, #56ff69, #04951a)'
                             color='white'
                             borderRadius='xl'
                         >
                             <Heading size="md">
-                            Pending Prescription
+                                {user?.role == "doctor" ? 'Active Medical Records' : user?.role == 'nurse' ? 'Today Available Monitoring Sheet': 'Pending Prescription'}
                             </Heading>
                             <Box p={5} display='flex' alignItems='center' justifyContent='flex-end'>
                                 <Text textAlign='right' fontSize={40}>{data.count || 0}</Text>
@@ -792,7 +792,7 @@ const Dashboard = () => {
                                                 <Tr>
                                                     {data && data?.column.map((item, index) =>
                                                     (
-                                                        <Th key={index}  w='70%'>{item}</Th>
+                                                        <Th key={index} w='70%'>{item}</Th>
                                                     )
                                                     )}
                                                 </Tr>
