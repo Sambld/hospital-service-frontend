@@ -23,17 +23,25 @@ import {
 import { FiExternalLink } from 'react-icons/fi';
 import { NavLink } from 'react-router-dom';
 import { SearchIcon } from '@chakra-ui/icons';
+
 import { BsGenderFemale, BsGenderMale } from 'react-icons/bs';
 import { AiFillFolderOpen } from 'react-icons/ai'
 
+// Translation
+import { useTranslation } from 'react-i18next';
+
+
 const PatientsTable = ({ initValue, patients, count, search }) => {
+
+    const { t, i18n } = useTranslation();
+
     return (
         <>
             <Table variant='simple' colorScheme='blackAlpha'>
                 <Thead>
                     <Tr bg='#fafafa'>
                         <Th w='50px' p='5'><Text fontSize='sm' p='0px'>#</Text></Th>
-                        <Th maxW='172px'>
+                        <Th>
                             <InputGroup>
                                 <InputLeftElement
                                     pointerEvents='none'
@@ -42,10 +50,17 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                                 <Input defaultValue={initValue} variant='flushed' type='text' placeholder='Search by Name' onChange={({ target }) => { search(target.value) }} />
                             </InputGroup>
                         </Th>
-                        <Th>Phone Number</Th>
-                        <Th>birth Info</Th>
+                        <Th display={{ base: 'none', lg: 'table-cell' }}>
+                            {t('patient.phoneNumber')}
+                        </Th>
+                        <Th display={{ base: 'none', xl: 'table-cell' }}>
+                            {t('patient.birthDate')}
+                        </Th>
                         <Th w='200px'>
-                            <Text fontSize='sm' color='gray.500' p='10px' align='right'>{count ? count : patients ? '0' : '-'} Patients</Text>
+                            <Text fontSize='sm' color='gray.500' p='10px' align='right'>
+                                {count ? count : patients ? '0' : '-'} {" "}
+                                {t('patient.title')} 
+                            </Text>
 
                         </Th>
                     </Tr>
@@ -62,8 +77,8 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                                 />
                             </Td>
                             <Td><Text fontWeight='normal' fontSize={{ base: 'sm', lg: 'lg' }}>{patient.first_name + " " + patient.last_name}</Text></Td>
-                            <Td fontSize={{ base: 'sm', lg: 'lg' }}>{patient.phone_number}</Td>
-                            <Td fontSize={{ base: 'sm', lg: 'lg' }}>
+                            <Td display={{ base: 'none', lg: 'table-cell' }} fontSize={{ base: 'sm', lg: 'lg' }}>{patient.phone_number}</Td>
+                            <Td display={{ base: 'none', xl: 'table-cell' }} fontSize={{ base: 'sm', lg: 'lg' }}>
                                 <Text fontSize={{ base: 'sm', lg: 'lg' }}>{patient.birth_date}</Text>
                                 <Text fontSize={{ base: 'xs', lg: 'sm' }} color='gray.500'>{patient.place_of_birth}</Text>
                             </Td>
@@ -71,7 +86,9 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                                 <NavLink to={patient.id.toString()} style={{ 'display': 'block', 'borderRadius': '5px' }}>
                                     <Button colorScheme={(patient.gender == 'Male') ? 'blue' : 'pink'} w='100%' p={0}>
                                         <AiFillFolderOpen size={20} />
-                                        <Text ml={1}>Open</Text>
+                                        <Text ml={1}>
+                                            {t('patient.open')}
+                                        </Text>
                                     </Button>
                                 </NavLink>
                             </Td>
@@ -89,7 +106,8 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
             </Center>} */}
             {!patients && (
                 <Box>
-                    {[1, 2, 3, 4, 5].map((i) => (
+                    {/* array 1 to 15 */}
+                    {[...Array(15)].map((i) => (
                         <Box display='flex' p='10px' key={i}>
                             <Skeleton boxSize='50px' borderRadius='md'>
                                 <Text>Loading...</Text>

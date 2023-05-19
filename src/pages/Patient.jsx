@@ -52,6 +52,9 @@ import useLoader from "../hooks/useLoader";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import useDelete from "../hooks/useDelete";
 
+// Translations
+import { useTranslation } from "react-i18next";
+
 const SummaryItem = ({ label, children }) => (
     <Box w='100%' display='flex' flexDirection='row' justifyContent='space-between'>
         <Text pt='2' fontSize='lg' fontWeight="bold">{label}:</Text>
@@ -63,6 +66,8 @@ const Patient = () => {
     const { id } = useParams()
     const [searchParams, setSearchParams] = useSearchParams()
     const toast = useToast()
+
+    const { t, i18n } = useTranslation()
 
     const [patient, setpatient] = useState(null)
     const { setPatient: setPatientInfo, user, handleRecordEdit, handlePatientEdit } = useOutletContext()
@@ -211,10 +216,10 @@ const Patient = () => {
                 404
             </Text>
             <Text textAlign='center' fontSize={30}>
-                Patient Not Found
+                {t('patientNotFound')}
             </Text>
             <Text textAlign='center' fontSize={15}>
-                (Please check the id and try again)
+                ({t('checkId')})
             </Text>
         </Box>
     )
@@ -222,8 +227,12 @@ const Patient = () => {
         <>
             <Tabs index={tabIndex} onChange={handleTabsChange}>
                 <TabList>
-                    <Tab>Patient</Tab>
-                    <Tab isDisabled={med['ok'] ? false : true}>Medical Record</Tab>
+                    <Tab>
+                        {t('patient.patient')}
+                    </Tab>
+                    <Tab isDisabled={med['ok'] ? false : true}>
+                        {t('medicalRecord.medicalRecord')}
+                    </Tab>
                 </TabList>
 
                 <TabPanels>
@@ -242,37 +251,37 @@ const Patient = () => {
                                                                     fontSize={25}
                                                                     color='gray.700'
                                                                 >
-                                                                    Information:
+                                                                    {t('patient.details.information')}:
                                                                 </Text>
                                                                 <Box mt={4}>
                                                                     <Table className={styles.table} variant="unstyled">
                                                                         <Tbody fontSize={18}>
                                                                             <Tr >
-                                                                                <Td color='gray.700'><Text>Name:</Text></Td>
+                                                                                <Td color='gray.700'><Text>{t('patient.details.name')}::</Text></Td>
                                                                                 <Td color='gray.500'>{patient.first_name + " " + patient.last_name}</Td>
                                                                             </Tr>
                                                                             <Tr>
-                                                                                <Td color='gray.700'>Phone number:</Td>
+                                                                                <Td color='gray.700'>{t('patient.phoneNumber')}::</Td>
                                                                                 <Td color='gray.500'>{patient.phone_number}</Td>
                                                                             </Tr>
                                                                             <Tr>
-                                                                                <Td color='gray.700'>Birth date:</Td>
+                                                                                <Td color='gray.700'>{t('patient.birthDate')}:</Td>
                                                                                 <Td color='gray.500'>{patient.birth_date}</Td>
                                                                             </Tr>
                                                                             <Tr>
-                                                                                <Td color='gray.700'>Place of birth:</Td>
+                                                                                <Td color='gray.700'>{t('patient.details.placeOfBirth')}:</Td>
                                                                                 <Td color='gray.500'>{patient.place_of_birth}</Td>
                                                                             </Tr>
                                                                             <Tr>
-                                                                                <Td color='gray.700'>Gender:</Td>
+                                                                                <Td color='gray.700'>{t('patient.details.gender')}:</Td>
                                                                                 <Td color='gray.500'>{patient.gender}</Td>
                                                                             </Tr>
                                                                             <Tr>
-                                                                                <Td color='gray.700'>Nationality:</Td>
+                                                                                <Td color='gray.700'>{t('patient.details.nationality')}:</Td>
                                                                                 <Td color='gray.500'>{patient.nationality}</Td>
                                                                             </Tr>
                                                                             <Tr>
-                                                                                <Td color='gray.700'>Address:</Td>
+                                                                                <Td color='gray.700'>{t('patient.details.address')}:</Td>
                                                                                 <Td color='gray.500'>{patient.address}</Td>
                                                                             </Tr>
                                                                         </Tbody>
@@ -284,17 +293,17 @@ const Patient = () => {
                                                                     fontSize={25}
                                                                     color='red.700'
                                                                 >
-                                                                    Emergency Information:
+                                                                    {t('patient.details.emergencyInformation')}:
                                                                 </Text>
                                                                 <Box mt={4}>
                                                                     <Table className={styles.tableRed} variant="unstyled">
                                                                         <Tbody fontSize={18}>
                                                                             <Tr >
-                                                                                <Td color='red.700'><Text>Emergency Contact Name:</Text></Td>
+                                                                                <Td color='red.700'><Text>{t('patient.details.emergencyContactName')}:</Text></Td>
                                                                                 <Td color='gray.500'>{patient.emergency_contact_name}</Td>
                                                                             </Tr>
                                                                             <Tr>
-                                                                                <Td color='red.700'>Emergency Contact Phone:</Td>
+                                                                                <Td color='red.700'>{t('patient.details.emergencyContactPhone')}:</Td>
                                                                                 <Td color='gray.500'>{patient.emergency_contact_number}</Td>
                                                                             </Tr>
                                                                         </Tbody>
@@ -320,30 +329,30 @@ const Patient = () => {
                                                         gap='1px'
                                                     >
                                                         <Button leftIcon={<EditIcon />} bg='white' w='50%' variant='outline' border={0} colorScheme="green" type="submit" borderRadius={0} onClick={() => handlePatientEdit(patient)}>
-                                                            Edit
+                                                            {t('patient.details.edit')}
                                                         </Button>
                                                         <Button leftIcon={<DeleteIcon />} bg='white' w='50%' variant='outline' border={0} colorScheme="red" type="submit" borderRadius={0} onClick={() => onPatientDeleteOpen()}>
-                                                            Delete
+                                                            {t('patient.details.delete')}
                                                         </Button>
                                                     </Box>
                                                 )}
                                                 <Box p={0} bg='gray.50' boxShadow='lg' borderRadius='lg' border='2px' borderColor='gray.300' overflow='hidden'>
                                                     <Heading p='10px' size='md' color='gray.700' textTransform='uppercase' w='100%'>
-                                                        Medical Records
+                                                        {t('medicalRecord.title')}
                                                     </Heading>
                                                     {/* only doctor  */}
                                                     <Box p={2} >
                                                         <Accordion p={0} bg='gray.50' width='100%' border='4px' borderColor='gray.300' borderRadius='md' allowToggle>
                                                             {/* if there is no record */}
-                                                            {RecordList && RecordList.length === 0 && <Text bg='gray.100' textAlign='center' p={2} mt='0' fontSize={20}>NO MEDICAL RECORDS FOUND</Text>}
+                                                            {RecordList && RecordList.length === 0 && <Text bg='gray.100' textAlign='center' p={2} mt='0' fontSize={20}>{t('patient.details.noMedicalRecordFound')}</Text>}
                                                             {RecordList && RecordList.map((record, index) => (
                                                                 <AccordionItem bg='white' key={index}>
                                                                     <h2>
                                                                         <AccordionButton _expanded={{ bg: record.patient_leaving_date ? 'red.500' : 'green.500', color: 'white' }}>
                                                                             <Box fontSize='lg' as="span" flex='1' textAlign='left'>
-                                                                                <Text>Medical Record #{record.id}
-                                                                                    {record.patient_leaving_date ? ' - Discharged ' : ' - In Hospital '}
-                                                                                    {record.user_id == user.id ? '(owned)' : ''}
+                                                                                <Text>{t('medicalRecord.medicalRecord')} #{record.id}
+                                                                                    {record.patient_leaving_date ? ' - ' + t('medicalRecord.discharged') + " " : ' - ' + t('medicalRecord.inHospital') + " "}
+                                                                                    {record.user_id == user.id ? '(' + t('medicalRecord.owned') + ')' : ''}
                                                                                 </Text>
                                                                             </Box>
                                                                             <AccordionIcon />
@@ -351,14 +360,14 @@ const Patient = () => {
                                                                     </h2>
                                                                     <AccordionPanel border='4px' borderTop={0} borderColor={record.patient_leaving_date ? 'red.500' : 'green.500'} pb={4} color='gray.900'>
                                                                         <Text pt='2' fontSize='md'>
-                                                                            Entry day: {record.patient_entry_date}
+                                                                            {t('medicalRecord.entry_Day')}: {record.patient_entry_date}
                                                                         </Text>
                                                                         <Text pt='2' mb='5' fontSize='md'>
-                                                                            Leaving day: {record.patient_leaving_date ? record.patient_leaving_date : 'still in hospital'}
+                                                                            {t('medicalRecord.discharge_Day')}: {record.patient_leaving_date ? record.patient_leaving_date : t('medicalRecord.stillInHospital')}
                                                                         </Text>
                                                                         <NavLink to={"?med=" + record.id} onClick={() => handleMedChange(record.id)}>
                                                                             <Button colorScheme={record.patient_leaving_date ? 'red' : 'green'} width='100%' variant='solid' isLoading={loading}>
-                                                                                Open
+                                                                                {t('patient.open')}
                                                                             </Button>
                                                                         </NavLink>
                                                                     </AccordionPanel>

@@ -26,6 +26,9 @@ import { FaBriefcaseMedical } from 'react-icons/fa';
 import usePost from '../hooks/usePost';
 import usePut from '../hooks/usePut';
 
+// Translation
+import { useTranslation } from 'react-i18next';
+
 const MedicineForm = ({ closeModal, closeAndRefresh, editMode, medicine }) => {
     const [formData, setFormData] = useState({
         name: editMode ? medicine.name : '',
@@ -39,6 +42,8 @@ const MedicineForm = ({ closeModal, closeAndRefresh, editMode, medicine }) => {
     });
     const [loading, setLoading] = useState(false);
 
+    const { t, i18n } = useTranslation();
+
     const handleSubmit = (event) => {
         event.preventDefault();
         setLoading(true);
@@ -48,53 +53,53 @@ const MedicineForm = ({ closeModal, closeAndRefresh, editMode, medicine }) => {
         else {
             handleAdd();
         }
-        
+
     };
 
     const handleAdd = () => {
         setLoading(true);
         usePost('/medicines', formData)
-        .then((res) => {
-            setLoading(false);
-            closeAndRefresh(
-                {
-                    title: 'Medicine created successfully.',
-                    status: 'success',
-                    redirect: '/medicines/' + res.data.id,
-                }
-            )
-        }).catch((err) => {
-            setLoading(false);
-            closeAndRefresh(
-                {
-                    title: err.response.data.message,
-                    status: 'error',
-                }
-            )
-        })
+            .then((res) => {
+                setLoading(false);
+                closeAndRefresh(
+                    {
+                        title: 'Medicine created successfully.',
+                        status: 'success',
+                        redirect: '/medicines/' + res.data.id,
+                    }
+                )
+            }).catch((err) => {
+                setLoading(false);
+                closeAndRefresh(
+                    {
+                        title: err.response.data.message,
+                        status: 'error',
+                    }
+                )
+            })
     };
 
     const handleEdit = () => {
         setLoading(true);
         usePut('/medicines/' + medicine.id, formData)
-        .then((res) => {
-            setLoading(false);
-            closeAndRefresh(
-                {
-                    title: 'Medicine updated successfully.',
-                    status: 'success',
-                    redirect: '/medicines/' + medicine.id,
-                }
-            )
-        }).catch((err) => {
-            setLoading(false);
-            closeAndRefresh(
-                {
-                    title: err.response.data.message,
-                    status: 'error',
-                }
-            )
-        })
+            .then((res) => {
+                setLoading(false);
+                closeAndRefresh(
+                    {
+                        title: 'Medicine updated successfully.',
+                        status: 'success',
+                        redirect: '/medicines/' + medicine.id,
+                    }
+                )
+            }).catch((err) => {
+                setLoading(false);
+                closeAndRefresh(
+                    {
+                        title: err.response.data.message,
+                        status: 'error',
+                    }
+                )
+            })
     };
 
     const handleChange = (event) => {
@@ -108,7 +113,9 @@ const MedicineForm = ({ closeModal, closeAndRefresh, editMode, medicine }) => {
     return (
         <Form onSubmit={handleSubmit}>
             <FormControl mb={3} id="name" isRequired>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>
+                    {t('medicine.name')}
+                </FormLabel>
                 <Input
                     type="text"
                     name="name"
@@ -118,7 +125,9 @@ const MedicineForm = ({ closeModal, closeAndRefresh, editMode, medicine }) => {
             </FormControl>
 
             <FormControl mb={3} id="description" isRequired>
-                <FormLabel>description</FormLabel>
+                <FormLabel>
+                    {t('medicine.description')}
+                </FormLabel>
                 <Textarea
                     name="description"
                     value={formData.description}
@@ -127,7 +136,9 @@ const MedicineForm = ({ closeModal, closeAndRefresh, editMode, medicine }) => {
             </FormControl>
 
             <FormControl mb={3} id="category" isRequired>
-                <FormLabel>Category</FormLabel>
+                <FormLabel>
+                    {t('medicine.category')}
+                </FormLabel>
                 <Input
                     type="text"
                     name="category"
@@ -153,7 +164,9 @@ const MedicineForm = ({ closeModal, closeAndRefresh, editMode, medicine }) => {
             </FormControl> */}
 
             <FormControl mb={3} id="quantity" isRequired>
-                <FormLabel>Quantity</FormLabel>
+                <FormLabel>
+                    {t('medicine.quantity')}
+                </FormLabel>
                 <NumberInput
                     type="number"
                     name="quantity"

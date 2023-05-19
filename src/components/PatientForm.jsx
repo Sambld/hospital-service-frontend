@@ -17,6 +17,7 @@ import { BsPersonAdd } from 'react-icons/bs';
 import usePost from '../hooks/usePost';
 import { EditIcon } from '@chakra-ui/icons';
 import usePut from '../hooks/usePut';
+import { useTranslation } from 'react-i18next';
 
 const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation }) => {
     const [formData, setFormData] = useState({
@@ -35,6 +36,8 @@ const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation
     const [loading, setLoading] = useState(false);
 
     const taost = useToast();
+
+    const { t, i18n } = useTranslation();
 
 
     const handleSubmit = (event) => {
@@ -125,7 +128,9 @@ const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation
             <Grid templateColumns={{ base: 'repeat(1, 1fr)', lg: 'repeat(2, 1fr)' }} gap={6}>
                 <GridItem colSpan={1}>
                     <FormControl mb={3} id="first_name" isRequired>
-                        <FormLabel>First Name</FormLabel>
+                        <FormLabel>
+                            {t('patient.firstName')}
+                        </FormLabel>
                         <Input
                             type="text"
                             name="first_name"
@@ -135,7 +140,9 @@ const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation
                     </FormControl>
 
                     <FormControl mb={3} id="last_name" isRequired>
-                        <FormLabel>Last Name</FormLabel>
+                        <FormLabel>
+                            {t('patient.lastName')}
+                        </FormLabel>
                         <Input
                             type="text"
                             name="last_name"
@@ -145,7 +152,9 @@ const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation
                     </FormControl>
 
                     <FormControl mb={3} id="birth_date" isRequired>
-                        <FormLabel>Birth Date</FormLabel>
+                        <FormLabel>
+                            {t('patient.birthDate')}
+                        </FormLabel>
                         <Input
                             type="date"
                             name="birth_date"
@@ -155,7 +164,9 @@ const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation
                     </FormControl>
 
                     <FormControl mb={3} id="place_of_birth" isRequired>
-                        <FormLabel>Place of Birth</FormLabel>
+                        <FormLabel>
+                            {t('patient.details.placeOfBirth')}
+                        </FormLabel>
                         <Input
                             type="text"
                             name="place_of_birth"
@@ -165,21 +176,29 @@ const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation
                     </FormControl>
 
                     <FormControl mb={3} id="gender" isRequired>
-                        <FormLabel>Gender</FormLabel>
+                        <FormLabel>
+                            {t('patient.details.gender')}
+                        </FormLabel>
                         <Select
                             name="gender"
                             value={formData.gender}
                             onChange={handleChange}
                         >
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
+                            <option value="Male">
+                                {t('global.male')}
+                            </option>
+                            <option value="Female">
+                                {t('global.female')}
+                            </option>
                         </Select>
                     </FormControl>
                 </GridItem>
 
                 <GridItem colSpan={1}>
                     <FormControl mb={3} id="address" isRequired>
-                        <FormLabel>Address</FormLabel>
+                        <FormLabel>
+                            {t('patient.details.address')}
+                        </FormLabel>
                         <Textarea
                             name="address"
                             value={formData.address}
@@ -188,7 +207,9 @@ const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation
                     </FormControl>
 
                     <FormControl mb={3} id="nationality" isRequired>
-                        <FormLabel>Nationality</FormLabel>
+                        <FormLabel>
+                            {t('patient.details.natinoality')}
+                        </FormLabel>
                         <Input
                             type="text"
                             name="nationality"
@@ -198,7 +219,9 @@ const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation
                     </FormControl>
 
                     <FormControl mb={3} id="phone_number" isRequired>
-                        <FormLabel>Phone Number</FormLabel>
+                        <FormLabel>
+                            {t('patient.phoneNumber')}
+                        </FormLabel>
                         <Input
                             type="tel"
                             name="phone_number"
@@ -208,7 +231,9 @@ const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation
                     </FormControl>
 
                     <FormControl mb={3} id="family_situation">
-                        <FormLabel>Family Situation</FormLabel>
+                        <FormLabel>
+                            {t('patient.details.familySituation')}
+                        </FormLabel>
                         <Input
                             type="text"
                             name="family_situation"
@@ -218,7 +243,9 @@ const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation
                     </FormControl>
 
                     <FormControl mb={3} id="emergency_contact_name">
-                        <FormLabel>Emergency Contact Name</FormLabel>
+                        <FormLabel>
+                            {t('patient.details.emergencyContactName')}
+                        </FormLabel>
                         <Input
                             type="text"
                             name="emergency_contact_name"
@@ -228,7 +255,9 @@ const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation
                     </FormControl>
 
                     <FormControl mb={3} id="emergency_contact_number">
-                        <FormLabel>Emergency Contact Phone Number</FormLabel>
+                        <FormLabel>
+                            {t('patient.details.emergencyContactPhone')}
+                        </FormLabel>
                         <Input
                             type="tel"
                             name="emergency_contact_number"
@@ -241,13 +270,13 @@ const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation
 
             <Flex justifyContent='center' mt='10px'>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
-                    Close
+                    {t('global.cancel')}
                 </Button>
                 <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText={EditMode ? 'Updating' : 'Adding'}>
                     {/* add icon */}
                     { EditMode ? <EditIcon /> :<BsPersonAdd /> }
                     <Text ml="5px" >
-                        {EditMode ? 'Update' : 'Add'}
+                        {EditMode ? t('global.edit') : t('global.add')}
                     </Text>
                 </Button>
             </Flex>

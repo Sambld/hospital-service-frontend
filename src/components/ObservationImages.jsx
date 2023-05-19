@@ -5,6 +5,8 @@ import { BsCaretLeftFill, BsCaretRightFill } from "react-icons/bs";
 import { RiDeleteBinLine } from "react-icons/ri";
 import axios from "./axios";
 
+import { useTranslation } from "react-i18next";
+
 const SummaryItem = ({ label, children }) => (
     <HStack>
         <Text pt='2' fontSize='lg' fontWeight="bold">{label}:</Text>
@@ -19,6 +21,8 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [deleteLoading, setDeleteLoading] = useState(false);
     const cancelRef = useRef()
+
+    const { t, i18n } = useTranslation();
 
     const nextSlide = () => {
         setCurrent(current === length - 1 ? 0 : current + 1);
@@ -62,7 +66,7 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
             if (res.data.message == 'observation deleted successfully.') {
                 closeAndRefresh(
                     {
-                        title: 'Observation deleted successfully.',
+                        title: f('medicalRecord.observationInfo.deleted'),
                         status: 'success',
                     }
                 )
@@ -121,7 +125,9 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
                         onClick={() => downloadImage(Observation.images[current].path)}
                     >
                         <AiFillEye fontSize={20} />
-                        <Text ml={2}>View Full Size</Text>
+                        <Text ml={2}>
+                            {t('medicalRecord.viewFullSize')}
+                        </Text>
                     </Button>
                     {/* Print image */}
                     {/* <Button
@@ -151,7 +157,9 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
                         onClick={onOpen}
                     >
                         <RiDeleteBinLine fontSize={20} />
-                        <Text ml={2}>Delete</Text>
+                        <Text ml={2}>
+                            {t('global.delete')}
+                        </Text>
                     </Button>
 
                 </Flex>
@@ -196,19 +204,19 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
                 <AlertDialogOverlay>
                     <AlertDialogContent>
                         <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                            Delete Observation
+                            {t('medicalRecord.deleteObservation')}
                         </AlertDialogHeader>
 
                         <AlertDialogBody>
-                            Are you sure? You can't undo this action afterwards.
+                            {t('global.areYouSureYouCanNotUndoThisAction')}
                         </AlertDialogBody>
 
                         <AlertDialogFooter>
                             <Button ref={cancelRef} onClick={onClose}>
-                                Cancel
+                                {t('global.cancel')}
                             </Button>
                             <Button colorScheme='red' onClick={deleteObservation} ml={3} isLoading={deleteLoading}>
-                                Delete
+                                {t('global.delete')}
                             </Button>
                         </AlertDialogFooter>
                     </AlertDialogContent>

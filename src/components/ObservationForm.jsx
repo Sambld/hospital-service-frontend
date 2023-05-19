@@ -30,6 +30,8 @@ import { FaSort } from 'react-icons/fa';
 import { GiEmptyChessboard } from 'react-icons/gi';
 import { AiOutlinePlus } from 'react-icons/ai';
 
+import { useTranslation } from 'react-i18next';
+
 const ObservationImageDraggable = ({ image, index, value, moveListItem }) => {
     // useDrag - the list item is draggable
     const [{ isDragging }, dragRef] = useDrag({
@@ -103,6 +105,8 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
             imageTargetFile: {},
         },
     });
+
+    const { t, i18n } = useTranslation();
     const toast = useToast();
     const [ImageSorted, setImageSorted] = useState([]);
     const [ImageNumber, setImageNumber] = useState(1);
@@ -135,7 +139,7 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
         if (formData.name == '' || formData.images.imageList == {}) {
             toast({
                 title: "Error",
-                description: "Please fill in all the fields.",
+                description: t('medicalRecord.fillAllFields'),
                 status: "error",
                 duration: 9000,
                 isClosable: true,
@@ -153,7 +157,7 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                     if (res.data) {
                         closeAndRefresh(
                             {
-                                title: 'Observation created successfully.',
+                                title: t('medicalRecord.observationInfo.created'),
                                 status: 'success',
                             }
                         )
@@ -321,7 +325,9 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
         <Form onSubmit={handleSubmit}>
             <br />
             <FormControl id='name' isRequired>
-                <FormLabel>Title</FormLabel>
+                <FormLabel>
+                    {t("global.title")}
+                </FormLabel>
                 <Input
                     type="text"
                     name="name"
@@ -335,7 +341,9 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                     onClick={deleteEmpty}
                 >
                     <GiEmptyChessboard />
-                    <Text ml={1}>Delete empty</Text>
+                    <Text ml={1}>
+                        {t("medicalRecord.deleteEmpty")}
+                    </Text>
                 </Button>
 
                 <Button
@@ -360,7 +368,9 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
 
                     >
                         {ImageSorted.length == 0 ? (
-                            <Text textAlign='center'>Nothing to Sort</Text>
+                            <Text textAlign='center'>
+                                {t("medicalRecord.nothingToSort")}
+                            </Text>
                         ) : null}
                         {ImageSorted.map((value, index) => (
                             <ObservationImageDraggable
@@ -505,12 +515,14 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
             )}
             <Flex justifyContent='center' mt='10px'>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
-                    Close
+                    {t('global.cancel')}
                 </Button>
                 <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" onClick={handleSubmit}>
                     {/* add icon */}
                     <AiOutlinePlus />
-                    <Text ml="5px" >Add</Text>
+                    <Text ml="5px" >
+                        {t('global.add')}
+                    </Text>
                 </Button>
             </Flex>
         </Form >)

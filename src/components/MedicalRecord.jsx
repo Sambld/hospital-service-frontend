@@ -44,13 +44,15 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
+  Icon,
 } from "@chakra-ui/react";
 
 // Icons
 import { DeleteIcon, EditIcon, SearchIcon, AddIcon } from "@chakra-ui/icons";
-import { BsFillTrashFill } from "react-icons/bs";
-import { AiFillPrinter, AiOutlineCheck } from "react-icons/ai";
-
+import { BsFillTrashFill, BsInfoCircle, BsFillImageFill } from "react-icons/bs";
+import { AiFillPrinter, AiOutlineCheck, AiOutlineFileText } from "react-icons/ai";
+import { FiClipboard } from "react-icons/fi";
+import { RiTableFill } from "react-icons/ri";
 
 // Hooks
 import useLoader from "../hooks/useLoader";
@@ -77,10 +79,15 @@ import MonitoringSheetStyles from "../styles/MonitoringSheet.module.css";
 import axios from "./axios";
 import { FaPlus } from "react-icons/fa";
 
+// Translation
+import { useTranslation } from "react-i18next";
+
 
 const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const toast = useToast()
   const navigate = useNavigate()
+
+  const { t, i18n } = useTranslation();
 
   const [tabIndex, setTabIndex] = useState(0)
 
@@ -124,6 +131,14 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const { isOpen: isOpenMonitoringSheetRow, onOpen: onOpenMonitoringSheetRow, onClose: onCloseMonitoringSheetRow } = useDisclosure()
   const { isOpen: isOpenPrescriptionForm, onOpen: onOpenPrescriptionForm, onClose: onClosePrescriptionForm } = useDisclosure()
   const { isOpen: isOpenMandatoryDeclaration, onOpen: onOpenMandatoryDeclaration, onClose: onCloseMandatoryDeclaration } = useDisclosure()
+
+  const breakpointss = {
+    sm: '30em', // 480px
+    md: '48em', // 768px
+    lg: '62em', // 992px
+    xl: '80em', // 1280px
+    '2xl': '96em', // 1536px
+  }
 
   useEffect(() => {
     setExamination([])
@@ -324,7 +339,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     useDelete('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/examinations/' + examination.id).then((res) => {
       handleExaminationActions(
         {
-          title: 'Examination deleted successfully.',
+          title: t('medicalRecord.examinationInfo.deleted'),
           status: 'success',
         }
       )
@@ -592,34 +607,51 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         <>
           {/* Medical Record Examination, Observation, Monitoring Sheet */}
           <Tabs isFitted variant='unstyled' color='blue.900' mb={5} index={tabIndex} onChange={handleTabsChange}>
-            <TabList mb='1em' bg='gray.300' borderRadius={10}>
-              <Tab borderLeftRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}>Information</Tab>
-              <Tab
-                _selected={{ color: 'white', bg: 'blue.500' }}
-                onClick={ReloadTabContent}
-                isDisabled={user.id == medical_record.user_id ? false : true}
-              >
-                Examination
+            <TabList mb='1em' bg='gray.300' borderRadius={10} overflow='auto'>
+              <Tab borderLeftRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}>
+                <Icon h='30px' fontSize='30px' as={BsInfoCircle} display={{ base: 'block', lg: 'none' }} />
+                <Text display={{ base: 'none', lg: 'block' }} ml={2}>
+                  {t('medicalRecord.information')}
+                </Text>
               </Tab>
               <Tab
                 _selected={{ color: 'white', bg: 'blue.500' }}
                 onClick={ReloadTabContent}
                 isDisabled={user.id == medical_record.user_id ? false : true}
               >
-                Observation
+                <Icon h='30px' fontSize='30px' as={FiClipboard} display={{ base: 'block', lg: 'none' }} />
+                <Text display={{ base: 'none', lg: 'block' }} ml={2}>
+                  {t('medicalRecord.examinations')}
+                </Text>
+              </Tab>
+              <Tab
+                _selected={{ color: 'white', bg: 'blue.500' }}
+                onClick={ReloadTabContent}
+                isDisabled={user.id == medical_record.user_id ? false : true}
+              >
+                <Icon h='30px' fontSize='30px' as={BsFillImageFill} display={{ base: 'block', lg: 'none' }} />
+                <Text display={{ base: 'none', lg: 'block' }} ml={2}>
+                  {t('medicalRecord.observations')}
+                </Text>
               </Tab>
               <Tab
                 _selected={{ color: 'white', bg: 'blue.500' }}
                 onClick={ReloadTabContent}
               >
-                Monitoring Sheet
+                <Icon h='30px' fontSize='30px' as={RiTableFill} display={{ base: 'block', lg: 'none' }} />
+                <Text display={{ base: 'none', lg: 'block' }} ml={2}>
+                  {t('medicalRecord.monitoringSheet')}
+                </Text>
               </Tab>
               <Tab
                 borderRightRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}
                 onClick={ReloadTabContent}
                 isDisabled={user.id == medical_record.user_id ? false : true}
               >
-                Prescriptions
+                <Icon h='30px' fontSize='30px' as={AiOutlineFileText} display={{ base: 'block', lg: 'none' }} />
+                <Text display={{ base: 'none', lg: 'block' }} ml={2}>
+                  {t('medicalRecord.prescriptions')}
+                </Text>
               </Tab>
             </TabList>
             <TabPanels>
@@ -641,13 +673,14 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                       fontSize={25}
                       color='gray.700'
                     >
-                      Medical Record #{medical_record.id}
+                      {t('medicalRecord.medicalRecord')}
+                      #{medical_record.id}
                     </Text>
                     <Box mt={4}>
                       <Table className={styles.table} variant="unstyled">
                         <Tbody fontSize={18}>
                           <Tr >
-                            <Td color='gray.700'><Text>Condition description:</Text></Td>
+                            <Td color='gray.700'><Text>{t('medicalRecord.conditionDescription')}:</Text></Td>
                             <Td color='blue.900'>
                               {medical_record.condition_description.split('\n').map((item, key) => {
                                 return <Text key={key} mt={2}>{item}</Text>
@@ -655,7 +688,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             </Td>
                           </Tr>
                           <Tr>
-                            <Td color='gray.700'><Text>Standard treatment:</Text></Td>
+                            <Td color='gray.700'><Text>{t('medicalRecord.standardTreatment')}:</Text></Td>
                             <Td color='blue.900'>
                               {medical_record.standard_treatment.split('\n').map((item, key) => {
                                 return <Text key={key} mt={2}>{item}</Text>
@@ -663,24 +696,24 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             </Td>
                           </Tr>
                           <Tr>
-                            <Td color='gray.700'><Text>State upon enter:</Text></Td>
+                            <Td color='gray.700'><Text>{t('medicalRecord.stateUponEnter')}:</Text></Td>
                             <Td color='blue.900'><Text>{medical_record.state_upon_enter}</Text></Td>
                           </Tr>
                           <Tr>
-                            <Td color='gray.700'><Text>Patient entry date:</Text></Td>
+                            <Td color='gray.700'><Text>{t('medicalRecord.patientEntryDate')}:</Text></Td>
                             <Td color='blue.900'><Text>{medical_record.patient_entry_date}</Text></Td>
                           </Tr>
                           <Tr>
-                            <Td color='gray.700'><Text>Bed number:</Text></Td>
+                            <Td color='gray.700'><Text>{t('medicalRecord.bedNumber')}:</Text></Td>
                             <Td color='blue.900'><Text>{medical_record.bed_number}</Text></Td>
                           </Tr>
                           {medical_record.patient_leaving_date && (
                             <>
                               <Tr>
-                                <Td color='green.400' colSpan={2}><Text>Leaving Information:</Text></Td>
+                                <Td color='green.400' colSpan={2}><Text>{t('medicalRecord.leavingInformation')}:</Text></Td>
                               </Tr>
                               <Tr>
-                                <Td color='gray.700'><Text>State upon exit:</Text></Td>
+                                <Td color='gray.700'><Text>{t('medicalRecord.stateUponExit')}:</Text></Td>
                                 <Td color='blue.900'>
                                   <Text>
                                     {medical_record.state_upon_exit || "Still in hospital"}
@@ -689,12 +722,12 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
 
                               </Tr>
                               <Tr>
-                                <Td color='gray.700'><Text>Patient leaving date:</Text></Td>
+                                <Td color='gray.700'><Text>{t('medicalRecord.patientLeavingDate')}:</Text></Td>
                                 <Td color='blue.900'>
                                   <Text>
                                     {medical_record.patient_leaving_date
                                       ? medical_record.patient_leaving_date
-                                      : "Still in hospital"}
+                                      : t("medicalRecord.stillInHospital")}
                                   </Text>
                                 </Td>
                               </Tr>
@@ -714,10 +747,10 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                       gap='1px'
                     >
                       <Button leftIcon={<EditIcon />} bg='white' w='50%' variant='outline' border={0} colorScheme="green" type="submit" borderRadius={0} onClick={() => handleMedicalRecordEdit(medical_record)}>
-                        Edit
+                        {t('patient.details.edit')}
                       </Button>
                       <Button leftIcon={<DeleteIcon />} bg='white' w='50%' variant='outline' border={0} colorScheme="red" type="submit" borderRadius={0} isLoading={deleteLoading} onClick={() => onDeleteOpen()}>
-                        Delete
+                        {t('patient.details.delete')}
                       </Button>
                     </Box>
                   )}
@@ -739,7 +772,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                       <>
                         <Box w='100%' display='flex' justifyContent='space-between' alignItems='center' mb={3}>
                           <Text fontWeight="bold" textAlign='left' fontSize={20}>
-                            Mandatory Declaration
+                            {t('medicalRecord.mandatoryDeclaration')}
                           </Text>
                           {user.id == medical_record.user_id && (
                             <Button colorScheme="blue" mt={3} onClick={() => {
@@ -753,9 +786,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                         <Table variant='simple' colorScheme='blackAlpha' >
                           <Thead>
                             <Tr bg='gray.200'>
-                              <Th><Text>Declaration Date</Text></Th>
-                              <Th><Text>Diagnosis</Text></Th>
-                              <Th><Text>Detailed Diagnosis</Text></Th>
+                              <Th><Text>{t('medicalRecord.declarationDate')}</Text></Th>
+                              <Th><Text>{t('medicalRecord.diagnosis')}</Text></Th>
+                              <Th><Text>{t('medicalRecord.detailedDiagnosis')}</Text></Th>
                             </Tr>
                           </Thead>
                           <Tbody>
@@ -771,10 +804,10 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                     ) : (
                       <>
                         <Text fontWeight="bold" textAlign='center'>
-                          Mandatory declaration has not been created yet.
+                          {t('medicalRecord.noMandatoryDeclaration')}
                         </Text>
                         <Button colorScheme="blue" mt={3} onClick={onOpenMandatoryDeclaration}>
-                          Create Now
+                          {t('medicalRecord.createNow')}
                         </Button>
                       </>
                     )
@@ -793,10 +826,20 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                   <Table variant='simple' colorScheme='blackAlpha' >
                     <Thead>
                       <Tr bg='gray.200'>
-                        <Th><Text>examination Date</Text></Th>
-                        <Th><Text>treatment type</Text></Th>
+                        <Th>
+                          <Text>
+                            {t('medicalRecord.examinationDate')}
+                          </Text>
+                        </Th>
+                        <Th>
+                          <Text>
+                            {t('medicalRecord.treatmentType')}
+                          </Text>
+                        </Th>
                         <Th pr={3}>
-                          <Text>Result</Text>
+                          <Text>
+                            {t('medicalRecord.examinationResult')}
+                          </Text>
                         </Th>
                         <Th display='flex' justifyContent='flex-end'>
                           {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
@@ -846,7 +889,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                         </Tr>
                       ))}
                       {!loadingExamination && Examination.length === 0 && (
-                        <Tr><Td colSpan={4}><Text textAlign='center' fontWeight='bold' fontSize='xl'>No Examination</Text></Td></Tr>
+                        <Tr><Td colSpan={4}><Text textAlign='center' fontWeight='bold' fontSize='xl'>{t('medicalRecord.noExamination')}</Text></Td></Tr>
                       )}
                     </Tbody>
                   </Table>
@@ -869,7 +912,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                 {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
                   <Flex justify='flex-end' mb='15px'>
                     <Button colorScheme='green' onClick={onOpenObservation} mr={3}>
-                      <Text>Add Observation</Text>
+                      <Text>
+                        {t('medicalRecord.addObservation')}
+                      </Text>
                     </Button>
                   </Flex>
                 )}
@@ -965,7 +1010,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                 ))}
                 {!loadingObservation && Observations.length === 0 && (
                   <Box>
-                    <Text textAlign='center'>No Observation</Text>
+                    <Text textAlign='center'>
+                      {t('medicalRecord.noObservation')}
+                    </Text>
                   </Box>
                 )}
                 {loadingObservation && (
@@ -1004,7 +1051,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                   <Box>
                     <Flex justify='flex-end' mb='15px'>
                       <Button colorScheme='green' onClick={onOpenPrescriptionForm} mr={3}>
-                        <Text>Add Prescription</Text>
+                        <Text>
+                          {t('medicalRecord.addPrescription')}
+                        </Text>
                       </Button>
                     </Flex>
                   </Box>
@@ -1034,26 +1083,40 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                                 {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
                                   <Button colorScheme='green' onClick={() => handlePrescriptionEdit(pres)}>
                                     <EditIcon fontSize='20px' />
-                                    <Text ml={2}>Edit</Text>
+                                    <Text ml={2}>
+                                      {t('global.edit')}
+                                    </Text>
                                   </Button>
                                 )}
-                                <Button w='100px' colorScheme='teal' onClick={() => handlePrintPrescription(pres)} isLoading={loadingPrescriptionDownload && PrescriptionDownloaded == pres.id}>
+                                <Button w='150px' colorScheme='teal' onClick={() => handlePrintPrescription(pres)} isLoading={loadingPrescriptionDownload && PrescriptionDownloaded == pres.id}>
                                   <AiFillPrinter fontSize='20px' />
-                                  <Text ml={2}>Print</Text>
+                                  <Text ml={2}>
+                                    {t('global.print')}
+                                  </Text>
                                 </Button>
                               </Box>
 
                               <Table variant="simple" colorScheme='blackAlpha' className={MonitoringSheetStyles.table} border='2px' borderColor='gray.300'>
                                 <Thead bg='gray.200'>
                                   <Tr>
-                                    <Th>Medicine</Th>
-                                    <Th>Quantity</Th>
-                                    <Th>Date of Prescription</Th>
                                     <Th>
-                                      <Text textAlign='center'>status</Text>
+                                      {t('medicalRecord.medicine')}
                                     </Th>
                                     <Th>
-                                      <Text>Review</Text>
+                                      {t('medicalRecord.quantity')}
+                                    </Th>
+                                    <Th>
+                                      {t('medicalRecord.dateOfPrescription')}
+                                    </Th>
+                                    <Th>
+                                      <Text textAlign='center'>
+                                        {t('medicalRecord.status')}
+                                      </Text>
+                                    </Th>
+                                    <Th>
+                                      <Text>
+                                        {t('medicalRecord.review')}
+                                      </Text>
                                     </Th>
                                   </Tr>
                                 </Thead>
@@ -1065,21 +1128,31 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                                       <Td>{changeFormat(med.created_at)}</Td>
                                       <Td>
                                         {med.status === 'Pending' && (
-                                          <Badge colorScheme="yellow">Pending</Badge>
+                                          <Badge colorScheme="yellow">
+                                            {t('medicalRecord.pending')}
+                                            </Badge>
                                         )}
                                         {med.status === 'Approved' && (
-                                          <Badge colorScheme="green">Approved</Badge>
+                                          <Badge colorScheme="green">
+                                            {t('medicalRecord.approved')}
+                                          </Badge>
                                         )}
                                         {med.status === 'Rejected' && (
-                                          <Badge colorScheme="red">Rejected</Badge>
+                                          <Badge colorScheme="red">
+                                            {t('medicalRecord.rejected')}
+                                          </Badge>
                                         )}
                                       </Td>
                                       <Td>
                                         {med.review && (
-                                          <Badge colorScheme="green">Reviewed</Badge>
+                                          <Badge colorScheme="green">
+                                            {t('medicalRecord.reviewed')}
+                                          </Badge>
                                         )}
                                         {!med.review && (
-                                          <Badge colorScheme="red">Not Reviewed</Badge>
+                                          <Badge colorScheme="red">
+                                            {t('medicalRecord.notReviewed')}
+                                          </Badge>
                                         )}
                                       </Td>
                                     </Tr>
@@ -1095,7 +1168,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                     ) : (
                       <Box>
                         <Text fontSize='xl' fontWeight='bold' textAlign='center'>
-                          No Prescription Found
+                          {t('medicalRecord.noPrescriptionFound')}
                         </Text>
                       </Box>
                     )}
@@ -1118,15 +1191,17 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
           <AlertDialogContent maxW='300px' p={5}>
 
             <AlertDialogBody textAlign='center'>
-              <Text fontSize='lg' fontWeight='bold'>Are you sure?</Text>
+              <Text fontSize='lg' fontWeight='bold'>
+                {t('medicalRecord.areYouSure')}
+              </Text>
             </AlertDialogBody>
 
             <AlertDialogFooter justifyContent='center'>
               <Button onClick={onDeleteClose}>
-                Cancel
+                {t('global.cancel')}
               </Button>
               <Button colorScheme='red' onClick={handleMedicalRecordDelete} ml={3} isLoading={deleteLoading}>
-                Delete
+                {t('global.delete')}
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -1137,7 +1212,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenExamination} onClose={onCloseExamination}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>ADD EXAMINATION</ModalHeader>
+            <ModalHeader>
+              {t('medicalRecord.addExamination').toUpperCase()}
+            </ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={5} pt={0}>
               <ExaminationForm medical_record={medical_record} closeModal={onCloseExamination} closeAndRefresh={handleExaminationActions} editMode={ExaminationEditMode} examination={ExaminationEditInfo} />
@@ -1149,7 +1226,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenObservation} onClose={onCloseObservation}>
           <ModalOverlay />
           <ModalContent maxW='1000px'>
-            <ModalHeader>ADD OBSERVATION</ModalHeader>
+            <ModalHeader>
+              {t('medicalRecord.addObservation').toUpperCase()}
+            </ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={5} pt={0}>
               <ObservationForm medical_record={medical_record} closeModal={onCloseObservation} closeAndRefresh={handleObservationAdd} />
@@ -1161,7 +1240,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenObservationImages} onClose={onCloseObservationImages}>
           <ModalOverlay />
           <ModalContent maxW='1000px'>
-            <ModalHeader>Observation Information</ModalHeader>
+            <ModalHeader>
+              {t('medicalRecord.observationInformation')}
+            </ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={5} pt={0}>
               <OBservationImages Observation={Observation} closeAndRefresh={handleObservationAdd} patientId={medical_record.patient_id} />
@@ -1173,7 +1254,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenMonitoring} onClose={onCloseMonitoring}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Monitoring Sheet</ModalHeader>
+            <ModalHeader>
+              {t('medicalRecord.monitoringSheet')}
+            </ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={5} pt={0}>
               <MonitoringSheetForm medical_record={medical_record} closeModal={onCloseMonitoring} closeAndRefresh={handleMonitoringSheetAdd} EditInfo={MonitoringSheetEditInfo} />
@@ -1185,10 +1268,12 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenMonitoringSheetRow} onClose={onCloseMonitoringSheetRow}>
           <ModalOverlay />
           <ModalContent maxW='600px'>
-            <ModalHeader>Monitoring Sheet Row</ModalHeader>
+            <ModalHeader>
+              {t('medicalRecord.monitoringSheetInfo.monitoringSheetRow')}
+            </ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={5} pt={0}>
-              <MonitoringSheetRow user={user} medical_record={medical_record} data={MonitoringSheetRowData} closeModal={onCloseMonitoringSheetRow} closeAndRefresh={handleMonitoringSheetAdd} loadingData={loadingMonitoringSheetRow} />
+              <MonitoringSheetRow  user={user} medical_record={medical_record} data={MonitoringSheetRowData} closeModal={onCloseMonitoringSheetRow} closeAndRefresh={handleMonitoringSheetAdd} loadingData={loadingMonitoringSheetRow} />
             </ModalBody>
           </ModalContent>
         </Modal>
@@ -1197,7 +1282,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenPrescriptionForm} onClose={handlePrescriptionFormClose}>
           <ModalOverlay />
           <ModalContent maxW='1000px'>
-            <ModalHeader>Prescription</ModalHeader>
+            <ModalHeader>
+              {t('medicalRecord.prescription')}
+            </ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={5} pt={0}>
               <PrescriptionForm medical_record={medical_record} closeModal={handlePrescriptionFormClose} closeAndRefresh={handlePrescriptionAdd} EditMode={PrescriptionEditMode} prescription={PrescriptionEditInfo} />
@@ -1209,7 +1296,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenMandatoryDeclaration} onClose={onCloseMandatoryDeclaration}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Mandatory Declaration</ModalHeader>
+            <ModalHeader>
+              {t('medicalRecord.mandatoryDeclaration')}
+            </ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={5} pt={0}>
               <MandatoryDeclarationForm medical_record={medical_record} closeModal={onCloseMandatoryDeclaration} closeAndRefresh={handleMandatoryDeclarationAdd} EditMode={MandatoryDeclarationEditMode} mandatory_declaration={MandatoryDeclaration} />

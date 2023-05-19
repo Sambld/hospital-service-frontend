@@ -43,6 +43,8 @@ import { useEffect } from 'react';
 import usePut from '../hooks/usePut';
 import useDelete from '../hooks/useDelete';
 
+import { useTranslation } from 'react-i18next';
+
 const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRefresh, loadingData }) => {
     const [examinations, setExaminations] = useState([
         { name: 'urine', label: 'Urine', suffix: 'ml' },
@@ -57,6 +59,8 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
         temperature: 0,
         weight: 0,
     });
+    
+    const { t, i18n } = useTranslation();
 
     const [addedTreatments, setAddedTreatments] = useState([]);
     const [deletedTreatments, setDeletedTreatments] = useState([]);
@@ -72,7 +76,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
     const toast = useToast();
 
     useEffect(() => {
-
+        console.log(t('medicalRecord.monitoringSheetInfo.updated'));
         if (data) {
             setFormData((prev) => ({
                 ...prev,
@@ -105,11 +109,12 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
             });
 
 
+
             usePut('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + data.id, rest).then((res) => {
                 setLoading(false);
                 closeAndRefresh(
                     {
-                        title: 'Monitoring Sheet Row Updated',
+                        title: t('medicalRecord.monitoringSheetInfo.updated') ,
                         status: 'success',
                     }
                 )
@@ -132,7 +137,6 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
         const progressUnit = 100 / deletedTreatments.length;
         try {
             setLoading(true);
-            console.log("hihihi")
             if (addedTreatments.length > 0) {
                 await MonitoringSheetMedAdd(progressUnit * addedTreatments.length);
             }
@@ -142,7 +146,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
             setLoading(false);
             closeAndRefresh(
                 {
-                    title: 'Monitoring Sheet Row Updated',
+                    title: t('medicalRecord.monitoringSheetInfo.updated') ,
                     status: 'success',
                 }
             )
@@ -299,7 +303,9 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
             <Box>
                 {data && data.treatments && data.treatments.length > 0 && (
                     <Box>
-                        <Heading size='md' mb={3}>Treatments</Heading>
+                        <Heading size='md' mb={3}>
+                            {t('medicalRecord.treatments')}
+                        </Heading>
                         <Box
                             maxH='500px'
                             overflowY='auto'
@@ -320,16 +326,24 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                                     boxShadow='md'
                                 >
                                     <Tr>
-                                        <Th w='300px'>Name</Th>
-                                        <Th>Dose</Th>
-                                        <Th>Type</Th>
+                                        <Th w='300px'>
+                                            {t('medicalRecord.name')}
+                                        </Th>
+                                        <Th>
+                                            {t('medicalRecord.dose')}
+                                        </Th>
+                                        <Th>
+                                            {t('medicalRecord.type')}
+                                        </Th>
                                         <Th></Th>
                                     </Tr>
                                 </Thead>
                                 <Tbody>
                                     { formData.medicines.length == 0 && (
                                         <Tr>
-                                            <Td colSpan={4} textAlign='center'>No data</Td>
+                                            <Td colSpan={4} textAlign='center'>
+                                                {t('medicalRecord.noData')}
+                                            </Td>
                                         </Tr>
                                     )}
                                     {formData.medicines.map((medicine, index) => (
@@ -368,7 +382,9 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                 <>
                     <Divider my={3} />
                     <Box mt={3}>
-                        <Heading size='md' mb={3}>Added Treatments</Heading>
+                        <Heading size='md' mb={3}>
+                            {t('medicalRecord.addedTreatments')}
+                        </Heading>
                         <Box maxH='300px' overflowY='auto' display='flex' flexDirection='column' border='1px solid' borderColor='gray.300' borderRadius='md' p={3} gap={5}>
                             {addedTreatments.length > 0 && addedTreatments.map((treatment, index) => (
                                 <Box key={index} display='flex' justifyContent='space-between'>
@@ -397,7 +413,9 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                 <>
                     <Divider my={3} />
                     <Box mt={3}>
-                        <Heading size='md' mb={3}>Deleted Treatments</Heading>
+                        <Heading size='md' mb={3}>
+                            {t('medicalRecord.deletedTreatments')}
+                        </Heading>
                         <Box maxH='300px' overflowY='auto' display='flex' flexDirection='column' border='1px solid' borderColor='gray.300' borderRadius='md' p={3} gap={5}>
                             {deletedTreatments.length > 0 && deletedTreatments.map((treatment, index) => (
                                 <Box key={index} display='flex' justifyContent='space-between'>
@@ -433,7 +451,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     <Box mt={3} border='1px solid' borderColor='gray.300' borderRadius='md' p={3}>
                         <Box display='flex' flexDir='column' gap={3}>
                             <AsyncSelect
-                                placeholder="Select Medicines"
+                                placeholder={t('medicalRecord.selectMedicines')}
                                 name='medicineSearch'
                                 loadOptions={loadOptions}
                                 value={selectedMedicine}
@@ -445,7 +463,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                                 name="Dose"
                                 value={Dose}
                                 onChange={(e) => setDose(e.target.value)}
-                                placeholder="Dose"
+                                placeholder={t('medicalRecord.dose')}
                             />
                         </Box>
                         <Box mt={3} display='flex' gap={3}>
@@ -454,10 +472,18 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                                 value={type}
                                 onChange={(e) => setType(e.target.value)}
                             >
-                                <option value="SC">under the skin ( SC )</option>
-                                <option value="IM">in the muscle ( IM )</option>
-                                <option value="IV">in the vein ( IV )</option>
-                                <option value="PO">by mouth ( PO )</option>
+                                <option value="SC">
+                                    {t('medicalRecord.sc')}
+                                </option>
+                                <option value="IM">
+                                    {t('medicalRecord.im')}
+                                </option>
+                                <option value="IV">
+                                    {t('medicalRecord.iv')}
+                                </option>
+                                <option value="PO">
+                                    {t('medicalRecord.po')}
+                                </option>
                             </Select>
                             <IconButton
                                 aria-label="Add"
@@ -492,7 +518,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
             )}
             <Flex justifyContent='center' mt='10px'>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
-                    Close
+                    {t('global.cancel')}
                 </Button>
                 {user && user?.role == 'doctor' && (
                     <Button
@@ -504,7 +530,9 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     >
                         {/* add icon */}
                         <BiPencil />
-                        <Text ml="5px" >Edit</Text>
+                        <Text ml="5px" >
+                            {t('global.edit')}
+                        </Text>
                     </Button>
                 )}
                 {user && user?.role == 'nurse' ? data && data['filled_by_id'] ? (
@@ -518,7 +546,9 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     >
                         {/* add icon */}
                         <BiPencil />
-                        <Text ml="5px" >Edit</Text>
+                        <Text ml="5px" >
+                            {t('global.edit')}
+                        </Text>
                     </Button>) : (
                     <Button
                         variant='solid'
@@ -530,7 +560,9 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     >
                         {/* add icon */}
                         <AiOutlinePlus />
-                        <Text ml="5px" >Apply</Text>
+                        <Text ml="5px" >
+                            {t('global.apply')}
+                        </Text>
                     </Button>
                 ) : null}
             </Flex>

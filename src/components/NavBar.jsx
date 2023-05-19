@@ -21,12 +21,20 @@ import {
     AlertDialogContent,
     AlertDialogOverlay,
     useDisclosure,
+    Modal,
+    ModalOverlay,
+    ModalHeader,
+    ModalContent,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { FaShieldVirus, FaUserNurse, FaUserMd } from "react-icons/fa";
 import { RiShutDownLine, RiAdminLine } from "react-icons/ri";
 import { NavLink } from "react-router-dom";
 import { GiMedicines } from "react-icons/gi";
+import Settings from "./Settings/Settings";
+
+// Translation
+import { useTranslation } from "react-i18next";
 
 const UserRoleItem = (user) => {
     let items = [];
@@ -46,7 +54,12 @@ const UserRoleItem = (user) => {
 
 const NavBar = ({ logout, user }) => {
     const [UserRoleIcon, setUserRoleItem] = useState(UserRoleItem(user));
+
+    const { t, i18n } = useTranslation();
+
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const { isOpen: isOpenSettings, onOpen: onOpenSettings, onClose: onCloseSettings } = useDisclosure()
+
     const cancelRef = useRef()
 
     const [Leading, setLeading] = useState(false);
@@ -54,7 +67,7 @@ const NavBar = ({ logout, user }) => {
     useEffect(() => {
         setUserRoleItem(UserRoleItem(user));
     }, [user])
-    
+
     const handleLogout = () => {
         setLeading(true);
         setTimeout(() => {
@@ -66,8 +79,10 @@ const NavBar = ({ logout, user }) => {
     return (
         <Flex justifyContent={'space-between'} p={{ base: '5px', lg: '10px' }}>
             <HStack color="#374083">
-                <FaShieldVirus fontSize='40px'/>
-                <Text fontSize={{ base: 'md', lg: '3xl' }}>Infectious Diseases</Text>
+                <FaShieldVirus fontSize='40px' />
+                <Text fontSize={{ base: 'md', lg: '3xl' }}>
+                    {t('navbar.webSiteName')}
+                </Text>
             </HStack>
             <Spacer />
 
@@ -103,17 +118,21 @@ const NavBar = ({ logout, user }) => {
                         <Divider />
                         <NavLink to='/profile'>
                             <MenuItem>
-                                <Text>Profile</Text>
+                                <Text>
+                                    {t('navbar.profile')}
+                                </Text>
                             </MenuItem>
                         </NavLink>
-                        <NavLink to='/settings'>
-                            <MenuItem>
-                                <Text>settings</Text>
-                            </MenuItem>
-                        </NavLink>
+                        <MenuItem onClick={onOpenSettings}>
+                            <Text>
+                                {t('navbar.settings')}
+                            </Text>
+                        </MenuItem>
                         <Divider mt='10px' />
                         <MenuItem onClick={onOpen}>
-                            <Text color='red.500' fontWeight='normal'>Sign out</Text>
+                            <Text color='red.500' fontWeight='normal'>
+                                {t('navbar.signOut')}
+                            </Text>
                             <Spacer />
                             <Icon as={RiShutDownLine} boxSize={5} color='red.500' />
                             {/* <Button color='red.500' fontWeight='normal' variant='ghost' size='sm'>
@@ -153,6 +172,14 @@ const NavBar = ({ logout, user }) => {
                     </AlertDialogContent>
                 </AlertDialogOverlay>
             </AlertDialog>
+
+            <Modal isOpen={isOpenSettings} onClose={onCloseSettings} size='xl'>
+                <ModalOverlay />
+                <ModalContent minW='50vw'>
+                    <Settings onClose={onCloseSettings} />
+                </ModalContent>
+            </Modal>
+
         </Flex>
     );
 }

@@ -29,6 +29,8 @@ import usePost from '../hooks/usePost';
 import usePut from '../hooks/usePut';
 import useLoader from '../hooks/useLoader';
 
+import { useTranslation } from 'react-i18next';
+
 const SummaryItem = ({ label, children }) => (
     <HStack>
         <Text w='230px' pt='2' fontSize='lg' fontWeight="bold">{label}:</Text>
@@ -52,6 +54,8 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
     const [Patient, setPatient] = useState(null);
     const [LoadingPatient, setLoadingPatient] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const { t, i18n } = useTranslation();
 
     useEffect(() => {
         if (patientId != null) {
@@ -160,7 +164,9 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
     return (
         <Form onSubmit={handleSubmit}>
             <FormControl mb={3} id="patient_id" isRequired>
-                <FormLabel>Patient ID</FormLabel>
+                <FormLabel>
+                    {t('patient.patientID')}
+                </FormLabel>
                 <InputGroup>
                     <InputLeftAddon children='#' />
                     <NumberInput
@@ -197,10 +203,12 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
                     mb={5}
                     color='blue.900'
                 >
-                    Basic Information
+                    {t('medicalRecord.basicInformation')}
                 </Text>
                 <FormControl mb={3} id="medical_specialty" isRequired>
-                    <FormLabel>Medical Especiality</FormLabel>
+                    <FormLabel>
+                        {t('medicalRecord.medicalEspeciality')}
+                    </FormLabel>
                     <Select name="medical_specialty" onChange={handleChange} value={formData.medical_specialty} isDisabled>
                         <option value="Cardiology">Cardiology</option>
                         <option value="Dermatology">Dermatology</option>
@@ -223,7 +231,9 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
                     </Select>
                 </FormControl>
                 <FormControl mb={3} id="patient_entry_date" isRequired>
-                    <FormLabel>Patient Entry Date</FormLabel>
+                    <FormLabel>
+                        {t('medicalRecord.patientEntryDate')}
+                    </FormLabel>
                     <Input
                         type="Date"
                         name="patient_entry_date"
@@ -233,7 +243,9 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
                 </FormControl>
 
                 <FormControl mb={3} id="bed_number" isRequired>
-                    <FormLabel>Bed Number</FormLabel>
+                    <FormLabel>
+                        {t('medicalRecord.bedNumber')}
+                    </FormLabel>
                     <NumberInput name="bed_number" onChange={handleNumberChange} defaultValue={formData.bed_number}>
                         <NumberInputField />
                         <NumberInputStepper>
@@ -243,7 +255,9 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
                     </NumberInput>
                 </FormControl>
                 <FormControl mb={3} id="condition_description" isRequired>
-                    <FormLabel>Conditions Description</FormLabel>
+                    <FormLabel>
+                        {t('medicalRecord.conditionDescription')}
+                    </FormLabel>
                     <Textarea
                         name="condition_description"
                         value={formData.condition_description}
@@ -251,7 +265,9 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
                     />
                 </FormControl>
                 <FormControl mb={3} id="state_upon_enter" isRequired>
-                    <FormLabel>State Upon Enter</FormLabel>
+                    <FormLabel>
+                        {t('medicalRecord.stateUponEnter')}
+                    </FormLabel>
                     <Input
                         type="text"
                         name="state_upon_enter"
@@ -260,7 +276,9 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
                     />
                 </FormControl>
                 <FormControl mb={3} id="standard_treatment" isRequired>
-                    <FormLabel>Standard Treatment</FormLabel>
+                    <FormLabel>
+                        {t('medicalRecord.standardTreatment')}
+                    </FormLabel>
                     <Textarea
                         name="standard_treatment"
                         value={formData.standard_treatment}
@@ -278,10 +296,12 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
                         mb={5}
                         color='blue.900'
                     >
-                        Leaving Information
+                        {t('medicalRecord.leavingInformation')}
                     </Text>
                     <FormControl mb={3} id="patient_leaving_date">
-                        <FormLabel>Patient Leaving Date</FormLabel>
+                        <FormLabel>
+                            {t('medicalRecord.patientLeavingDate')}
+                        </FormLabel>
                         <Input
                             type="Date"
                             name="patient_leaving_date"
@@ -291,7 +311,9 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
                     </FormControl>
 
                     <FormControl mb={3} id="state_upon_exit">
-                        <FormLabel>State Upon Exit</FormLabel>
+                        <FormLabel>
+                            {t('medicalRecord.stateUponExit')}
+                        </FormLabel>
                         <Input
                             type="text"
                             name="state_upon_exit"
@@ -303,19 +325,23 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
             )}
             <Flex justifyContent='center' mt='10px'>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
-                    Close
+                    {t('global.cancel')}
                 </Button>
                 {editMode ? (
                     <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Updating" >
                         {/* add icon */}
                         <AiOutlineEdit />
-                        <Text ml="5px" >Update</Text>
+                        <Text ml="5px" >
+                            {t('global.edit')}
+                        </Text>
                     </Button>
                 ) : (
                     <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" >
                         {/* add icon */}
                         <AiOutlinePlus />
-                        <Text ml="5px" >Add</Text>
+                        <Text ml="5px" >
+                            {t('global.add')}
+                        </Text>
                     </Button>
                 )}
             </Flex>

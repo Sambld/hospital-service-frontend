@@ -38,12 +38,16 @@ import { AiOutlinePlus } from 'react-icons/ai';
 import { CloseIcon } from '@chakra-ui/icons';
 import useLoader from '../hooks/useLoader';
 
+import { useTranslation } from 'react-i18next';
+
 const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, EditInfo }) => {
     const [formData, setFormData] = useState({
         TimeField: 1,
         Start_date: EditInfo?.Start_date || new Date(),
         medicines: [],
     });
+
+    const { t, i18n } = useTranslation();
 
     const [options, setOptions] = useState([]);
     const [selectedMedicine, setSelectedMedicine] = useState(null);
@@ -53,7 +57,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
     const [uploadProgress, setUploadProgress] = useState(0);
     const [loading, setLoading] = useState(false);
 
-    const formatDate = (date,separator) => {
+    const formatDate = (date, separator) => {
         let date_ = new Date(date);
         const year = date_.getUTCFullYear();
         const month = (date_.getUTCMonth() + 1).toString().padStart(2, '0'); // pad month with leading zero if less than 10
@@ -69,20 +73,20 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
         try {
             // GET DATS OF NEXT TIMEFIELD DAYS
             const startDate = new Date(formData?.Start_date || new Date());
-            
+
             let AllDates = [];
             for (let i = 0; i < formData.TimeField; i++) {
                 let date = new Date(startDate);
                 date.setDate(date.getDate() + i);
 
-                AllDates.push(formatDate(date,'/'));
+                AllDates.push(formatDate(date, '/'));
             }
             // console.log(AllDates)
             MonitoringSheetadd(AllDates).then(() => {
                 setLoading(false);
                 closeAndRefresh(
                     {
-                        title: 'Monitoring Sheet created successfully.',
+                        title: t('medicalRecord.monitoringSheetInfo.created'),
                         status: 'success',
                     }
                 )
@@ -102,7 +106,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                 }).then(async (res) => {
 
                     if (res.data) {
-                        await MonitoringSheetMedAdd(res.data.id,progressUnit)
+                        await MonitoringSheetMedAdd(res.data.id, progressUnit)
                     } else {
                         closeAndRefresh(
                             {
@@ -122,7 +126,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
         }
     }
 
-    const MonitoringSheetMedAdd = async (id,pu) => {
+    const MonitoringSheetMedAdd = async (id, pu) => {
         try {
             const progressUnit = pu / formData.medicines.length;
             const promises = [];
@@ -132,7 +136,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                     name: medicine.label,
                     dose: medicine.dose,
                     type: medicine.type
-                }).then(()=>{
+                }).then(() => {
                     setUploadProgress((prevProgress) => prevProgress + progressUnit);
                 })
                 promises.push(promise);
@@ -202,7 +206,6 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                     type='date'
                     value={formatDate(formData.Start_date)}
                     onChange={(event) => {
-                        console.log(new Date(event.target.value))
                         setFormData((prevFormData) => ({
                             ...prevFormData,
                             Start_date: new Date(event.target.value),
@@ -211,11 +214,11 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                 />
             </FormControl>
 
-            <FormControl id='type' gap={3} display='flex'>
-                <FormLabel m={0} alignItems='center' display='flex'>
+            <FormControl id='type' gap={3} display='flex' justifyContent='center'>
+                {/* <FormLabel m={0} alignItems='center' display='flex'>
                     <Text verticalAlign='middle' fontSize='xl'>Within:</Text>
-                </FormLabel>
-                <InputGroup>
+                </FormLabel> */}
+                <InputGroup  display='flex' justifyContent='center'>
                     <NumberInput
                         value={formData.TimeField}
                         min={1}
@@ -236,16 +239,16 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
             <Divider mt='10px' mb='10px' />
             {/* choose medicines */}
             <Box>
-                <Text textAlign='center' fontSize={25}>Medicines List</Text>
+                <Text textAlign='center' fontSize={25}>{t('medicalRecord.treatments')}</Text>
                 <Box border='2px' borderColor='gray.300' boxShadow='md' p={1} mb={3} maxH='30vh' overflow='auto'>
                     <Table variant="unstyled" size="sm" >
                         <Tbody>
-                            {formData.medicines.length === 0 && <Tr><Td textAlign='center'>No medicines added yet</Td></Tr>}
+                            {formData.medicines.length === 0 && <Tr><Td textAlign='center'>{t('medicalRecord.noData')}</Td></Tr>}
                             {formData.medicines.map((medicine) => (
                                 <Tr bg='gray.50' key={medicine.value}>
-                                    <Td fontSize={13}>Name: {medicine.label}</Td>
-                                    <Td fontSize={13}>Dose: {medicine.dose}</Td>
-                                    <Td fontSize={13}>Type: {medicine.type}</Td>
+                                    <Td fontSize={13}>{t('medicalRecord.name')}: {medicine.label}</Td>
+                                    <Td fontSize={13}>{t('medicalRecord.dose')}: {medicine.dose}</Td>
+                                    <Td fontSize={13}>{t('medicalRecord.type')}: {medicine.type}</Td>
                                     <Td display='flex' p={2} justifyContent='flex-end'>
                                         <IconButton
                                             aria-label="Remove"
@@ -287,10 +290,10 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                             value={type}
                             onChange={(e) => setType(e.target.value)}
                         >
-                            <option value="SC">under the skin ( SC )</option>
-                            <option value="IM">in the muscle ( IM )</option>
-                            <option value="IV">in the vein ( IV )</option>
-                            <option value="PO">by mouth ( PO )</option>
+                            <option value="SC">{t('medicalRecord.sc')}</option>
+                            <option value="IM">{t('medicalRecord.im')}</option>
+                            <option value="IV">{t('medicalRecord.iv')}</option>
+                            <option value="PO">{t('medicalRecord.po')}</option>
                         </Select>
                         <IconButton
                             aria-label="Add"
@@ -315,8 +318,8 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                     bg='gray.50'
                     p={2}
                 >
-                    <Text fontSize={13}> Name: {selectedMedicine ? selectedMedicine.label : ''}</Text>
-                    <Text fontSize={13}> Quantity: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
+                    <Text fontSize={13}> {t('medicalRecord.name')}: {selectedMedicine ? selectedMedicine.label : ''}</Text>
+                    <Text fontSize={13}> {t('medicalRecord.quantity')}: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
                 </Box>
             )}
             {loading && (
@@ -340,12 +343,14 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
             )}
             <Flex justifyContent='center' mt='10px'>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
-                    Close
+                    {t('global.cancel')}
                 </Button>
                 <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" >
                     {/* add icon */}
                     <AiOutlinePlus />
-                    <Text ml="5px" >Add</Text>
+                    <Text ml="5px" >
+                        {t('global.add')}
+                    </Text>
                 </Button>
             </Flex>
         </Form>)

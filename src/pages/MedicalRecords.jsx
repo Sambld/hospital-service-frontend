@@ -30,6 +30,9 @@ import { useNavigate, useSearchParams, useOutletContext } from "react-router-dom
 // Components
 import Pagination from "../components/Pagination";
 
+// Translations
+import { useTranslation } from "react-i18next";
+
 
 
 const MedicalRecords = () => {
@@ -37,6 +40,8 @@ const MedicalRecords = () => {
     const [data, setData] = useState(null);
     const [showFilter, setShowFilter] = useState(false);
     const [loading, setLoading] = useState(true);
+
+    const { t, i18n } = useTranslation();
 
     const [searchParams, setSearchParams] = useSearchParams()
     const navigate = useNavigate()
@@ -102,7 +107,7 @@ const MedicalRecords = () => {
                 <Breadcrumb fontSize={{ base: "md", lg: '3xl' }}>
                     <BreadcrumbItem>
                         <Text color="gray.500" fontSize={{ base: "md", lg: '3xl' }} ml='20px'>
-                            Medical Records
+                            {t('medicalRecord.title')}
                         </Text>
                     </BreadcrumbItem>
                 </Breadcrumb>
@@ -116,10 +121,10 @@ const MedicalRecords = () => {
                             pointerEvents='none'
                             children={<SearchIcon color='gray.300' />}
                         />
-                        <Input defaultValue={searchParams.get('q') || ''} variant='outline' type='text' placeholder='Search by Condition Or treatment' onChange={(e) => handleSearchParams({ q: e.target.value ? e.target.value : null })} />
+                        <Input defaultValue={searchParams.get('q') || ''} variant='outline' type='text' placeholder={t('medicalRecord.searchPlaceholder')} onChange={(e) => handleSearchParams({ q: e.target.value ? e.target.value : null })} />
                     </InputGroup>
                     <Button colorScheme='blue' leftIcon={<AiFillFilter />} onClick={() => setShowFilter((prev) => !prev)}>
-                        Filter
+                        {t('medicalRecord.filter')}
                     </Button>
                     <IconButton
                         colorScheme='blackAlpha'
@@ -132,10 +137,14 @@ const MedicalRecords = () => {
                 {showFilter &&
                     <Box bg='gray.50' border='2px' borderColor='gray.100' borderRadius={10} p='10px' mb='10px' w='100%' display='flex' flexDirection='column' gap={2}>
                         <Box w='100%' display='flex' flexDirection='column' gap={2}>
-                            <Text fontWeight='bold' fontSize='md'>Filter By Date</Text>
+                            <Text fontWeight='bold' fontSize='md'>
+                                {t('medicalRecord.filterByDate')}
+                            </Text>
                             <Box w='100%' display='flex' justifyContent='space-between' alignItems='center' gap={2}>
                                 <Box w='100%' display='flex' justifyContent='space-between' alignItems='center' gap={2}>
-                                    <Text>From</Text>
+                                    <Text>
+                                        {t('medicalRecord.from')}:
+                                    </Text>
                                     <Input
                                         type='date'
                                         bg='white'
@@ -145,7 +154,9 @@ const MedicalRecords = () => {
                                 </Box>
                                 <Divider orientation='vertical' />
                                 <Box w='100%' display='flex' justifyContent='space-between' alignItems='center' gap={2}>
-                                    <Text>To:</Text>
+                                    <Text>
+                                        {t('medicalRecord.to')}:
+                                    </Text>
                                     <Input
                                         type='date'
                                         bg='white'
@@ -156,28 +167,30 @@ const MedicalRecords = () => {
                             </Box>
                         </Box>
                         <Box w='100%' display='flex' flexDirection='column' gap={2}>
-                            <Text fontWeight='bold' fontSize='md'>Filter By Status</Text>
+                            <Text fontWeight='bold' fontSize='md'>
+                                {t('medicalRecord.filterByStatus')}
+                            </Text>
                             <Box w='100%' display='flex' gap={2}>
                                 <Button
                                     bg={searchParams.get('status') != 'active' && searchParams.get('status') != 'close' ? 'gray.600' : 'gray.50'}
                                     color={searchParams.get('status') != 'active' && searchParams.get('status') != 'close' ? 'white' : null}
                                     onClick={() => handleSearchParams({ status: 'all' })}
                                 >
-                                    All
+                                    {t('medicalRecord.all')}
                                 </Button>
                                 <Button
                                     bg={searchParams.get('status') === 'active' ? 'green.600' : 'gray.50'}
                                     color={searchParams.get('status') === 'active' ? 'white' : null}
                                     onClick={() => handleSearchParams({ status: 'active' })}
                                 >
-                                    Active
+                                    {t('medicalRecord.active')}
                                 </Button>
                                 <Button
                                     bg={searchParams.get('status') === 'close' ? 'red.600' : 'gray.50'}
                                     color={searchParams.get('status') === 'close' ? 'white' : null}
                                     onClick={() => handleSearchParams({ status: 'close' })}
                                 >
-                                    Close
+                                    {t('medicalRecord.close')}
                                 </Button>
                             </Box>
                         </Box>
@@ -189,14 +202,14 @@ const MedicalRecords = () => {
                                     color={searchParams.get('id') != 'all' && searchParams.get('id') != 'mineOnly' ? 'white' : null}
                                     onClick={() => handleSearchParams({ id: null })}
                                 >
-                                    All
+                                    {t('medicalRecord.all')}
                                 </Button>
                                 <Button
                                     bg={searchParams.get('id') === 'mineOnly' ? 'green.600' : 'gray.50'}
                                     color={searchParams.get('id') === 'mineOnly' ? 'white' : null}
                                     onClick={() => handleSearchParams({ id: 'mineOnly' })}
                                 >
-                                    Only Mine
+                                    {t('medicalRecord.mineOnly')}
                                 </Button>
                             </Box>
                         </Box>
@@ -242,15 +255,15 @@ const MedicalRecords = () => {
                                         </Box> */}
                                         <Box bg={item.patient_leaving_date ? 'red.100' : 'green.100'} p={2}>
                                             <Text fontWeight='bold' fontSize='md' textAlign='center' color='gray.500'>
-                                                Medical Record #{item.id}
+                                                {t('medicalRecord.medicalRecord')} #{item.id}
                                             </Text>
                                         </Box>
 
                                         <Box p={3}>
-                                            <Text fontSize='sm' color='gray.500'>Patient: {item.patient.first_name} {item.patient.last_name}</Text>
-                                            <Text fontSize='sm' color='gray.500'>Entry day: {item.patient_entry_date}</Text>
-                                            <Text fontSize='sm' color='gray.500'>Discharge day: {item.patient_leaving_date || 'still in hospital'}</Text>
-                                            <Text fontSize='sm' color='gray.500'>state: {item.state_upon_enter}</Text>
+                                            <Text fontSize='sm' color='gray.500'>{t('medicalRecord.patient')}: {item.patient.first_name} {item.patient.last_name}</Text>
+                                            <Text fontSize='sm' color='gray.500'>{t('medicalRecord.entry_Day')}: {item.patient_entry_date}</Text>
+                                            <Text fontSize='sm' color='gray.500'>{t('medicalRecord.discharge_Day')}: {item.patient_leaving_date || 'still in hospital'}</Text>
+                                            <Text fontSize='sm' color='gray.500'>{t('medicalRecord.state')}: {item.state_upon_enter}</Text>
                                         </Box>
                                         <Box bg='gray.100' p={0}>
                                             <Button
@@ -265,7 +278,9 @@ const MedicalRecords = () => {
                                                 w='100%'
                                                 onClick={() => navigate(`/patients/${item.patient_id}?med=${item.id}`)}
                                             >
-                                                <Text mr='5px' fontSize={15} fontWeight='normal'>Detail</Text>
+                                                <Text mr='5px' fontSize={15} fontWeight='normal'>
+                                                    {t('medicalRecord.detail')}
+                                                </Text>
                                             </Button>
                                         </Box>
                                     </Box>

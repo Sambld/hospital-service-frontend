@@ -38,7 +38,7 @@ import {
     Select,
     Skeleton,
 } from "@chakra-ui/react";
-import { FaPrescriptionBottleAlt, FaUserMd } from "react-icons/fa";
+import { FaExclamationCircle, FaPrescriptionBottleAlt, FaUserMd } from "react-icons/fa";
 import { AiFillFile, AiOutlineClockCircle } from "react-icons/ai";
 import { IoClose, IoCheckmarkSharp } from "react-icons/io5";
 import { MdSick } from "react-icons/md";
@@ -408,7 +408,10 @@ const Prescriptions = () => {
                             )}
                             {(tabIndex == 0 ? PendingPrescriptions : PastPrescriptions) && (tabIndex == 0 ? PendingPrescriptions : PastPrescriptions).length === 0 && !(tabIndex == 0 ? PendingLoading : PastLoading) &&
                                 <Flex justifyContent='center' alignItems='center' h='100px'>
-                                    <Text fontSize='20px' fontWeight='bold'>No {tabIndex == 0 ? 'Pending' : 'Past'} Prescriptions</Text>
+                                    <Icon as={FaExclamationCircle} fontSize='50px' color='gray.500'/>
+                                    <Text ml={2} fontSize='20px' fontWeight='bold' color='gray.500'>
+                                        No {tabIndex == 0 ? 'Pending' : 'Past'} Prescriptions
+                                    </Text>
                                 </Flex>
                             }
                             {(tabIndex == 0 ? PendingPrescriptions : PastPrescriptions) && (tabIndex == 0 ? PendingPrescriptions : PastPrescriptions).last_page > 1 &&

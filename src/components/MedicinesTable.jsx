@@ -11,7 +11,7 @@ const MedicinesTable = ({ initValue, medicines, count, search }) => {
             <Table variant='simple' colorScheme='blackAlpha'>
                 <Thead>
                     <Tr bg='#fafafa'>
-                        <Th maxW='154px'>
+                        <Th>
                             <InputGroup>
                                 <InputLeftElement
                                     pointerEvents='none'
@@ -20,8 +20,8 @@ const MedicinesTable = ({ initValue, medicines, count, search }) => {
                                 <Input defaultValue={initValue} variant='flushed' type='text' placeholder='Search by Name' onChange={({ target }) => { search(target.value) }} />
                             </InputGroup>
                         </Th>
-                        <Th>quantity</Th>
-                        <Th>expiration Date</Th>
+                        <Th display={{ base: 'none', lg: 'table-cell' }}>quantity</Th>
+                        <Th display={{ base: 'none', xl: 'table-cell' }}>expiration Date</Th>
                         <Th><Text textAlign='center'>Detail</Text></Th>
                     </Tr>
                 </Thead>
@@ -29,8 +29,8 @@ const MedicinesTable = ({ initValue, medicines, count, search }) => {
                     {medicines && medicines.map((medicine, index) => (
                         <Tr key={index}>
                             <Td><Text fontWeight='normal' fontSize={20}>{medicine.name}</Text></Td>
-                            <Td>{medicine.quantity}</Td>
-                            <Td>{medicine.expiration_date}</Td>
+                            <Td display={{ base: 'none', lg: 'table-cell' }}>{medicine.quantity}</Td>
+                            <Td display={{ base: 'none', xl: 'table-cell' }}>{medicine.expiration_date}</Td>
                             <Td><NavLink to={medicine.id.toString()}><Button colorScheme='blue' w='100%'>Detail</Button></NavLink></Td>
                         </Tr>
                     ))}
@@ -39,7 +39,7 @@ const MedicinesTable = ({ initValue, medicines, count, search }) => {
             </Table>
             {!medicines && (
                 <Box>
-                    {[1, 2, 3, 4, 5].map((i) => (
+                    {[...Array(15)].map((i) => (
                         <Box display='flex' p='10px' key={i}>
                             <Skeleton w='60%' ml='5' h='50px'>
                                 <Text ml='5'>Loading...</Text>

@@ -32,20 +32,30 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Link, Outlet, useOutlet, useSearchParams, useNavigate, useOutletContext } from "react-router-dom";
-import PatientsTable from "../components/PatientsTable";
-import Pagination from '../components/Pagination'
+
 import useLoader from "../hooks/useLoader";
+
+// Icons
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { FaUserMd } from "react-icons/fa";
 import { AiFillFolderOpen } from "react-icons/ai";
+
+// Components
 import PatientForm from "../components/PatientForm";
 import RecordForm from "../components/RecordForm";
+import PatientsTable from "../components/PatientsTable";
+import Pagination from '../components/Pagination'
+
+// Translation
+import { useTranslation } from "react-i18next";
 
 const Patients = () => {
     const outlet = useOutlet()
     const user = useOutletContext()
     const [data, setData] = useState(null)
     const [rerender, setRerender] = useState(false)
+
+    const { t,i18n } = useTranslation()
 
     const [patient, setPatient] = useState(null)
     const [patientEditMode, setPatientEditMode] = useState(false)
@@ -69,7 +79,7 @@ const Patients = () => {
 
     const [id, setId] = useState(0)
     const NavigateButton = useRef()
-    const EditableSpanValue = useRef('ALL')
+    const EditableSpanValue = useRef(t('patient.all').toUpperCase())
 
     useEffect(() => {
         if (!data && !outlet) {
@@ -116,7 +126,7 @@ const Patients = () => {
             setId(parseInt(e))
             onNavigateOpen()
         }
-        EditableSpanValue.current.textContent = 'ALL'
+        EditableSpanValue.current.textContent = t('patient.all').toUpperCase()
     }
 
     const handlePagination = (e) => {
@@ -210,15 +220,15 @@ const Patients = () => {
     return (
         <Box>
             <Flex mr={3}>
-                <Breadcrumb fontSize={{ base: "md", lg: '3xl' }}>
+                <Breadcrumb fontSize={{ base: "md", sm: '3xl' }}>
                     <BreadcrumbItem>
                         <Link to='/patients' color='red'>
                             <Text
-                                fontSize={{ base: "md", lg: '3xl' }}
+                                fontSize={{ base: "md", sm: '3xl' }}
                                 color={outlet ? 'blue.700' : 'gray.500'}
                                 ml='20px'
                             >
-                                Patients
+                                {t('patient.title')}
                             </Text>
                         </Link>
                     </BreadcrumbItem>
@@ -227,12 +237,12 @@ const Patients = () => {
                         {outlet && (
                             <Center h='54px' w='100%' >
                                 {
-                                patient ? <Text  fontSize={{ base: "md", lg: '3xl' }} color='#2e3149' >{patient.first_name + " " + patient.last_name}</Text> : <Spinner thickness='4px' />
+                                patient ? <Text  fontSize={{ base: "md", sm: '3xl' }} color='#2e3149' >{patient.first_name + " " + patient.last_name}</Text> : <Spinner thickness='4px' />
                                 }
                             </Center>
                         )}
                         {!outlet &&
-                            <Editable fontSize={{ base: 'md', lg: '3xl' }} color='#2e3149' onSubmit={handleSubmit} placeholder='ALL'>
+                            <Editable fontSize={{ base: 'md', sm: '3xl' }} color='#2e3149' onSubmit={handleSubmit} placeholder={t('patient.all').toUpperCase()} >
                                 <EditablePreview ref={EditableSpanValue} />
                                 <EditableInput />
                             </Editable>
@@ -242,20 +252,20 @@ const Patients = () => {
                 <Spacer />
                 {user.role == 'doctor' && (
                     <Menu>
-                        <MenuButton w='120px' colorScheme='blue.300' bg='blue.700' color='gray.100' as={Button} rightIcon={<ChevronDownIcon />} >
-                            ADD
+                        <MenuButton w='150px' colorScheme='blue.300' bg='blue.700' color='gray.100' as={Button} rightIcon={<ChevronDownIcon />} >
+                            {t('patient.add').toUpperCase()}
                         </MenuButton>
                         <MenuList>
                             <MenuItem onClick={onPatientOpen}>
                                 <FaUserMd />
                                 <Text ml={3}>
-                                    NEW PATIENT
+                                    {t('patient.newPatient').toUpperCase()}
                                 </Text>
                             </MenuItem>
                             <MenuItem onClick={onRecordOpen}>
                                 <AiFillFolderOpen />
                                 <Text ml={3}>
-                                    NEW RECORD
+                                    {t('patient.newRecord').toUpperCase()}
                                 </Text>
                             </MenuItem>
                         </MenuList>

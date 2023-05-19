@@ -20,9 +20,16 @@ import { FaShieldVirus } from 'react-icons/fa';
 // Styles
 import styles from "../styles/Loading.module.css";
 
+// Translations
+import { useTranslation } from 'react-i18next';
+
 const RootLayout = () => {
     const { user, setUser, deleteUser } = useUser();
     const [loadingUserInformation, setLoadingUserInformation] = useState(true);
+
+    const { t:TextTranslated,i18n } = useTranslation();
+    // const [allData, setAllData] = useState([]);
+
     const navigate = useNavigate();
     const location = useLocation();
     const toast = useToast();

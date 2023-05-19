@@ -10,24 +10,27 @@ import { useEffect } from "react";
 import { AiOutlineBarChart } from "react-icons/ai";
 import { SiChatbot } from "react-icons/si";
 
+// Translation
+import { useTranslation } from "react-i18next";
+
 const SideBarItems = (user) => {
   let items = [
-    { name: 'Dashboard', icon: <RiDashboardLine size={23} />, link: '/' },
+    { name: 'sideBar.dashboard', icon: <RiDashboardLine size={23} />, link: '/' },
   ];
   try {
     if (user.role === 'administrator') {
-      items.push({ name: 'Staff', icon: <HiOutlineUserGroup size={23} />, link: '/staff' });
+      items.push({ name: 'sideBar.staff', icon: <HiOutlineUserGroup size={23} />, link: '/staff' });
     } else if (user.role === 'doctor') {
-      items.push({ name: 'Patients', icon: <MdOutlineSick size={23} />, link: '/patients' });
-      items.push({ name: 'Medical Records' , icon: <RiFolderOpenLine size={23} />, link: '/medical-records' });
-      items.push({ name: 'Statistics', icon: <AiOutlineBarChart size={23} />, link: '/statistics' })
+      items.push({ name: 'sideBar.patients', icon: <MdOutlineSick size={23} />, link: '/patients' });
+      items.push({ name: 'sideBar.medicalRecords' , icon: <RiFolderOpenLine size={23} />, link: '/medical-records' });
+      items.push({ name: 'sideBar.statistics', icon: <AiOutlineBarChart size={23} />, link: '/statistics' })
     } else if (user.role === 'nurse') {
-      items.push({ name: 'Patients', icon: <MdOutlineSick size={23} />, link: '/patients' });
-      items.push({ name: 'Statistics', icon: <AiOutlineBarChart size={23} />, link: '/statistics' })
+      items.push({ name: 'sideBar.patients', icon: <MdOutlineSick size={23} />, link: '/patients' });
+      items.push({ name: 'sideBar.statistics', icon: <AiOutlineBarChart size={23} />, link: '/statistics' })
     } else if (user.role === 'pharmacist') {
-      items.push({ name: 'Prescriptions', icon: <BsFileEarmarkMedical size={23} />, link: '/prescriptions' })
-      items.push({ name: 'Medicines', icon: <MdOutlineMedicalServices size={23} />, link: '/medicines' })
-      items.push({ name: 'Statistics', icon: <AiOutlineBarChart size={23} />, link: '/statistics' })
+      items.push({ name: 'sideBar.prescriptions', icon: <BsFileEarmarkMedical size={23} />, link: '/prescriptions' })
+      items.push({ name: 'sideBar.medicines', icon: <MdOutlineMedicalServices size={23} />, link: '/medicines' })
+      items.push({ name: 'sideBar.statistics', icon: <AiOutlineBarChart size={23} />, link: '/statistics' })
     }
       
       return items;
@@ -35,6 +38,9 @@ const SideBarItems = (user) => {
 }
 
 const SideBar = ({ user }) => {
+
+  const { t,i18n } = useTranslation();
+
   const [SidebarItem, setSidebarItem] = useState(SideBarItems(user));
 
   useEffect(() => {
@@ -51,7 +57,9 @@ const SideBar = ({ user }) => {
             }}>
               {item.icon}
               {/* if is below lg then don't show text */}
-              <Text display={{ base: 'none', lg: 'block' }}>{item.name}</Text>
+              <Text display={{ base: 'none', lg: 'block' }}>
+                {t(item.name)}
+                </Text>
             </HStack>
           </NavLink>
         </ListItem>

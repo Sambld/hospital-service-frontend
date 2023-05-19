@@ -21,6 +21,10 @@ import Prescriptions from "./pages/Prescriptions";
 import Medicine from "./pages/Medicine";
 import MedicalRecords from "./pages/MedicalRecords";
 import Statistics from "./pages/Statistics";
+import About from "./pages/About";
+
+// translation
+import './i18n';
 
 
 
@@ -40,6 +44,7 @@ const router = createBrowserRouter(
       </Route>
       <Route path='medical-records' element={<MedicalRecords />} />
       <Route path='statistics' element={<Statistics />} />
+      <Route path='about' element={<About />} />
       <Route path='*' element={<NotFound />} />
     </Route>
   )

@@ -22,6 +22,9 @@ import useDelete from '../hooks/useDelete';
 import { DeleteIcon, EditIcon, SearchIcon, AddIcon } from "@chakra-ui/icons";
 import { AiOutlineCheck } from 'react-icons/ai';
 
+// Translation
+import { useTranslation } from 'react-i18next';
+
 const ExaminationForm = ({ medical_record, closeModal, closeAndRefresh, editMode, examination }) => {
     const [formData, setFormData] = useState({
         type: editMode ? examination.type : '',
@@ -31,6 +34,8 @@ const ExaminationForm = ({ medical_record, closeModal, closeAndRefresh, editMode
     const [deleteLoading, setDeleteLoading] = useState(false);
 
     const [deleteConfirmation, setDeleteConfirmation] = useState(false);
+
+    const { t, i18n } = useTranslation();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -50,7 +55,7 @@ const ExaminationForm = ({ medical_record, closeModal, closeAndRefresh, editMode
             setLoading(false);
                 closeAndRefresh(
                     {
-                        title: 'Examination created successfully.',
+                        title: t('medicalRecord.examinationInfo.created'),
                         status: 'success',
                     }
                 )
@@ -71,7 +76,7 @@ const ExaminationForm = ({ medical_record, closeModal, closeAndRefresh, editMode
             setLoading(false);
                 closeAndRefresh(
                     {
-                        title: 'Examination updated successfully.',
+                        title: t('medicalRecord.examinationInfo.updated'),
                         status: 'success',
                     }
                 )
@@ -101,7 +106,7 @@ const ExaminationForm = ({ medical_record, closeModal, closeAndRefresh, editMode
             setDeleteLoading(false);
                 closeAndRefresh(
                     {
-                        title: 'Examination deleted successfully.',
+                        title: t('medicalRecord.examinationInfo.deleted'),
                         status: 'success',
                     }
                 )
@@ -129,7 +134,9 @@ const ExaminationForm = ({ medical_record, closeModal, closeAndRefresh, editMode
         <Form onSubmit={handleSubmit}>
             <br />
             <FormControl id='type'>
-                <FormLabel>Examination Type</FormLabel>
+                <FormLabel>
+                    {t('medicalRecord.treatmentType')}
+                </FormLabel>
                 <Input
                     type="text"
                     name="type"
@@ -138,7 +145,9 @@ const ExaminationForm = ({ medical_record, closeModal, closeAndRefresh, editMode
             </FormControl>
             <br />
             <FormControl id='result'>
-                <FormLabel>Examination Result</FormLabel>
+                <FormLabel>
+                    {t('medicalRecord.examinationResult')}
+                </FormLabel>
                 <Input
                     type="text"
                     name="result"
@@ -156,7 +165,7 @@ const ExaminationForm = ({ medical_record, closeModal, closeAndRefresh, editMode
                 <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText={editMode ? "Updating" : "Adding"}>
                     {/* add icon */}
                     {editMode ? <EditIcon /> : <AddIcon />}
-                    <Text ml="5px" >{editMode ? 'Update' : 'Add'}</Text>
+                    <Text ml="5px" >{editMode ? t('global.edit') : t('global.add')}</Text>
                 </Button>
             </Flex>
         </Form>)
