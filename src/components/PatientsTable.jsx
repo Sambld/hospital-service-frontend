@@ -88,7 +88,7 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                                 <NavLink to={patient.id.toString()} style={{ 'display': 'block', 'borderRadius': '5px' }}>
                                     <Button colorScheme={(patient.gender == 'Male') ? 'blue' : 'pink'} w='100%' p={0}>
                                         <AiFillFolderOpen size={20} />
-                                        <Text ml={1}>
+                                        <Text mx={3}>
                                             {t('patient.open')}
                                         </Text>
                                     </Button>

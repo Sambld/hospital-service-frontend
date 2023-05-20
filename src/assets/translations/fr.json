@@ -1,5 +1,4 @@
 {
-
     "global": {
         "edit": "Modifier",
         "delete": "Supprimer",
@@ -26,7 +25,8 @@
         "noData": "Aucune donnée",
         "detail": "Détail",
         "details": "Détails",
-        "submit": "Soumettre"
+        "submit": "Soumettre",
+        "open": "Ouvrir"
     },
     "navbar": {
         "webSiteName": "Maladies Infectieuses",
@@ -47,10 +47,32 @@
     "settings": {
         "settingsChanged": "Paramètres modifiés avec succès"
     },
-
-    "dashboard.doctor.Today_Medical_Records": "Dossiers médicaux aujourd'hui",
-    "dashboard.doctor.Patient_Number": "Nombre de patients",
-
+    "dashboard": {
+        "medicalRecord": "Dossier médical",
+        "filledBy": "Rempli par",
+        "action": "Action",
+        "firstName": "Prénom",
+        "lastName": "Nom de famille",
+        "bedNumber": "Numéro de lit",
+        "medicine": "Médicament",
+        "quantity": "Quantité",
+        "status": "Statut",
+        "activeMedicalRecords": "Dossiers médicaux actifs",
+        "todayAvailableMonitoringSheet": "Feuille de surveillance disponible aujourd'hui",
+        "latestFilledMonitoringSheet": "Dernière feuille de surveillance remplie",
+        "administratorNumber": "Nombre d'administrateurs",
+        "doctorNumber": "Nombre de médecins",
+        "nurseNumber": "Nombre d'infirmières",
+        "pharmacistNumber": "Nombre de pharmaciens",
+        "patientNumber": "Nombre de patients",
+        "todayMedicalRecords": "Dossiers médicaux d'aujourd'hui",
+        "todayAvailable": "Disponible aujourd'hui",
+        "latestUpdate": "Dernière mise à jour",
+        "latestFilling": "Dernier remplissage",
+        "medicineRequests": "Demandes de médicaments",
+        "requests": "Demandes",
+        "medicineCount": "Nombre de médicaments"
+    },
     "patient": {
         "title": "Patients",
         "patient": "Patient",
@@ -241,7 +263,6 @@
             "hasBeen": "Le médicament a été"
         }
     },
-
     "staff": {
         "addStaff": "Ajouter un personnel",
         "searchByName": "Rechercher par nom",
@@ -258,7 +279,9 @@
             "deleted": "Personnel supprimé"
         }
     },
-
     "about.title": "À propos de nous",
-    "about.content": "Ce site Web a été créé avec ReactJS"
+    "about.content": "Ce site Web a été créé avec ReactJS",
+    "logout": {
+        "areYouSureWantToSignOut": "Êtes-vous sûr(e) de vouloir vous déconnecter ?"
+    }
 }

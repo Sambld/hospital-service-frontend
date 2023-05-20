@@ -111,7 +111,15 @@ const Settings = ({ onClose }) => {
                         </Text>
                     </Box>
 
-                    <Select textAlign="center" onChange={(e) => setLanguage(e.target.value)} value={language} w='100%' color={useColorModeValue('blue.900', 'white')} fontSize={{ base: "md", lg: '2xl' }}>
+                    <Select
+                        textAlign="center"
+                        onChange={(e) => setLanguage(e.target.value)}
+                        value={language}
+                        w='100%'
+                        color={useColorModeValue('blue.900', 'white')}
+                        fontSize={{ base: "md", lg: '2xl' }}
+                        cursor='pointer'
+                    >
                         <option value="en">English</option>
                         <option value="ar">Arabic</option>
                         <option value="fr">French</option>

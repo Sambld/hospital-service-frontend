@@ -181,7 +181,7 @@ const RootLayout = () => {
     }
 
     return (
-        <Box bg={useColorModeValue('#f8f8fb', '#333542')}>
+        <Box bg={useColorModeValue('#f8f8fb', '#333542')} style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "jf-flat" : 'Light' }}>
             {loadingPage &&
                 <Box w='100%' h='100vh' display='flex' justifyContent='center' alignItems='center' position='absolute' zIndex='1000'>
                     <Box position='absolute' top='0' left='0' w='100%' h='100%' bg='white' opacity='0.8'>

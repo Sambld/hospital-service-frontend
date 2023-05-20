@@ -185,12 +185,12 @@ const NavBar = ({ logout, user }) => {
                     <AlertDialogContent maxW='300px' p='20px'>
 
                         <AlertDialogBody textAlign='center'>
-                            Are you sure? you want to sign out
+                            {t('logout.areYouSureWantToSignOut')}
                         </AlertDialogBody>
 
                         <AlertDialogFooter>
                             <Button onClick={handleLogout} w='100%' fontWeight='normal' isLoading={Leading}>
-                                Sign out
+                                {t('navbar.signOut')}
                             </Button>
                         </AlertDialogFooter>
                     </AlertDialogContent>

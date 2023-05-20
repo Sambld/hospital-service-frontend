@@ -43,6 +43,9 @@ import { BiRefresh } from 'react-icons/bi';
 import { FaNotesMedical, FaClock } from 'react-icons/fa';
 import { RiCalendarCheckLine, RiFileList2Line, RiChatCheckLine } from 'react-icons/ri';
 
+// Translation
+import { useTranslation } from "react-i18next";
+
 
 const Dashboard = () => {
     const user = useOutletContext()
@@ -59,8 +62,9 @@ const Dashboard = () => {
 
     const [StaffInfo, setStaffInfo] = useState([])
 
-
     const [infoLoading, setInfoLoading] = useState(true)
+
+    const { t, i18n } = useTranslation()
     useEffect(() => {
         getDashboardData()
     }, [])
@@ -72,21 +76,21 @@ const Dashboard = () => {
             if (user.role === 'doctor') {
                 setData((prev) => ({
                     ...prev,
-                    column: ['Medical Record', 'filled by', 'Action'],
+                    column: [t('dashboard.medicalRecord'), t('dashboard.filledby'), t('dashboard.action')],
                     data: []
                 }))
                 getLatestUpdate()
             } else if (user.role === 'nurse') {
                 setData((prev) => ({
                     ...prev,
-                    column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
+                    column: [t('dashboard.firstName'), t('dashboard.lastName'), t('dashboard.bedNumber'), t('dashboard.action')],
                     data: []
                 }))
                 getLastestFillingMonitoringSheet()
             } else if (user.role === 'pharmacist') {
                 setData((prev) => ({
                     ...prev,
-                    column: ['Medicine', 'Quantity'],
+                    column: [t('dashboard.medicine'), t('dashboard.quantity')],
                     data: []
                 }))
                 getPendingMedicalRequests(selectedDate, true)
@@ -96,21 +100,21 @@ const Dashboard = () => {
             if (user.role === 'doctor') {
                 setData((prev) => ({
                     ...prev,
-                    column: ['first name', 'last name', 'bed number', 'Action'],
+                    column: [t('dashboard.firstName'), t('dashboard.lastName'), t('dashboard.bedNumber'), t('dashboard.action')],
                     data: []
                 }))
                 getActiveMedicalRecords()
             } else if (user.role === 'nurse') {
                 setData((prev) => ({
                     ...prev,
-                    column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
+                    column: [t('dashboard.firstName'), t('dashboard.lastName'), t('dashboard.bedNumber'), t('dashboard.action')],
                     data: []
                 }))
                 getTodayAvailableMonitoringSheet()
             } else if (user.role === 'pharmacist') {
                 setData((prev) => ({
                     ...prev,
-                    column: ['Medicine', 'Quantity', 'status'],
+                    column: [t('dashboard.medicine'), t('dashboard.quantity'),t('dashboard.status')],
                     data: []
                 }))
                 getPendingMedicalRequests(selectedDate)
@@ -193,7 +197,7 @@ const Dashboard = () => {
                 setInfoLoading(false)
                 const data = res.map((item) => {
                     const link = `/patients/${item.medical_record.patient_id}?med=${item.record_id}#monitoring`;
-                    const text = 'Open';
+                    const text = t('global.open');
                     const ColorScheme = 'blue';
                     const Icon = <AiFillFolderOpen />;
                     return [
@@ -209,8 +213,8 @@ const Dashboard = () => {
                 })
                 setData((prevFormData) => ({
                     ...prevFormData,
-                    headerTitle: 'Active Medical Records',
-                    column: ['Medical Record', 'filled by', 'Action'],
+                    headerTitle: t('dashboard.activeMedicalRecords'),
+                    column: [t('dashboard.medicalRecord'), t('dashboard.filledby'), t('dashboard.action')],
                     data: data,
                 }))
             })
@@ -231,7 +235,7 @@ const Dashboard = () => {
                 setInfoLoading(false)
                 const data = res.map((item) => {
                     const link = `/patients/${item.patient.id}?med=${item.id}`;
-                    const text = 'Open';
+                    const text = t('global.open');
                     const ColorScheme = (item.patient.gender == 'Male') ? 'blue' : 'pink';
                     const Icon = <AiFillFolderOpen />;
                     return [
@@ -247,8 +251,8 @@ const Dashboard = () => {
                     ]
                 })
                 setData({
-                    headerTitle: 'Active Medical Records',
-                    column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
+                    headerTitle: t('dashboard.activeMedicalRecords'),
+                    column: [t('dashboard.firstName'), t('dashboard.lastName'), t('dashboard.bedNumber'), t('dashboard.action')],
                     data: data,
                     count: res.length
                 })
@@ -273,7 +277,7 @@ const Dashboard = () => {
                 setInfoLoading(false)
                 const data = res.map((item) => {
                     const link = `/patients/${item.medical_record.patient.id}?med=${item.record_id}#monitoring`;
-                    const text = 'Open';
+                    const text = t('global.open');
                     const ColorScheme = (item.medical_record.patient.gender == 'Male') ? 'blue' : 'pink';
                     const Icon = <AiFillFolderOpen />;
                     return [
@@ -289,8 +293,8 @@ const Dashboard = () => {
                     ]
                 })
                 setData({
-                    headerTitle: 'Today Available Monitoring Sheet',
-                    column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
+                    headerTitle: t('dashboard.todayAvailableMonitoringSheet'),
+                    column: [t('dashboard.firstName'), t('dashboard.lastName'), t('dashboard.bedNumber'), t('dashboard.action')],
                     data: data,
                     count: res.length
                 })
@@ -314,7 +318,7 @@ const Dashboard = () => {
                 setInfoLoading(false)
                 const data = res.map((item) => {
                     const link = `/patients/${item.medical_record.patient.id}?med=${item.record_id}#monitoring`;
-                    const text = 'Open';
+                    const text = t('global.open');
                     const ColorScheme = (item.medical_record.patient.gender == 'Male') ? 'blue' : 'pink';
                     const Icon = <AiFillFolderOpen />;
                     return [
@@ -331,8 +335,8 @@ const Dashboard = () => {
                 })
                 setData((pres) => ({
                     ...pres,
-                    headerTitle: 'Lastest Filled Monitoring Sheet',
-                    column: ['First Name', 'Last Name', 'Bed Number', 'Action'],
+                    headerTitle: t('dashboard.latestFilledMonitoringSheet'),
+                    column: [t('dashboard.firstName'), t('dashboard.lastName'), t('dashboard.bedNumber'), t('dashboard.action')],
                     data: data,
                 }))
             })
@@ -356,7 +360,7 @@ const Dashboard = () => {
             .then(res => {
                 setData((prev) => ({
                     ...prev,
-                    headerTitle: 'Pending Prescription',
+                    headerTitle: t('prescription.pendingPrescription'),
                     count: res.count
                 }))
             })
@@ -402,7 +406,7 @@ const Dashboard = () => {
                 }
                 setData((prev) => ({
                     ...prev,
-                    column: count ? ['Medicine', 'Quantity'] : ['Medicine', 'Quantity', 'status'],
+                    column: count ? [t('dashboard.medicine'), t('dashboard.quantity')] : [t('dashboard.medicine'), t('dashboard.quantity'),t('dashboard.status')],
                     data: res
                 }))
             })
@@ -449,7 +453,9 @@ const Dashboard = () => {
                                 borderRadius='xl'
                                 mt={5}
                             >
-                                <Heading size="md" mb={3} textAlign='center'>administrator Number</Heading>
+                                <Heading size="md" mb={3} textAlign='center'>
+                                    {t('dashboard.administratorNumber')}
+                                </Heading>
                                 <Flex justifyContent='center'>
                                     {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[0] || '0'}</Text>}
                                 </Flex>
@@ -465,7 +471,9 @@ const Dashboard = () => {
                                 borderRadius='xl'
                                 mt={5}
                             >
-                                <Heading size="md" mb={3} textAlign='center'>Doctor Number</Heading>
+                                <Heading size="md" mb={3} textAlign='center'>
+                                    {t('dashboard.doctorNumber')}
+                                </Heading>
                                 <Flex justifyContent='center'>
                                     {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[1] || '0'}</Text>}
                                 </Flex>
@@ -481,7 +489,9 @@ const Dashboard = () => {
                                 borderRadius='xl'
                                 mt={5}
                             >
-                                <Heading size="md" mb={3} textAlign='center'>Nurse Number</Heading>
+                                <Heading size="md" mb={3} textAlign='center'>
+                                    {t('dashboard.nurseNumber')}
+                                </Heading>
                                 <Flex justifyContent='center'>
                                     {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[2] || '0'}</Text>}
                                 </Flex>
@@ -497,7 +507,9 @@ const Dashboard = () => {
                                 borderRadius='xl'
                                 mt={5}
                             >
-                                <Heading size="md" mb={3} textAlign='center'>Pharmacist Number</Heading>
+                                <Heading size="md" mb={3} textAlign='center'>
+                                    {t('dashboard.pharmacistNumber')}
+                                </Heading>
                                 <Flex justifyContent='center'>
                                     {infoLoading ? <Spinner size='xl' thickness="8px" mt={7} mb={7} /> : <Text textAlign='center' fontSize={69}>{StaffInfo[3] || '0'}</Text>}
                                 </Flex>
@@ -528,7 +540,7 @@ const Dashboard = () => {
                             borderRadius='xl'
                         >
                             <Heading size="md">
-                                {user?.role == "doctor" ? 'Active Medical Records' : user?.role == 'nurse' ? 'Today Available Monitoring Sheet' : 'Pending Prescription'}
+                                {user?.role == "doctor" ? t('dashboard.activeMedicalRecords') : user?.role == 'nurse' ? t('dashboard.todayAvailableMonitoringSheet') : t('prescription.pendingPrescription')}
                             </Heading>
                             <Box p={5} display='flex' alignItems='center' justifyContent='flex-end'>
                                 <Text textAlign='right' fontSize={40}>{data.count || 0}</Text>
@@ -549,7 +561,9 @@ const Dashboard = () => {
                                     overflow='hidden'
                                     mt={5}
                                 >
-                                    <Heading size="md">Patient Number</Heading>
+                                    <Heading size="md">
+                                        {t('dashboard.patientNumber')}
+                                    </Heading>
                                     <Box p={5} display='flex' alignItems='center' justifyContent='flex-end'>
                                         <Text textAlign='right' fontSize={40}>{patientCount || 0}</Text>
                                     </Box>
@@ -573,7 +587,7 @@ const Dashboard = () => {
                                 >
                                     <Box w='80px'></Box>
                                     <Text>
-                                        Today Medical Records
+                                        {t('dashboard.todayMedicalRecords')}
                                     </Text>
                                     <IconButton
                                         colorScheme='blackAlpha'
@@ -593,7 +607,7 @@ const Dashboard = () => {
                                                     <>
                                                         <FaNotesMedical size={23} />
                                                         <Text pt={1} fontSize={15}>
-                                                            Medical Records
+                                                            {t('medicalRecord.medicalRecord')}
                                                         </Text>
                                                     </>
                                                 )}
@@ -601,7 +615,7 @@ const Dashboard = () => {
                                                     <>
                                                         <RiCalendarCheckLine size={23} />
                                                         <Text pt={1} fontSize={15}>
-                                                            Today Available
+                                                            {t('dashboard.todayAvailable')}
                                                         </Text>
                                                     </>
                                                 )}
@@ -613,7 +627,7 @@ const Dashboard = () => {
                                                     <>
                                                         <FaClock size={23} />
                                                         <Text pt={1} fontSize={15}>
-                                                            Latest Update
+                                                            {t('dashboard.latestUpdate')}
                                                         </Text>
                                                     </>
                                                 )}
@@ -621,7 +635,7 @@ const Dashboard = () => {
                                                     <>
                                                         <RiFileList2Line size={23} />
                                                         <Text pt={1} fontSize={15}>
-                                                            Latest Filling
+                                                            {t('dashboard.latestFilling')}
                                                         </Text>
                                                     </>
                                                 )}
@@ -690,7 +704,7 @@ const Dashboard = () => {
                                     >
                                         <Box w='80px'></Box>
                                         <Text>
-                                            Medicine Requests
+                                            {t('dashboard.medicineRequests')}
                                         </Text>
                                         <IconButton
                                             colorScheme='blackAlpha'
@@ -707,13 +721,17 @@ const Dashboard = () => {
                                             <Tab _selected={{ color: 'white' }}>
                                                 <VStack spacing={0}>
                                                     <RiChatCheckLine size={23} />
-                                                    <Text pt={1} fontSize={15}>Requests</Text>
+                                                    <Text pt={1} fontSize={15}>
+                                                        {t('dashboard.requests')}
+                                                    </Text>
                                                 </VStack>
                                             </Tab>
                                             <Tab _selected={{ color: 'white' }}>
                                                 <VStack spacing={0}>
                                                     <AiOutlineMedicineBox size={23} />
-                                                    <Text pt={1} fontSize={15}>Medicine Count</Text>
+                                                    <Text pt={1} fontSize={15}>
+                                                        {t('dashboard.medicineCount')}
+                                                    </Text>
                                                 </VStack>
                                             </Tab>
                                         </TabList>
@@ -767,7 +785,9 @@ const Dashboard = () => {
                         {
                             !infoLoading && data && data?.data.length === 0 && (
                                 <Center p='10px' bg={useColorModeValue('white', 'gray.900')} borderBottomRadius='md' boxShadow='md'>
-                                    <Text fontSize={20} color='gray.500'>No Data</Text>
+                                    <Text fontSize={20} color='gray.500'>
+                                        {t('global.noData')}
+                                    </Text>
                                 </Center>
                             )
                         }

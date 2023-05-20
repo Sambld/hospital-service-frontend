@@ -25,7 +25,8 @@
         "noData": "No Data",
         "detail": "Detail",
         "details": "Details",
-        "submit": "Submit"
+        "submit": "Submit",
+        "open": "Open"
     },
     "navbar": {
         "webSiteName": "Infectious Diseases",
@@ -47,8 +48,33 @@
         "settingsChanged": "Settings Changed Successfully"
     },
 
-    "dashboard.doctor.Today_Medical_Records": "Today Medical Records",
-    "dashboard.doctor.Patient_Number": "Patient Number",
+    "dashboard": {
+        "medicalRecord": "Medical Record",
+        "filledBy": "Filled By",
+        "action": "Action",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "bedNumber": "Bed Number",
+        "medicine": "Medicine",
+        "quantity": "Quantity",
+        "status": "Status",
+        "activeMedicalRecords": "Active Medical Records",
+        "todayAvailableMonitoringSheet": "Today Available Monitoring Sheet",
+        "latestFilledMonitoringSheet": "Lastest Filled Monitoring Sheet",
+        "administratorNumber": "Administrator Number",
+        "doctorNumber": "Doctor Number",
+        "nurseNumber": "Nurse Number",
+        "pharmacistNumber": "Pharmacist Number",
+        "patientNumber": "Patient Number",
+        "todayMedicalRecords": "Today Medical Records",
+        "todayAvailable": "Today Available",
+        "latestUpdate": "Latest Update",
+        "latestFilling": "Latest Filling",
+        "medicineRequests": "Medicine Requests",
+        "requests": "Requests",
+        "medicineCount": "Medicine Count"
+    },
+
     "patient": {
         "title": "Patients",
         "patient": "Patient",
@@ -258,5 +284,8 @@
     "about": {
         "title": "About",
         "content": "this web site created With ReactJS"
+    },
+    "logout": {
+        "areYouSureWantToSignOut": "Are you sure? you want to sign out"
     }
 }

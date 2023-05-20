@@ -22,6 +22,7 @@ import {
     useToast,
     Breadcrumb,
     BreadcrumbItem,
+    useColorModeValue,
 } from "@chakra-ui/react";
 import {
     Chart as ChartJS,
@@ -332,7 +333,7 @@ const Statistics = () => {
             <Box mb={5} mt={1}>
                 <Breadcrumb fontSize={{ base: "md", lg: '3xl' }}>
                     <BreadcrumbItem>
-                        <Text color="gray.500" fontSize={{ base: "md", lg: '3xl' }} ml='20px'>Statistics</Text>
+                        <Text color={useColorModeValue('gray.500', 'gray.200')} fontSize={{ base: "md", lg: '3xl' }} ml='20px'>Statistics</Text>
                     </BreadcrumbItem>
                 </Breadcrumb>
             </Box>

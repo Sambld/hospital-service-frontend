@@ -4,6 +4,7 @@ import { initReactI18next } from 'react-i18next';
 // 
 import en from './assets/translations/en.json';
 import fr from './assets/translations/fr.json';
+import ar from './assets/translations/ar.json';
 
 i18n
     .use(initReactI18next)
@@ -16,6 +17,9 @@ i18n
             en: {
                 translation: en
             },
+            ar: {
+                translation: ar
+            }
         },
         fallbackLng: 'en',
         debug: true,
