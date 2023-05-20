@@ -182,7 +182,9 @@ const MedicineForm = ({ closeModal, closeAndRefresh, editMode, medicine }) => {
             </FormControl>
 
             <FormControl mb={3} id="is_pharmaceutical" isRequired>
-                <FormLabel>Is Pharmaceutical</FormLabel>
+                <FormLabel>
+                    {t('medicine.isPharmaceutical')}
+                </FormLabel>
                 <Select
                     name="is_pharmaceutical"
                     value={formData.is_pharmaceutical}
@@ -193,13 +195,19 @@ const MedicineForm = ({ closeModal, closeAndRefresh, editMode, medicine }) => {
                         });
                     }}
                 >
-                    <option value={true}>Yes</option>
-                    <option value={false}>No</option>
+                    <option value={true}>
+                        {t('global.yes')}
+                    </option>
+                    <option value={false}>
+                        {t('global.no')}
+                    </option>
                 </Select>
             </FormControl>
 
             <FormControl mb={3} id="manufacturer" isRequired>
-                <FormLabel>Manufacturer</FormLabel>
+                <FormLabel>
+                    {t('medicine.manufacturer')}
+                </FormLabel>
                 <Input
                     type="text"
                     name="manufacturer"
@@ -209,7 +217,9 @@ const MedicineForm = ({ closeModal, closeAndRefresh, editMode, medicine }) => {
             </FormControl>
 
             <FormControl mb={3} id="supplier" isRequired>
-                <FormLabel>Supplier</FormLabel>
+                <FormLabel>
+                    {t('medicine.supplier')}
+                </FormLabel>
                 <Input
                     type="text"
                     name="supplier"
@@ -219,7 +229,9 @@ const MedicineForm = ({ closeModal, closeAndRefresh, editMode, medicine }) => {
             </FormControl>
 
             <FormControl mb={3} id="expiration_date" isRequired>
-                <FormLabel>Expiration Date</FormLabel>
+                <FormLabel>
+                    {t('medicine.expirationDate')}
+                </FormLabel>
                 <Input
                     type="date"
                     name="expiration_date"
@@ -230,12 +242,12 @@ const MedicineForm = ({ closeModal, closeAndRefresh, editMode, medicine }) => {
 
             <Flex justifyContent='center' mt='10px'>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
-                    Close
+                    {t('global.cancel')}
                 </Button>
                 <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" >
                     {/* add icon */}
                     <FaBriefcaseMedical />
-                    <Text ml="5px" >{editMode ? 'Update' : 'Add'}</Text>
+                    <Text ml="5px" >{editMode ? t('global.edit') : t('global.add')}</Text>
                 </Button>
             </Flex>
         </Form>)

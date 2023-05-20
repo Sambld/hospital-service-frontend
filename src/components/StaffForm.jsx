@@ -20,6 +20,7 @@ import { FaLock } from "react-icons/fa";
 import { AiOutlinePlus, AiOutlineEdit } from 'react-icons/ai';
 import usePost from '../hooks/usePost';
 import usePut from '../hooks/usePut';
+import { useTranslation } from 'react-i18next';
 
 
 const roles = [
@@ -39,6 +40,8 @@ const StaffForm = ({ closeModal, closeAndRefresh, editMode, selectedStaff }) => 
     });
     const [loading, setLoading] = useState(false);
 
+    const { t, i18n } = useTranslation();
+
     const handleSubmit = (event) => {
         event.preventDefault();
         setLoading(true);
@@ -57,7 +60,7 @@ const StaffForm = ({ closeModal, closeAndRefresh, editMode, selectedStaff }) => 
             if (res.user) {
                 closeAndRefresh(
                     {
-                        title: 'Staff created successfully.',
+                        title: t('staff.staffInfo.created'),
                         status: 'success',
                         redirect: '/staff',
                     }
@@ -82,12 +85,11 @@ const StaffForm = ({ closeModal, closeAndRefresh, editMode, selectedStaff }) => 
         });
     };
     const handleEdit = (event) => {
-        console.log(event)
         usePut('/users/' + selectedStaff.id, formData).then((res) => {
             setLoading(false);
             closeAndRefresh(
                 {
-                    title: 'Staff updated successfully.',
+                    title: t('staff.staffInfo.updated'),
                     status: 'success',
                     redirect: '/staff',
                 }
@@ -124,7 +126,9 @@ const StaffForm = ({ closeModal, closeAndRefresh, editMode, selectedStaff }) => 
         <Form onSubmit={handleSubmit}>
             <Box mt='10px' mb='10px' display='flex' justifyContent='space-between' gap={5}>
                 <FormControl id="first_name">
-                    <FormLabel>First Name</FormLabel>
+                    <FormLabel>
+                        {t('staff.firstName')}
+                    </FormLabel>
                     <Input
                         type="text"
                         name="first_name"
@@ -134,7 +138,9 @@ const StaffForm = ({ closeModal, closeAndRefresh, editMode, selectedStaff }) => 
                 </FormControl>
 
                 <FormControl id="last_name">
-                    <FormLabel>Last Name</FormLabel>
+                    <FormLabel>
+                        {t('staff.lastName')}
+                    </FormLabel>
                     <Input
                         type="text"
                         name="last_name"
@@ -146,7 +152,9 @@ const StaffForm = ({ closeModal, closeAndRefresh, editMode, selectedStaff }) => 
             </Box>
 
             <FormControl id="username">
-                <FormLabel>Username</FormLabel>
+                <FormLabel>
+                    {t('staff.username')}
+                </FormLabel>
                 <Input
                     type="text"
                     name="username"
@@ -156,8 +164,9 @@ const StaffForm = ({ closeModal, closeAndRefresh, editMode, selectedStaff }) => 
             </FormControl>
 
             <FormControl id="password">
-                <FormLabel>Password</FormLabel>
-
+                <FormLabel>
+                    {t('staff.password')}
+                </FormLabel>
                 <InputGroup>
                     <InputLeftElement
                         pointerEvents="none"
@@ -172,14 +181,16 @@ const StaffForm = ({ closeModal, closeAndRefresh, editMode, selectedStaff }) => 
                     />
                     <InputRightElement width="auto" mr={2}>
                         <Button h="1.75rem" size="sm" onClick={handleGenerateRandomPassword}>
-                            Generate
+                            {t('staff.generate')}
                         </Button>
                     </InputRightElement>
                 </InputGroup>
             </FormControl>
 
             <FormControl id="role">
-                <FormLabel>Role</FormLabel>
+                <FormLabel>
+                    {t('staff.role')}
+                </FormLabel>
                 <Select
                     value={formData.role}
                     name="role"
@@ -203,7 +214,9 @@ const StaffForm = ({ closeModal, closeAndRefresh, editMode, selectedStaff }) => 
                         onClick={() => closeModal()}
                     >
                         <AiOutlineEdit />
-                        <Text ml="5px" >Edit</Text>
+                        <Text ml="5px" >
+                            {t('global.edit')}
+                        </Text>
                     </Button>
                 ) : (
                     <Button
@@ -214,7 +227,9 @@ const StaffForm = ({ closeModal, closeAndRefresh, editMode, selectedStaff }) => 
                         loadingText="Adding"
                     >
                         <AiOutlinePlus />
-                        <Text ml="5px" >Add Staff</Text>
+                        <Text ml="5px" >
+                            {t('staff.addStaff')}
+                        </Text>
                     </Button>
                 )}
             </Flex>

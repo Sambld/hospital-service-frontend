@@ -40,6 +40,8 @@ import { CloseIcon } from '@chakra-ui/icons';
 import useLoader from '../hooks/useLoader';
 import usePut from '../hooks/usePut';
 
+import { useTranslation } from 'react-i18next';
+
 const MedicineQuantityForm = ({ closeModal, closeAndRefresh }) => {
     const [formData, setFormData] = useState({
         medicines: [],
@@ -51,6 +53,8 @@ const MedicineQuantityForm = ({ closeModal, closeAndRefresh }) => {
 
     const [uploadProgress, setUploadProgress] = useState(0);
     const [loading, setLoading] = useState(false);
+
+    const { t, i18n } = useTranslation();
 
     const formatDate = (date) => {
         let date_ = new Date(date);
@@ -160,16 +164,18 @@ const MedicineQuantityForm = ({ closeModal, closeAndRefresh }) => {
             <Divider mt='10px' mb='10px' />
             {/* choose medicines */}
             <Box>
-                <Text textAlign='center' fontSize={25}>Medicines List</Text>
+                <Text textAlign='center' fontSize={25}>
+                    {t('medicine.medicinesList')}
+                </Text>
                 <Box border='2px' borderColor='gray.300' boxShadow='md' p={1} mb={3} maxH='30vh' overflow='auto'>
                     <Table variant="unstyled" size="sm" >
                         <Tbody>
                             {formData.medicines.length === 0 && <Tr><Td textAlign='center'>No medicines added yet</Td></Tr>}
                             {formData.medicines.map((medicine) => (
                                 <Tr bg='gray.50' key={medicine.value} color='gray.700'>
-                                    <Td fontSize={13}>Name: {medicine.label}</Td>
-                                    <Td fontSize={13}>Quantity: {medicine.quantity}</Td>
-                                    <Td fontSize={13}>Old Quantity: {medicine.old_quantity}</Td>
+                                    <Td fontSize={13}>{t('medicine.name')}: {medicine.label}</Td>
+                                    <Td fontSize={13}>{t('medicine.quantity')}: {medicine.quantity}</Td>
+                                    <Td fontSize={13}>{t('medicine.oldQuantity')}: {medicine.old_quantity}</Td>
                                     <Td display='flex' p={2} justifyContent='flex-end'>
                                         <IconButton
                                             aria-label="Remove"
@@ -272,12 +278,14 @@ const MedicineQuantityForm = ({ closeModal, closeAndRefresh }) => {
             )}
             <Flex justifyContent='center' mt='10px'>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
-                    Close
+                    {t('global.cancel')}
                 </Button>
                 <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" >
                     {/* add icon */}
                     <AiOutlinePlus />
-                    <Text ml="5px" >Add</Text>
+                    <Text ml="5px" >
+                        {t('global.add')}
+                    </Text>
                 </Button>
             </Flex>
         </Form>)

@@ -71,6 +71,9 @@ import { GiMedicines } from "react-icons/gi";
 import { HiOutlineEmojiSad } from "react-icons/hi";
 import { BiRefresh } from "react-icons/bi";
 
+// Translation
+import { useTranslation } from "react-i18next";
+
 const UserRoleItem = (user) => {
     let items = [];
     try {
@@ -105,6 +108,8 @@ const Staff = () => {
     const toast = useToast()
 
     const navigate = useNavigate()
+
+    const { t, i18n } = useTranslation()
 
 
     useEffect(() => {
@@ -199,7 +204,7 @@ const Staff = () => {
         useDelete('/users/' + selectedStaff.id).then(res => {
             setDeleteLoading(false)
             handleStaffActions({
-                title: 'Staff deleted successfully',
+                title: t('staff.staffInfo.deleted'),
                 status: 'success',
                 redirect: location.pathname + location.search
             })
@@ -256,7 +261,9 @@ const Staff = () => {
                     variant='outline'
                     fontWeight='normal'
                     onClick={handleAddStaff}
-                >ADD STAFF</Button>
+                >
+                    {t('staff.addStaff')}
+                </Button>
             </HStack>
             <Box bg={useColorModeValue('white', 'gray.800')} w='100%' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
                 <Text fontSize='sm' color='gray.500' p='10px' align='right'>Showing {data && data.data.length} of {data && data.total} staff</Text>
@@ -266,7 +273,7 @@ const Staff = () => {
                             pointerEvents='none'
                             children={<SearchIcon color='gray.300' />}
                         />
-                        <Input bg={useColorModeValue('white', 'gray.800')} defaultValue={searchParams.get('q') || ''} variant='outline' type='text' placeholder='Search by Name' onChange={({ target }) => { handleSearch(target.value) }} _placeholder={{ color: useColorModeValue('gray.500', 'gray.300') }} />
+                        <Input bg={useColorModeValue('white', 'gray.800')} defaultValue={searchParams.get('q') || ''} variant='outline' type='text' placeholder={t('staff.searchByName')} onChange={({ target }) => { handleSearch(target.value) }} _placeholder={{ color: useColorModeValue('gray.500', 'gray.300') }} />
                     </InputGroup>
                     <IconButton
                         colorScheme='blackAlpha'
@@ -289,8 +296,8 @@ const Staff = () => {
                                             icon={UserRoleItem(item)[0]}
                                         />
                                         <Text color={useColorModeValue('gray.600', 'gray.100')}fontWeight='normal' fontSize={{ base: 'sm', lg: 'lg' }}>{item.first_name + " " + item.last_name}</Text>
-                                        <Text fontSize='sm' color={useColorModeValue('gray.500', 'gray.300')}>Role: {item.role} </Text>
-                                        <Text fontSize='sm' color={useColorModeValue('gray.500', 'gray.300')}>Created At: {new Date(item.created_at).toLocaleDateString()} </Text>
+                                        <Text fontSize='sm' color={useColorModeValue('gray.500', 'gray.300')}>{t('staff.role')}: {item.role} </Text>
+                                        <Text fontSize='sm' color={useColorModeValue('gray.500', 'gray.300')}>{t('staff.createdAt')}: {new Date(item.created_at).toLocaleDateString()} </Text>
 
                                     </Box>
                                     <Flex justifyContent='space-between' bg='gray.100' borderBottomRadius='md' pt='1px' gap='1px'>
@@ -310,7 +317,9 @@ const Staff = () => {
                                                 onDeleteOpen()
                                             }}
                                         >
-                                            <Text mr='5px' fontSize={15} fontWeight='normal'>Delete</Text>
+                                            <Text mr='5px' fontSize={15} fontWeight='normal'>
+                                                {t('global.delete')}
+                                            </Text>
                                         </Button>
 
                                         <Button
@@ -329,7 +338,9 @@ const Staff = () => {
                                                 onStaffOpen()
                                             }}
                                         >
-                                            <Text mr='5px' fontSize={15} fontWeight='normal'>Edit</Text>
+                                            <Text mr='5px' fontSize={15} fontWeight='normal'>
+                                                {t('global.edit')}
+                                            </Text>
                                         </Button>
                                     </Flex>
                                 </Box>
@@ -373,7 +384,9 @@ const Staff = () => {
             <Modal closeOnOverlayClick={false} isOpen={isStaffOpen} onClose={handleStaffFormClose}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>Add Staff</ModalHeader>
+                    <ModalHeader>
+                        {t('staff.addStaff').toUpperCase()}
+                    </ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
                         <StaffForm
@@ -393,15 +406,17 @@ const Staff = () => {
                     <AlertDialogContent maxW='300px' p={5}>
 
                         <AlertDialogBody textAlign='center'>
-                            <Text fontSize='lg' fontWeight='bold'>Are you sure?</Text>
+                            <Text fontSize='lg' fontWeight='bold'>
+                                {t('global.areYouSure')}
+                            </Text>
                         </AlertDialogBody>
 
                         <AlertDialogFooter justifyContent='center'>
                             <Button onClick={onDeleteClose}>
-                                Cancel
+                                {t('global.cancel')}
                             </Button>
                             <Button colorScheme='red' onClick={handleDeleteStaff} ml={3} isLoading={deleteLoading}>
-                                Delete
+                                {t('global.delete')}
                             </Button>
                         </AlertDialogFooter>
                     </AlertDialogContent>

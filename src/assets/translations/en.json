@@ -18,9 +18,14 @@
         "all": "All",
         "empty": "Empty",
         "title": "Title",
+        "areYouSure": "Are you sure?",
         "areYouSureYouCanNotUndoThisAction": "Are you sure? You can't undo this action afterwards.",
         "male": "Male",
-        "female": "Female"
+        "female": "Female",
+        "noData": "No Data",
+        "detail": "Detail",
+        "details": "Details",
+        "submit": "Submit"
     },
     "navbar": {
         "webSiteName": "Infectious Diseases",
@@ -190,7 +195,64 @@
         "name": "Name",
         "description": "Description",
         "category": "Category",
-        "quantity": "Quantity"
+        "quantity": "Quantity",
+        "expirationDate": "Expiration Date",
+        "addMedicine": "Add Medicine",
+        "addQuantity": "Add Quantity",
+        "detail": "Detail",
+        "medicineNotFound": "Medicine Not Found",
+        "checkId": "Please check the id and try again",
+        "pharmaceutical": "Pharmaceutical",
+        "manufacturer": "Manufacturer",
+        "supplier": "Supplier",
+        "isPharmaceutical": "Is Pharmaceutical",
+        "medicinesList": "Medicines List",
+        "oldQuantity": "Old Quantity"
+    },
+    "prescription": {
+        "pendingPrescription": "Pending Prescription",
+        "pastPrescription": "Past Prescription",
+        "pending": "Pending",
+        "approved": "Approved",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "doctor": "Doctor",
+        "patient": "Patient",
+        "description": "Description",
+        "prescription": "Prescription",
+        "prescriptions": "Prescriptions",
+        "medicine": "Medicine",
+        "selectedPrescription": "Selected Prescription",
+        "prescriptionDetail": "Prescription Detail",
+        "reviewPrescription": "Review Prescription",
+        "writeYourReviewHere": "Write your review here",
+        "acceptAll": "Accept All",
+        "rejectAll": "Reject All",
+        "available": "Available",
+        "prescriptionInfo": {
+            "created": "Prescription created successfully.",
+            "updated": "Prescription Updated",
+            "deleted": "Prescription Deleted",
+            "completed": "Prescription Completed",
+            "hasCompleted": "Prescription has been completed",
+            "hasBeen": "Medicine has been"
+        }
+    },
+    "staff": {
+        "addStaff": "Add Staff",
+        "searchByName": "Search By Name",
+        "role": "Role",
+        "createdAt": "Created At",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "username": "Username",
+        "password": "Password",
+        "generate": "Generate",
+        "staffInfo": {
+            "created": "Staff created successfully.",
+            "updated": "Staff Updated",
+            "deleted": "Staff Deleted"
+        }
     },
 
     "about": {

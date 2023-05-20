@@ -26,6 +26,9 @@ import useDelete from "../hooks/useDelete";
 import useLoader from "../hooks/useLoader";
 import { useParams, useOutletContext, useNavigate } from "react-router-dom";
 
+// Translation
+import { useTranslation } from "react-i18next";
+
 const Medicine = () => {
     const { id } = useParams()
     const [medicine, setMedicine] = useState(null)
@@ -39,6 +42,8 @@ const Medicine = () => {
 
     const toast = useToast()
     const navigate = useNavigate()
+
+    const { t, i18n } = useTranslation()
 
     const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
 
@@ -122,10 +127,10 @@ const Medicine = () => {
                 404
             </Text>
             <Text textAlign='center' fontSize={30}>
-                Medicine Not Found
+                {t('medicine.medicineNotFound')}
             </Text>
             <Text textAlign='center' fontSize={15}>
-                (Please check the id and try again)
+                ({t('medicine.checkId')})
             </Text>
         </Box>
     )
@@ -151,7 +156,9 @@ const Medicine = () => {
                                 w='50%'
                                 onClick={() => openMedicineModel(medicine)}
                             >
-                                <Text mr='5px' fontSize={15} fontWeight='normal'>Edit</Text>
+                                <Text mr='5px' fontSize={15} fontWeight='normal'>
+                                    {t('global.edit')}
+                                </Text>
                             </Button>
 
                             <Button
@@ -167,7 +174,9 @@ const Medicine = () => {
                                 w='50%'
                                 onClick={onDeleteOpen}
                             >
-                                <Text mr='5px' fontSize={15} fontWeight='normal'>Delete</Text>
+                                <Text mr='5px' fontSize={15} fontWeight='normal'>
+                                    {t('global.delete')}
+                                </Text>
                             </Button>
                         </Flex>
                     )}
@@ -181,7 +190,7 @@ const Medicine = () => {
                         <Divider />
                         <Box>
                             <Text fontSize="lg" fontWeight="bold">
-                                Description
+                                {t('medicine.description')}
                             </Text>
                             {medicine.description.split('\n').map((item, key) => {
                                 return <Text key={key} ml={5}>{item}</Text>
@@ -190,35 +199,35 @@ const Medicine = () => {
                         <Divider />
                         <Box>
                             <Text fontSize="lg" fontWeight="bold">
-                                Quantity
+                                {t('medicine.quantity')}
                             </Text>
                             <Text>{medicine.quantity}</Text>
                         </Box>
                         <Divider />
                         <Box>
                             <Text fontSize="lg" fontWeight="bold">
-                                Pharmaceutical
+                                {t('medicine.pharmaceutical')}
                             </Text>
                             <Text>{medicine.is_pharmaceutical ? "Yes" : "No"}</Text>
                         </Box>
                         <Divider />
                         <Box>
                             <Text fontSize="lg" fontWeight="bold">
-                                Manufacturer
+                                {t('medicine.manufacturer')}
                             </Text>
                             <Text>{medicine.manufacturer}</Text>
                         </Box>
                         <Divider />
                         <Box>
                             <Text fontSize="lg" fontWeight="bold">
-                                Supplier
+                                {t('medicine.supplier')}
                             </Text>
                             <Text>{medicine.supplier}</Text>
                         </Box>
                         <Divider />
                         <Box>
                             <Text fontSize="lg" fontWeight="bold">
-                                Expiration Date
+                                {t('medicine.expirationDate')}
                             </Text>
                             <Text>{medicine.expiration_date}</Text>
                         </Box>
@@ -234,15 +243,17 @@ const Medicine = () => {
                     <AlertDialogContent maxW='300px' p={5}>
 
                         <AlertDialogBody textAlign='center'>
-                            <Text fontSize='lg' fontWeight='bold'>Are you sure?</Text>
+                            <Text fontSize='lg' fontWeight='bold'>
+                                {t('global.areYouSure')}
+                            </Text>
                         </AlertDialogBody>
 
                         <AlertDialogFooter justifyContent='center'>
                             <Button onClick={onDeleteClose}>
-                                Cancel
+                                {t('global.cancel')}
                             </Button>
                             <Button colorScheme='red' onClick={handleDeleteMedicine} ml={3} isLoading={deleteLoading}>
-                                Delete
+                                {t('global.delete')}
                             </Button>
                         </AlertDialogFooter>
                     </AlertDialogContent>

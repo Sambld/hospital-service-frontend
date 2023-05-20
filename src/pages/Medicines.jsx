@@ -40,6 +40,9 @@ import Pagination from "../components/Pagination";
 import MedicineQuantityForm from "../components/MedicineQuantityForm";
 import MedicineForm from "../components/MedicineForm";
 
+// Translation
+import { useTranslation } from "react-i18next";
+
 const Medicines = () => {
     const outlet = useOutlet()
     const user = useOutletContext()
@@ -54,6 +57,8 @@ const Medicines = () => {
 
     const toast = useToast()
     const navigate = useNavigate()
+
+    const { t, i18n } = useTranslation()
 
     const { isOpen: isQuantityModalOpen, onOpen: onQuantityModalOpen, onClose: onQuantityModalClose } = useDisclosure()
     const { isOpen: isMedicineModalOpen, onOpen: onMedicineModalOpen, onClose: onMedicineModalClose } = useDisclosure()
@@ -184,20 +189,20 @@ const Medicines = () => {
                 <Spacer />
                 {user.role == 'administrator' || user.role == 'pharmacist' && !outlet && (
                     <Menu>
-                        <MenuButton w='120px' colorScheme='blue.300' bg='blue.700' color='gray.100' as={Button} rightIcon={<ChevronDownIcon />} >
-                            ADD
+                        <MenuButton w='150px' colorScheme='blue.300' bg='blue.700' color='gray.100' as={Button} rightIcon={<ChevronDownIcon />} >
+                            {t('global.add').toUpperCase()}
                         </MenuButton>
                         <MenuList>
                             <MenuItem onClick={onMedicineModalOpen}>
                                 <FaBriefcaseMedical  color={useColorModeValue('gray', 'white')} />
                                 <Text ml={3} color={useColorModeValue('gray.700', 'gray.100')}>
-                                    NEW MEDICINE
+                                    {t('medicine.addMedicine').toUpperCase()}
                                 </Text>
                             </MenuItem>
                             <MenuItem onClick={onQuantityModalOpen}>
                                 <GoDiffAdded  color={useColorModeValue('gray', 'white')} />
                                 <Text ml={3} color={useColorModeValue('gray.700', 'gray.100')}>
-                                    ADD QUANTITY
+                                    {t('medicine.addQuantity').toUpperCase()}
                                 </Text>
                             </MenuItem>
                         </MenuList>
@@ -215,7 +220,9 @@ const Medicines = () => {
             <Modal closeOnOverlayClick={false} isOpen={isQuantityModalOpen} onClose={onQuantityModalClose}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>ADD QUANTITY</ModalHeader>
+                    <ModalHeader>
+                        {t('medicine.addQuantity').toUpperCase()}
+                    </ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
                         <MedicineQuantityForm closeModal={onQuantityModalClose} closeAndRefresh={handleMedicineActions} />
@@ -226,7 +233,9 @@ const Medicines = () => {
             <Modal closeOnOverlayClick={false} isOpen={isMedicineModalOpen} onClose={onMedicineModalClose}>
                 <ModalOverlay />
                 <ModalContent maxW='700px'>
-                    <ModalHeader>ADD MEDICINE</ModalHeader>
+                    <ModalHeader>
+                        {t('medicine.addMedicine').toUpperCase()}
+                    </ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
                         <MedicineForm closeModal={onMedicineModalClose} closeAndRefresh={handleMedicineActions} editMode={medicineEditMode} medicine={medicine} />

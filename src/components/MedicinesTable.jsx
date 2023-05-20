@@ -4,7 +4,11 @@ import { SearchIcon } from '@chakra-ui/icons';
 import { TbMedicineSyrup } from 'react-icons/tb';
 import { AiFillFolderOpen } from 'react-icons/ai'
 
+import { useTranslation } from "react-i18next";
+
 const MedicinesTable = ({ initValue, medicines, count, search }) => {
+
+    const { t, i18n } = useTranslation();
     return (
         <>
             <Text fontSize='sm' color='gray.500' p='10px' align='right'>{count ? count : medicines ? '0' : '-'} Medicines</Text>
@@ -20,9 +24,17 @@ const MedicinesTable = ({ initValue, medicines, count, search }) => {
                                 <Input defaultValue={initValue} variant='flushed' type='text' placeholder='Search by Name' onChange={({ target }) => { search(target.value) }} />
                             </InputGroup>
                         </Th>
-                        <Th display={{ base: 'none', lg: 'table-cell' }}>quantity</Th>
-                        <Th display={{ base: 'none', xl: 'table-cell' }}>expiration Date</Th>
-                        <Th><Text textAlign='center'>Detail</Text></Th>
+                        <Th display={{ base: 'none', lg: 'table-cell' }}>
+                            {t('medicine.quantity')}
+                        </Th>
+                        <Th display={{ base: 'none', xl: 'table-cell' }}>
+                            {t('medicine.expirationDate')}
+                        </Th>
+                        <Th>
+                            <Text textAlign='center'>
+                                {t('medicine.detail')}
+                            </Text>
+                        </Th>
                     </Tr>
                 </Thead>
                 <Tbody>
@@ -31,10 +43,10 @@ const MedicinesTable = ({ initValue, medicines, count, search }) => {
                             <Td><Text color={useColorModeValue('gray.600', 'gray.50')} fontWeight='normal' fontSize={20}>{medicine.name}</Text></Td>
                             <Td color={useColorModeValue('gray.600', 'gray.50')} display={{ base: 'none', lg: 'table-cell' }}>{medicine.quantity}</Td>
                             <Td color={useColorModeValue('gray.600', 'gray.50')} display={{ base: 'none', xl: 'table-cell' }}>{medicine.expiration_date}</Td>
-                            <Td><NavLink to={medicine.id.toString()}><Button colorScheme='blue' w='100%'>Detail</Button></NavLink></Td>
+                            <Td><NavLink to={medicine.id.toString()}><Button colorScheme='blue' w='100%'>{t('medicine.detail')}</Button></NavLink></Td>
                         </Tr>
                     ))}
-                    {medicines && medicines.length == 0 && <Tr><Td colSpan='5'><Text textAlign='center' fontWeight='bold' fontSize='xl'>No Data</Text></Td></Tr>}
+                    {medicines && medicines.length == 0 && <Tr><Td colSpan='5'><Text textAlign='center' fontWeight='bold' fontSize='xl'>{t('global.noData')}</Text></Td></Tr>}
                 </Tbody>
             </Table>
             {!medicines && (

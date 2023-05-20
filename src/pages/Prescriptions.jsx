@@ -49,6 +49,7 @@ import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import Pagination from "../components/Pagination";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import useLoader from "../hooks/useLoader";
+import { useTranslation } from "react-i18next";
 
 
 const Prescriptions = () => {
@@ -86,6 +87,8 @@ const Prescriptions = () => {
     const navigate = useNavigate()
 
     const [tabIndex, setTabIndex] = useState(0)
+
+    const { t, i18n } = useTranslation();
 
 
     const toast = useToast()
@@ -185,8 +188,8 @@ const Prescriptions = () => {
             // setPrescriptions(null);
             // getPendingPrescriptions();
             toast({
-                title: "Prescription Completed",
-                description: "The prescription has been completed",
+                title: t('prescription:prescriptionInfo.completed'),
+                description: t('prescription:prescriptionInfo.hasCompleted'),
                 status: "success",
                 duration: 5000,
                 isClosable: true,
@@ -237,8 +240,8 @@ const Prescriptions = () => {
 
             if (!stopNotification) {
                 toast({
-                    title: `Medicine ${message}`,
-                    description: `The medicine has been ${message.toLowerCase()}`,
+                    title: `${t('prescription.medicine')} ${t('prescription.' + message.toLowerCase())}`,
+                    description: `${t('prescription.prescriptionInfo.hasBeen')} ${t('prescription.' + message.toLowerCase())}`,
                     status: "success",
                     duration: 5000,
                     isClosable: true
@@ -248,8 +251,8 @@ const Prescriptions = () => {
                     // setPrescriptions(null);
                     // getPendingPrescriptions();
                     toast({
-                        title: "Prescription Completed",
-                        description: "The prescription has been completed",
+                        title: t('prescription.prescriptionInfo.completed'),
+                        description: t('prescription.prescriptionInfo.hasCompleted'),
                         status: "success",
                         duration: 5000,
                         isClosable: true
@@ -324,13 +327,13 @@ const Prescriptions = () => {
                         borderRadius='md'
                         _selected={{ color: 'white', bg: 'blue.500' }}
                     >
-                        Pending Requests
+                        {t('prescription.pendingPrescription')}
                     </Tab>
                     <Tab
                         borderRadius='md'
                         _selected={{ color: 'white', bg: 'green.500' }}
                     >
-                        Past Requests
+                        {t('prescription.pastPrescription')}
                     </Tab>
                 </TabList>
                 <Box dispaly='flex' justifyContent='center' alignItems='center' p='10px'>
@@ -344,14 +347,16 @@ const Prescriptions = () => {
                                             borderRadius='md' boxShadow='md' overflow='hidden'>
                                                 <Flex alignItems='center' bg='blue.500' p={3} color='white' borderTopRadius='md' gap={1}>
                                                     <Icon as={FaPrescriptionBottleAlt} fontSize='20px' mr='5px' />
-                                                    <Text>Prescription</Text>
+                                                    <Text>
+                                                        {t('prescription.prescription')}
+                                                    </Text>
                                                     <Tag colorScheme='gray' ml='auto'>{item.prescriptions.length}</Tag>
                                                 </Flex>
                                                 <Flex justifyContent='flex-start' flexDirection='column' gap={3} p={3}>
-                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>Medical Record <Tag colorScheme='blue'>#{item.id}</Tag></Text>
-                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>Doctor: {item.assigned_doctor.first_name + " " + item.assigned_doctor.last_name}</Text>
-                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>Patient: {item.patient.first_name + " " + item.patient.last_name}</Text>
-                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>Description: {item.condition_description}</Text>
+                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>{t('medicalRecord.medicalRecord')} <Tag colorScheme='blue'>#{item.id}</Tag></Text>
+                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>{t('prescription.doctor')}: {item.assigned_doctor.first_name + " " + item.assigned_doctor.last_name}</Text>
+                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>{t('prescription.patient')}: {item.patient.first_name + " " + item.patient.last_name}</Text>
+                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>{t('prescription.description')}: {item.condition_description}</Text>
                                                 </Flex>
                                                 <Flex justifyContent='space-between' bg='gray.100' borderBottomRadius='md' pt='1px' gap='1px'>
 
@@ -383,7 +388,9 @@ const Prescriptions = () => {
                                                         _hover={{ bg: useColorModeValue('gray.100', 'gray.700') }}
                                                         onClick={() => handlePrescriptionDetail(item)}
                                                     >
-                                                        <Text mr='5px' fontSize={15} fontWeight='normal'>Detail</Text>
+                                                        <Text mr='5px' fontSize={15} fontWeight='normal'>
+                                                            {t('global.detail')}
+                                                        </Text>
                                                     </Button>
                                                 </Flex>
                                             </Box>
@@ -433,7 +440,7 @@ const Prescriptions = () => {
                 <ModalOverlay />
                 {PrescriptionDetail && (
                     <ModalContent maxW='800px' p={3}>
-                        <ModalHeader>Medical Record #{PrescriptionDetail.id} Prescriptions </ModalHeader>
+                        <ModalHeader>{t('medicalRecord.medicalRecord')} #{PrescriptionDetail.id} {t('prescription.prescriptions')} </ModalHeader>
                         <ModalCloseButton />
                         <ModalBody>
                             {/* doctor name */}
@@ -447,7 +454,9 @@ const Prescriptions = () => {
                                 <Text>{PrescriptionDetail.patient.first_name + " " + PrescriptionDetail.patient.last_name} #{PrescriptionDetail.patient_id}</Text>
                             </Flex>
                             <Divider mt={3} mb={3} />
-                            <Text mb={2} fontSize='20px' fontWeight='bold'>Selected Prescription</Text>
+                            <Text mb={2} fontSize='20px' fontWeight='bold'>
+                                {t('prescription.selectedPrescription')}
+                            </Text>
                             <Select onChange={(e) => handleSelectPrescription(e.target.value)}>
                                 {PrescriptionDetail.prescriptions.length > 0 && PrescriptionDetail.prescriptions.map((item, index) => (
                                     <option key={index} value={index}>{item.name} #{item.id}</option>
@@ -457,13 +466,21 @@ const Prescriptions = () => {
                             <Divider mt={3} mb={3} />
                             {PrescriptionDetail.prescriptions[SelectedPrescription] && (
                                 <Box maxH='50vh' overflow='auto'>
-                                    <Text mb={2} fontSize='20px' fontWeight='bold'>Prescription Detail</Text>
+                                    <Text mb={2} fontSize='20px' fontWeight='bold'>
+                                        {t('prescription.prescriptionDetail')}
+                                    </Text>
                                     <Table variant='simple' colorScheme='blackAlpha' border={useColorModeValue(null, '2px')} borderColor={useColorModeValue(null, 'gray.900')}>
                                         <Thead>
                                             <Tr>
-                                                <Th w='300px'>Medicine</Th>
-                                                <Th textAlign='center'>Quantity</Th>
-                                                {tabIndex == 0 && (<Th textAlign='center'>Available</Th>)}
+                                                <Th w='300px'>
+                                                    {t('prescription.medicine')}
+                                                </Th>
+                                                <Th textAlign='center'>
+                                                    {t('medicine.quantity')}
+                                                </Th>
+                                                {tabIndex == 0 && (<Th textAlign='center'>
+                                                    {t('prescription.available')}
+                                                </Th>)}
                                                 <Th></Th>
                                             </Tr>
                                         </Thead>
@@ -513,14 +530,14 @@ const Prescriptions = () => {
                                                                     {item.status.toLowerCase() == 'approved' && (
                                                                         <Tag w='100%' h='40px' colorScheme='green'>
                                                                             <Text w='100%' textAlign='center' fontSize='15px' fontWeight='bold'>
-                                                                                Accepted
+                                                                                {t('prescription.accepted')}
                                                                             </Text>
                                                                         </Tag>
                                                                     )}
                                                                     {item.status.toLowerCase() == 'rejected' && (
                                                                         <Tag w='100%' h='40px' colorScheme='red'>
                                                                             <Text w='100%' textAlign='center' fontSize='15px' fontWeight='bold'>
-                                                                                Rejected
+                                                                                {t('prescription.rejected')}
                                                                             </Text>
                                                                         </Tag>
                                                                     )}
@@ -548,7 +565,9 @@ const Prescriptions = () => {
                                     isLoading={AllActionLoading}
                                     onClick={() => onReviewOpen()}
                                 >
-                                    <Text mr='5px' fontSize={15} fontWeight='normal'>Reject All</Text>
+                                    <Text mr='5px' fontSize={15} fontWeight='normal'>
+                                        {t('prescription.rejectAll')}
+                                    </Text>
                                 </Button>
                                 <Button
                                     leftIcon={<IoCheckmarkSharp color="green.700" />}
@@ -560,7 +579,9 @@ const Prescriptions = () => {
                                     isLoading={AllActionLoading}
                                     onClick={() => changeAllMedicineRequestStatus(PrescriptionDetail, 'Approved')}
                                 >
-                                    <Text mr='5px' fontSize={15} fontWeight='normal'>Accept All</Text>
+                                    <Text mr='5px' fontSize={15} fontWeight='normal'>
+                                        {t('prescription.acceptAll')}
+                                    </Text>
                                 </Button>
                             </ModalFooter>
                         )}
@@ -577,10 +598,12 @@ const Prescriptions = () => {
             <Modal blockScrollOnMount={false} isOpen={isReviewOpen} onClose={onReviewClose}>
                 <ModalOverlay />
                 <ModalContent maxW='800px'>
-                    <ModalHeader>Review Prescription</ModalHeader>
+                    <ModalHeader>
+                        {t('prescription.reviewPrescription')}
+                    </ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <Textarea placeholder='Write your review here' value={review || ''} onChange={(event) => setReview(event.target.value)} />
+                        <Textarea placeholder={t('prescription.writeYourReviewHere')} value={review || ''} onChange={(event) => setReview(event.target.value)} />
                     </ModalBody>
                     <ModalFooter>
                         <Button
@@ -593,7 +616,9 @@ const Prescriptions = () => {
                             isLoading={reviewLoading}
                             onClick={() => rejectMedicineRequestWithReason(PrescriptionDetail, 'Rejected')}
                         >
-                            <Text mr='5px' fontSize={15} fontWeight='normal'>Submit</Text>
+                            <Text mr='5px' fontSize={15} fontWeight='normal'>
+                                {t('global.submit')}
+                            </Text>
                         </Button>
                     </ModalFooter>
                 </ModalContent>

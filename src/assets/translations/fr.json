@@ -19,9 +19,14 @@
         "all": "Tout",
         "empty": "Vide",
         "title": "Titre",
+        "areYouSure": "Êtes-vous sûr(e) ?",
         "areYouSureYouCanNotUndoThisAction": "Êtes-vous sûr(e) ? Vous ne pourrez pas annuler cette action par la suite.",
         "male": "Masculin",
-        "female": "Féminin"
+        "female": "Féminin",
+        "noData": "Aucune donnée",
+        "detail": "Détail",
+        "details": "Détails",
+        "submit": "Soumettre"
     },
     "navbar": {
         "webSiteName": "Maladies Infectieuses",
@@ -187,6 +192,71 @@
         "deleteObservation": "Supprimer l'observation",
         "basicInformation": "Informations de base",
         "medicalEspeciality": "Spécialité médicale"
+    },
+    "medicine": {
+        "name": "Nom",
+        "description": "Description",
+        "category": "Catégorie",
+        "quantity": "Quantité",
+        "expirationDate": "Date d'expiration",
+        "addMedicine": "Ajouter un médicament",
+        "addQuantity": "Ajouter une quantité",
+        "detail": "Détail",
+        "medicineNotFound": "Médicament non trouvé",
+        "checkId": "Veuillez vérifier l'identifiant et réessayer",
+        "pharmaceutical": "Pharmaceutique",
+        "manufacturer": "Fabricant",
+        "supplier": "Fournisseur",
+        "isPharmaceutical": "Est pharmaceutique",
+        "medicinesList": "Liste des médicaments",
+        "oldQuantity": "Ancienne quantité"
+    },
+
+    "prescription": {
+        "pendingPrescription": "Ordonnance en attente",
+        "pastPrescription": "Ordonnance passée",
+        "pending": "En attente",
+        "approved": "Approuvée",
+        "accepted": "Acceptée",
+        "rejected": "Rejetée",
+        "doctor": "Médecin",
+        "patient": "Patient",
+        "description": "Description",
+        "prescription": "Ordonnance",
+        "prescriptions": "Ordonnances",
+        "medicine": "Médicament",
+        "selectedPrescription": "Ordonnance sélectionnée",
+        "prescriptionDetail": "Détail de la ordonnance",
+        "reviewPrescription": "Revoir la ordonnance",
+        "writeYourReviewHere": "Rédigez votre avis ici",
+        "acceptAll": "Tout accepter",
+        "rejectAll": "Tout rejeter",
+        "available": "Disponible",
+        "prescriptionInfo": {
+            "created": "Prescription créée avec succès.",
+            "updated": "Prescription mise à jour",
+            "deleted": "Prescription supprimée",
+            "completed": "Prescription terminée",
+            "hasCompleted": "La prescription a été terminée",
+            "hasBeen": "Le médicament a été"
+        }
+    },
+
+    "staff": {
+        "addStaff": "Ajouter un personnel",
+        "searchByName": "Rechercher par nom",
+        "role": "Rôle",
+        "createdAt": "Créé le",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "username": "Nom d'utilisateur",
+        "password": "Mot de passe",
+        "generate": "Générer",
+        "staffInfo": {
+            "created": "Personnel créé avec succès.",
+            "updated": "Personnel mis à jour",
+            "deleted": "Personnel supprimé"
+        }
     },
 
     "about.title": "À propos de nous",
