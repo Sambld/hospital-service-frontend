@@ -50,6 +50,7 @@ import {
     Avatar,
     IconButton,
     Skeleton,
+    useColorModeValue,
 } from "@chakra-ui/react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
@@ -257,19 +258,20 @@ const Staff = () => {
                     onClick={handleAddStaff}
                 >ADD STAFF</Button>
             </HStack>
-            <Box bg='white' w='100%' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
+            <Box bg={useColorModeValue('white', 'gray.800')} w='100%' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
                 <Text fontSize='sm' color='gray.500' p='10px' align='right'>Showing {data && data.data.length} of {data && data.total} staff</Text>
                 <Box p='10px' mb='10px' w='100%' display='flex' justifyContent='space-between' gap={2}>
-                    <InputGroup>
+                    <InputGroup color={useColorModeValue('gray.600', 'gray.300')} borderColor={useColorModeValue('gray.200', 'gray.700')}>
                         <InputLeftElement
                             pointerEvents='none'
                             children={<SearchIcon color='gray.300' />}
                         />
-                        <Input defaultValue={searchParams.get('q') || ''} variant='outline' type='text' placeholder='Search by Name' onChange={({ target }) => { handleSearch(target.value) }} />
+                        <Input bg={useColorModeValue('white', 'gray.800')} defaultValue={searchParams.get('q') || ''} variant='outline' type='text' placeholder='Search by Name' onChange={({ target }) => { handleSearch(target.value) }} _placeholder={{ color: useColorModeValue('gray.500', 'gray.300') }} />
                     </InputGroup>
                     <IconButton
                         colorScheme='blackAlpha'
-                        bg='gray.600'
+                        bg={useColorModeValue('gray.600', 'gray.600')}
+                        color={useColorModeValue('white', 'white')}
                         aria-label='Refresh'
                         onClick={handleRefresh}
                         icon={<BiRefresh size={25} />}
@@ -279,21 +281,22 @@ const Staff = () => {
                     {
                         data && data.data.map((item, index) => (
                             <GridItem key={index}>
-                                <Box bg='gray.50' borderRadius='md' border='2px' borderColor='gray.200' overflow='hidden'>
+                                <Box bg={useColorModeValue('gray.50', 'gray.700')} borderRadius='md' border='2px' borderColor={useColorModeValue('gray.200','gray.700')} overflow='hidden'>
 
                                     <Box p='10px' textAlign='center'>
                                         <Avatar
                                             bg={UserRoleItem(item)[2]}
                                             icon={UserRoleItem(item)[0]}
                                         />
-                                        <Text fontWeight='normal' fontSize={{ base: 'sm', lg: 'lg' }}>{item.first_name + " " + item.last_name}</Text>
-                                        <Text fontSize='sm' color='gray.500'>Role: {item.role} </Text>
-                                        <Text fontSize='sm' color='gray.500'>Created At: {new Date(item.created_at).toLocaleDateString()} </Text>
+                                        <Text color={useColorModeValue('gray.600', 'gray.100')}fontWeight='normal' fontSize={{ base: 'sm', lg: 'lg' }}>{item.first_name + " " + item.last_name}</Text>
+                                        <Text fontSize='sm' color={useColorModeValue('gray.500', 'gray.300')}>Role: {item.role} </Text>
+                                        <Text fontSize='sm' color={useColorModeValue('gray.500', 'gray.300')}>Created At: {new Date(item.created_at).toLocaleDateString()} </Text>
 
                                     </Box>
                                     <Flex justifyContent='space-between' bg='gray.100' borderBottomRadius='md' pt='1px' gap='1px'>
                                         <Button
-                                            bg='white'
+                                            bg={useColorModeValue('white', 'gray.700')}
+                                            color={useColorModeValue('red.600', 'red.400')}
                                             leftIcon={<DeleteIcon />}
                                             colorScheme='red'
                                             borderRadius={0}
@@ -311,7 +314,7 @@ const Staff = () => {
                                         </Button>
 
                                         <Button
-                                            bg='white'
+                                            bg={useColorModeValue('white', 'gray.700')}
                                             leftIcon={<EditIcon />}
                                             colorScheme='green'
                                             borderRadius={0}

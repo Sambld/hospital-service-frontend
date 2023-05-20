@@ -37,6 +37,7 @@ import {
     Heading,
     Select,
     Skeleton,
+    useColorModeValue,
 } from "@chakra-ui/react";
 import { FaExclamationCircle, FaPrescriptionBottleAlt, FaUserMd } from "react-icons/fa";
 import { AiFillFile, AiOutlineClockCircle } from "react-icons/ai";
@@ -316,9 +317,9 @@ const Prescriptions = () => {
     }
 
     return (
-        <Box bg='white' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
+        <Box bg={useColorModeValue('white', 'gray.800')} m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
             <Tabs index={tabIndex} variant='unstyled' colorScheme='green' onChange={handleTabsChange} isFitted>
-                <TabList bg='gray.300' p='3px' borderRadius='md'>
+                <TabList bg={useColorModeValue('gray.300', 'gray.700')} color={useColorModeValue('gray.700', 'gray.300')} p='3px' borderRadius='md'>
                     <Tab
                         borderRadius='md'
                         _selected={{ color: 'white', bg: 'blue.500' }}
@@ -339,17 +340,18 @@ const Prescriptions = () => {
                                 {(tabIndex == 0 ? PendingPrescriptions : PastPrescriptions)
                                     .map((item, index) => (
                                         <GridItem key={index}>
-                                            <Box borderRadius='md' boxShadow='md' overflow='hidden'>
+                                            <Box bg={useColorModeValue('white', 'gray.700')}
+                                            borderRadius='md' boxShadow='md' overflow='hidden'>
                                                 <Flex alignItems='center' bg='blue.500' p={3} color='white' borderTopRadius='md' gap={1}>
                                                     <Icon as={FaPrescriptionBottleAlt} fontSize='20px' mr='5px' />
                                                     <Text>Prescription</Text>
                                                     <Tag colorScheme='gray' ml='auto'>{item.prescriptions.length}</Tag>
                                                 </Flex>
                                                 <Flex justifyContent='flex-start' flexDirection='column' gap={3} p={3}>
-                                                    <Text>Medical Record <Tag colorScheme='blue'>#{item.id}</Tag></Text>
-                                                    <Text>Doctor: {item.assigned_doctor.first_name + " " + item.assigned_doctor.last_name}</Text>
-                                                    <Text>Patient: {item.patient.first_name + " " + item.patient.last_name}</Text>
-                                                    <Text>Description: {item.condition_description}</Text>
+                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>Medical Record <Tag colorScheme='blue'>#{item.id}</Tag></Text>
+                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>Doctor: {item.assigned_doctor.first_name + " " + item.assigned_doctor.last_name}</Text>
+                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>Patient: {item.patient.first_name + " " + item.patient.last_name}</Text>
+                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>Description: {item.condition_description}</Text>
                                                 </Flex>
                                                 <Flex justifyContent='space-between' bg='gray.100' borderBottomRadius='md' pt='1px' gap='1px'>
 
@@ -368,7 +370,8 @@ const Prescriptions = () => {
                                                     <Text mr='5px' fontSize={15} fontWeight='normal'>Reject</Text>
                                                 </Button> */}
                                                     <Button
-                                                        bg='white'
+                                                        bg={useColorModeValue('gray.50', 'gray.600')}
+                                                        color={useColorModeValue('blue.600', 'blue.200')}
                                                         leftIcon={<AiFillFile color='blue.700' />}
                                                         colorScheme='blue'
                                                         borderRadius={0}
@@ -377,6 +380,7 @@ const Prescriptions = () => {
                                                         p='10px'
                                                         px={5}
                                                         w='100%'
+                                                        _hover={{ bg: useColorModeValue('gray.100', 'gray.700') }}
                                                         onClick={() => handlePrescriptionDetail(item)}
                                                     >
                                                         <Text mr='5px' fontSize={15} fontWeight='normal'>Detail</Text>
@@ -454,7 +458,7 @@ const Prescriptions = () => {
                             {PrescriptionDetail.prescriptions[SelectedPrescription] && (
                                 <Box maxH='50vh' overflow='auto'>
                                     <Text mb={2} fontSize='20px' fontWeight='bold'>Prescription Detail</Text>
-                                    <Table variant='simple' colorScheme='blackAlpha'>
+                                    <Table variant='simple' colorScheme='blackAlpha' border={useColorModeValue(null, '2px')} borderColor={useColorModeValue(null, 'gray.900')}>
                                         <Thead>
                                             <Tr>
                                                 <Th w='300px'>Medicine</Th>

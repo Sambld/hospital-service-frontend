@@ -1,4 +1,4 @@
-import { Box, Heading, Text, Button } from '@chakra-ui/react';
+import { Box, Heading, Text, Button, useColorModeValue } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 
 const NotFound = () => {
@@ -8,14 +8,16 @@ const NotFound = () => {
                 display="inline-block"
                 as="h2"
                 size="2xl"
-                bg='blue.700'
-                backgroundClip="text">
+                bg={useColorModeValue('blue.700', 'blue.300')}
+                backgroundClip="text"
+            >
                 404
             </Heading>
-            <Text fontSize="18px" mt={3} mb={2}>
+            <Text fontSize="18px" mt={3} mb={2} color={useColorModeValue('gray.500', 'gray.50')}>
                 Page Not Found
             </Text>
-            <Text color={'gray.500'} mb={6}>
+            <Text color={useColorModeValue('gray.500', 'gray.50')}
+                mb={6}>
                 The page you're looking for does not seem to exist
             </Text>
             <Link to='/'>

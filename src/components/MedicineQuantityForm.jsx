@@ -28,7 +28,8 @@ import {
     IconButton,
     Heading,
     Select,
-    Progress
+    Progress,
+    useColorModeValue
 } from '@chakra-ui/react';
 import { Form } from 'react-router-dom';
 import AsyncSelect from 'react-select/async';
@@ -165,7 +166,7 @@ const MedicineQuantityForm = ({ closeModal, closeAndRefresh }) => {
                         <Tbody>
                             {formData.medicines.length === 0 && <Tr><Td textAlign='center'>No medicines added yet</Td></Tr>}
                             {formData.medicines.map((medicine) => (
-                                <Tr bg='gray.50' key={medicine.value}>
+                                <Tr bg='gray.50' key={medicine.value} color='gray.700'>
                                     <Td fontSize={13}>Name: {medicine.label}</Td>
                                     <Td fontSize={13}>Quantity: {medicine.quantity}</Td>
                                     <Td fontSize={13}>Old Quantity: {medicine.old_quantity}</Td>
@@ -191,6 +192,18 @@ const MedicineQuantityForm = ({ closeModal, closeAndRefresh }) => {
                         <AsyncSelect
                             placeholder="Select Medicines"
                             name='medicineSearch'
+                            styles={{
+                                control: (provided, state) => ({
+                                    ...provided,
+                                    background: useColorModeValue('white', 'white'),
+                                    color: useColorModeValue('white', 'green'),
+                                }),
+                                option: (provided, state) => ({
+                                    ...provided,
+                                    color: useColorModeValue('black', 'white'),
+                                    background: useColorModeValue('white', '#2d3748'),
+                                }),
+                            }}
                             loadOptions={loadOptions}
                             value={selectedMedicine}
                             onChange={(value) => setSelectedMedicine(value)}
@@ -231,8 +244,8 @@ const MedicineQuantityForm = ({ closeModal, closeAndRefresh }) => {
                             bg='gray.50'
                             p={2}
                         >
-                            <Text fontSize={13}>Old Quantity: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
-                            <Text fontSize={13}>New Quantity: {selectedMedicine ? selectedMedicine.old_quantity + parseInt(Quantity) : 0}</Text>
+                            <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}>Old Quantity: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
+                            <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}>New Quantity: {selectedMedicine ? selectedMedicine.old_quantity + parseInt(Quantity) : 0}</Text>
                         </Box>
                     )}
 

@@ -16,6 +16,7 @@ import {
     Icon,
     Progress,
     useToast,
+    useColorModeValue,
 } from '@chakra-ui/react';
 import { Form } from 'react-router-dom';
 import usePost from '../hooks/usePost';
@@ -401,7 +402,6 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                                         borderColor='gray.300'
                                         borderStyle='dashed'
                                         borderRadius='lg'
-                                        borderTopRadius={0}
                                         bg='gray.100'
                                         cursor='pointer'
                                         h='300px'
@@ -463,7 +463,6 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                                         borderColor='gray.300'
                                         borderStyle='dashed'
                                         borderRadius='lg'
-                                        borderTopRadius={0}
                                         bg={dragActive ? 'gray.100' : 'gray.200'}
                                         cursor='pointer'
                                         h='300px'
@@ -474,7 +473,7 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                                         onDrop={(e) => handleDrop(e, i)}
                                         onDragOver={(e) => e.preventDefault()}
                                     >
-                                        <Flex justifyContent='center' alignItems='center' h='100%'>
+                                        <Flex justifyContent='center' alignItems='center' h='100%' color={useColorModeValue('gray.400', 'gray.500')}>
                                             <Text textAlign='center'>+</Text>
                                         </Flex>
                                     </FormLabel>

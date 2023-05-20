@@ -45,6 +45,7 @@ import {
   AccordionPanel,
   AccordionIcon,
   Icon,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
 // Icons
@@ -198,7 +199,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       }
       ReloadTabContent()
     }
-  }, [medical_record, tabIndex])
+  }, [medical_record])
 
   const NotAuthorized = () => {
     toast({
@@ -239,6 +240,8 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     setLoadingExamination(true)
     setLoadingMonitoringSheet(true)
     setLoadingPrescription(true)
+    setExamination([])
+    setObservation([])
     setTabIndex(index)
   }
 
@@ -606,8 +609,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       {medical_record && (
         <>
           {/* Medical Record Examination, Observation, Monitoring Sheet */}
-          <Tabs isFitted variant='unstyled' color='blue.900' mb={5} index={tabIndex} onChange={handleTabsChange}>
-            <TabList mb='1em' bg='gray.300' borderRadius={10} overflow='auto'>
+          <Tabs isFitted variant='unstyled' color={useColorModeValue('blue.900', 'white')} mb={5} index={tabIndex} onChange={handleTabsChange}>
+            <TabList mb='1em' bg={useColorModeValue('gray.300', 'gray.700')} borderRadius={10} overflow='auto'>
+              
               <Tab borderLeftRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}>
                 <Icon h='30px' fontSize='30px' as={BsInfoCircle} display={{ base: 'block', lg: 'none' }} />
                 <Text display={{ base: 'none', lg: 'block' }} ml={2}>
@@ -660,7 +664,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                 {/* Medical Record main information */}
                 <Box
                   p={0}
-                  color='blue.900'
+                  color={useColorModeValue('blue.900', 'white')}
                   borderWidth="2px"
                   borderColor='gray.300'
                   borderRadius={10}
@@ -668,10 +672,10 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                 >
                   {/* <Heading p={5}> Medical Record #{medical_record.id}</Heading> */}
 
-                  <Box bg='gray.50' p='20px' px='20px' boxShadow='sm'>
+                  <Box bg={useColorModeValue('gray.50', 'gray.700')} p='20px' px='20px' boxShadow='sm'>
                     <Text
                       fontSize={25}
-                      color='gray.700'
+                      color={useColorModeValue('gray.700', 'gray.50')}
                     >
                       {t('medicalRecord.medicalRecord')}
                       #{medical_record.id}
@@ -680,32 +684,32 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                       <Table className={styles.table} variant="unstyled">
                         <Tbody fontSize={18}>
                           <Tr >
-                            <Td color='gray.700'><Text>{t('medicalRecord.conditionDescription')}:</Text></Td>
-                            <Td color='blue.900'>
+                            <Td color={useColorModeValue('gray.700', 'gray.50')}><Text>{t('medicalRecord.conditionDescription')}:</Text></Td>
+                            <Td color={useColorModeValue('blue.900', 'gray.300')}>
                               {medical_record.condition_description.split('\n').map((item, key) => {
                                 return <Text key={key} mt={2}>{item}</Text>
                               })}
                             </Td>
                           </Tr>
                           <Tr>
-                            <Td color='gray.700'><Text>{t('medicalRecord.standardTreatment')}:</Text></Td>
-                            <Td color='blue.900'>
+                            <Td color={useColorModeValue('gray.700', 'gray.50')}><Text>{t('medicalRecord.standardTreatment')}:</Text></Td>
+                            <Td color={useColorModeValue('blue.900', 'gray.300')}>
                               {medical_record.standard_treatment.split('\n').map((item, key) => {
                                 return <Text key={key} mt={2}>{item}</Text>
                               })}
                             </Td>
                           </Tr>
                           <Tr>
-                            <Td color='gray.700'><Text>{t('medicalRecord.stateUponEnter')}:</Text></Td>
-                            <Td color='blue.900'><Text>{medical_record.state_upon_enter}</Text></Td>
+                            <Td color={useColorModeValue('gray.700', 'gray.50')}><Text>{t('medicalRecord.stateUponEnter')}:</Text></Td>
+                            <Td color={useColorModeValue('blue.900', 'gray.300')}><Text>{medical_record.state_upon_enter}</Text></Td>
                           </Tr>
                           <Tr>
-                            <Td color='gray.700'><Text>{t('medicalRecord.patientEntryDate')}:</Text></Td>
-                            <Td color='blue.900'><Text>{medical_record.patient_entry_date}</Text></Td>
+                            <Td color={useColorModeValue('gray.700', 'gray.50')}><Text>{t('medicalRecord.patientEntryDate')}:</Text></Td>
+                            <Td color={useColorModeValue('blue.900', 'gray.300')}><Text>{medical_record.patient_entry_date}</Text></Td>
                           </Tr>
                           <Tr>
-                            <Td color='gray.700'><Text>{t('medicalRecord.bedNumber')}:</Text></Td>
-                            <Td color='blue.900'><Text>{medical_record.bed_number}</Text></Td>
+                            <Td color={useColorModeValue('gray.700', 'gray.50')}><Text>{t('medicalRecord.bedNumber')}:</Text></Td>
+                            <Td color={useColorModeValue('blue.900', 'gray.300')}><Text>{medical_record.bed_number}</Text></Td>
                           </Tr>
                           {medical_record.patient_leaving_date && (
                             <>
@@ -713,8 +717,8 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                                 <Td color='green.400' colSpan={2}><Text>{t('medicalRecord.leavingInformation')}:</Text></Td>
                               </Tr>
                               <Tr>
-                                <Td color='gray.700'><Text>{t('medicalRecord.stateUponExit')}:</Text></Td>
-                                <Td color='blue.900'>
+                                <Td color={useColorModeValue('gray.700', 'gray.50')}><Text>{t('medicalRecord.stateUponExit')}:</Text></Td>
+                                <Td color={useColorModeValue('blue.900', 'gray.300')}>
                                   <Text>
                                     {medical_record.state_upon_exit || "Still in hospital"}
                                   </Text>
@@ -722,8 +726,8 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
 
                               </Tr>
                               <Tr>
-                                <Td color='gray.700'><Text>{t('medicalRecord.patientLeavingDate')}:</Text></Td>
-                                <Td color='blue.900'>
+                                <Td color={useColorModeValue('gray.700', 'gray.50')}><Text>{t('medicalRecord.patientLeavingDate')}:</Text></Td>
+                                <Td color={useColorModeValue('blue.900', 'gray.300')}>
                                   <Text>
                                     {medical_record.patient_leaving_date
                                       ? medical_record.patient_leaving_date
@@ -739,17 +743,17 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                   </Box>
                   {user.id == medical_record.user_id && (
                     <Box
-                      color='blue.900'
-                      bg='gray.300'
+                      color={useColorModeValue('blue.900', 'white')}
+                      bg={useColorModeValue('white', 'gray.700')}
                       display='flex'
                       borderTop='1px'
                       borderColor='gray.300'
                       gap='1px'
                     >
-                      <Button leftIcon={<EditIcon />} bg='white' w='50%' variant='outline' border={0} colorScheme="green" type="submit" borderRadius={0} onClick={() => handleMedicalRecordEdit(medical_record)}>
+                      <Button leftIcon={<EditIcon />} w='50%' variant='outline' border={0} colorScheme="green" type="submit" borderRadius={0} onClick={() => handleMedicalRecordEdit(medical_record)}>
                         {t('patient.details.edit')}
                       </Button>
-                      <Button leftIcon={<DeleteIcon />} bg='white' w='50%' variant='outline' border={0} colorScheme="red" type="submit" borderRadius={0} isLoading={deleteLoading} onClick={() => onDeleteOpen()}>
+                      <Button leftIcon={<DeleteIcon />} w='50%' variant='outline' border={0} colorScheme="red" type="submit" borderRadius={0} isLoading={deleteLoading} onClick={() => onDeleteOpen()}>
                         {t('patient.details.delete')}
                       </Button>
                     </Box>
@@ -759,7 +763,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                 <Box
                   mt={3}
                   p="6"
-                  color='blue.900'
+                  color={useColorModeValue('blue.900', 'white')}
                   borderWidth="2px"
                   borderColor='gray.300'
                   borderRadius={10}
@@ -779,13 +783,13 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                               setMandatoryDeclarationEditMode(true)
                               onOpenMandatoryDeclaration()
                             }}>
-                              Edit
+                              {t('global.edit')}
                             </Button>
                           )}
                         </Box>
                         <Table variant='simple' colorScheme='blackAlpha' >
                           <Thead>
-                            <Tr bg='gray.200'>
+                            <Tr bg={useColorModeValue('#fafafa', 'gray.800')}>
                               <Th><Text>{t('medicalRecord.declarationDate')}</Text></Th>
                               <Th><Text>{t('medicalRecord.diagnosis')}</Text></Th>
                               <Th><Text>{t('medicalRecord.detailedDiagnosis')}</Text></Th>
@@ -825,7 +829,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                 <Box >
                   <Table variant='simple' colorScheme='blackAlpha' >
                     <Thead>
-                      <Tr bg='gray.200'>
+                      <Tr bg={useColorModeValue('#fafafa', 'gray.800')}>
                         <Th>
                           <Text>
                             {t('medicalRecord.examinationDate')}
@@ -927,9 +931,8 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                           left="50%"
                           height="calc(100% + 15px)"
                           border="1px solid"
-                          borderColor={'blue.900'}
+                          borderColor={useColorModeValue('blue.900','gray.500')}
                           top="0px"
-
                         ></Box>
                         <Box pos="relative" p="10px">
                           <Text
@@ -944,9 +947,8 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             backgroundSize="cover"
                             backgroundRepeat="no-repeat"
                             backgroundPosition="center center"
-                            backgroundColor="rgb(255, 255, 255)"
-                            // borderRadius="100px"
-                            // border="3px solid rgb(4, 180, 180)"  
+                            backgroundColor={useColorModeValue('white', 'gray.900')}
+                            color={useColorModeValue('blue.700','gray.300')}
                             backgroundImage="none"
                             opacity={1}
                           >
@@ -968,7 +970,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             content: `""`,
                             w: '0',
                             h: '0',
-                            borderColor: `transparent #1a365d transparent transparent`,
+                            borderColor: `transparent ${useColorModeValue('#1a365d','#718096')} transparent transparent`,
                             borderStyle: 'solid',
                             borderWidth: '15px 15px 15px 0',
                             position: 'absolute',
@@ -976,7 +978,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             top: 'calc(50% - 15px)',
                             display: 'block',
                           }}>
-                          <Box bg='blue.900' p={2} w='100%' borderTopRadius={10} overflow='hidden'>
+                          <Box bg={useColorModeValue('blue.900','gray.500')} p={2} w='100%' borderTopRadius={10} overflow='hidden'>
                             <Text
                               textAlign='center'
                               fontWeight='bold'
@@ -988,7 +990,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             </Text>
                           </Box>
 
-                          <Flex p='5px' gap='5px' maxW='780px' bg='blue.900' flexWrap='wrap' borderBottomRadius={10} overflow='hidden'>
+                          <Flex p='5px' gap='5px' maxW='780px' bg={useColorModeValue('blue.900','gray.500')} flexWrap='wrap' borderBottomRadius={10} overflow='hidden'>
                             {obs.images && obs.images.map((img, index) => (
                               <Box
                                 key={index}
@@ -1057,7 +1059,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                       </Button>
                     </Flex>
                   </Box>
-                  <Box p={2} bg='gray.50' boxShadow='lg' borderRadius='lg' border='2px' borderColor='gray.300' >
+                  <Box p={0} bg={useColorModeValue('gray.50','gray.900')} boxShadow='lg' border='1px' borderColor='gray.300' borderRadius='lg' overflow='hidden'>
 
                     {loadingPrescription ? (
                       <Center p='10px'>
@@ -1072,7 +1074,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                       <Accordion border='4px' borderColor='gray.300' allowMultiple>
                         {Prescriptions && Prescriptions.map((pres, index) => (
                           <AccordionItem key={index} >
-                            <AccordionButton>
+                            <AccordionButton _hover={{ bg: useColorModeValue('gray.200','gray.700') }}>
                               <Box flex="1" textAlign="left">
                                 <Text fontWeight='bold' fontSize='xl'>{pres.name} #{pres.id}</Text>
                               </Box>
@@ -1097,7 +1099,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                               </Box>
 
                               <Table variant="simple" colorScheme='blackAlpha' className={MonitoringSheetStyles.table} border='2px' borderColor='gray.300'>
-                                <Thead bg='gray.200'>
+                                <Thead bg={useColorModeValue('#fafafa', 'gray.800')}>
                                   <Tr>
                                     <Th>
                                       {t('medicalRecord.medicine')}
@@ -1167,7 +1169,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                       </Accordion>
                     ) : (
                       <Box>
-                        <Text fontSize='xl' fontWeight='bold' textAlign='center'>
+                        <Text p={5} fontSize='xl' fontWeight='bold' textAlign='center'>
                           {t('medicalRecord.noPrescriptionFound')}
                         </Text>
                       </Box>

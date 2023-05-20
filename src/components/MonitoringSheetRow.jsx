@@ -29,7 +29,8 @@ import {
     Heading,
     Select,
     Progress,
-    useToast
+    useToast,
+    useColorModeValue
 } from '@chakra-ui/react';
 import { Form } from 'react-router-dom';
 import usePost from '../hooks/usePost';
@@ -318,7 +319,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                             >
                                 <Thead
                                     borderTop='1px solid'
-                                    bg='#fafafa'
+                                    bg={useColorModeValue('#fafafa', 'gray.800')}
                                     color='white'
                                     position="sticky"
                                     top={0}
@@ -453,6 +454,18 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                             <AsyncSelect
                                 placeholder={t('medicalRecord.selectMedicines')}
                                 name='medicineSearch'
+                                styles={{
+                                    control: (provided, state) => ({
+                                        ...provided,
+                                        background: useColorModeValue('white', 'white'),
+                                        color: useColorModeValue('white', 'white'),
+                                    }),
+                                    option: (provided, state) => ({
+                                        ...provided,
+                                        color: useColorModeValue('black', 'white'),
+                                        background: useColorModeValue('white', '#2d3748'),
+                                    }),
+                                }}
                                 loadOptions={loadOptions}
                                 value={selectedMedicine}
                                 onChange={(value) => setSelectedMedicine(value)}

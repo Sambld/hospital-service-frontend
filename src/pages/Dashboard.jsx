@@ -26,7 +26,7 @@ import {
     FormControl,
     Flex,
     Skeleton,
-
+    useColorModeValue,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Form, NavLink, useOutletContext } from "react-router-dom";
@@ -523,7 +523,7 @@ const Dashboard = () => {
                             p={5}
                             boxShadow='md'
                             borderWidth="1px"
-                            bgGradient='linear(to-l, #56ff69, #04951a)'
+                            bgGradient={`linear(to-l, ${useColorModeValue("#56ff69", "#8c1010")}, ${useColorModeValue("#04951a", "#550707")})`}
                             color='white'
                             borderRadius='xl'
                         >
@@ -541,11 +541,12 @@ const Dashboard = () => {
                             (
                                 <Box
                                     p={5}
-                                    shadow="md"
+                                    boxShadow='md'
                                     borderWidth="1px"
-                                    bgGradient='linear(to-l, #1775d2, #374083)'
+                                    bgGradient={`linear(to-l, ${useColorModeValue("#1775d2", "#0a3c6f")}, ${useColorModeValue("#374083", "#080d33")})`}
                                     color='white'
                                     borderRadius='xl'
+                                    overflow='hidden'
                                     mt={5}
                                 >
                                     <Heading size="md">Patient Number</Heading>
@@ -554,63 +555,6 @@ const Dashboard = () => {
                                     </Box>
                                 </Box>
                             )}
-                        {/* Chat */}
-                        {/* <Box
-                            mt={5}
-                            position='relative'
-                        >
-                            <Box
-                                position='absolute'
-                                display='flex'
-                                alignItems='center'
-                                justifyContent='center'
-                                flexDirection='column'
-                                w='100%'
-                                h='100%'
-                                bg='gray.100'
-                                borderRadius='xl'
-                                gap={3}
-                                opacity={0.5}
-                                zIndex={3}
-                            >
-                                <Badge variant='subtle' fontSize='1.5em' >COMING</Badge>
-                                <Badge variant='subtle' fontSize='1.5em' >SOON</Badge>
-                            </Box>
-                            <Box
-                                p={5}
-                                shadow="md"
-                                borderWidth="1px"
-                                bg='gray.100'
-                                borderRadius='xl'
-                                position='relative'
-                            >
-
-                                <Box
-                                    display='flex'
-                                    alignItems='center'
-                                    gap={3}
-                                    zIndex={1}
-                                >
-                                    <MdOutlineMarkUnreadChatAlt size={30} color="#374083" />
-                                    <Text fontSize={25} size="md">Chat</Text>
-                                </Box>
-                                <Box
-                                    zIndex={1}
-                                    borderRadius='md'
-                                    display='flex'
-                                    alignItems='center'
-                                    gap={2}
-                                    mt={5}
-                                >
-                                    <Textarea
-                                        bg='white'
-                                        h="auto"
-                                        placeholder="Type your message"
-                                    />
-                                    <AiOutlineSend size={40} color="#374083" />
-                                </Box>
-                            </Box>
-                        </Box> */}
 
                     </GridItem>
                     <GridItem area={'content'}>
@@ -688,13 +632,12 @@ const Dashboard = () => {
                                 <Box
                                     shadow="md"
                                     bg='white'
-                                    borderRadius='md'
                                     maxH='500px'
                                     overflowY='auto'
                                 >
                                     <Table variant='simple' colorScheme='blackAlpha'>
                                         <Thead
-                                            bg='#fafafa'
+                                            bg={useColorModeValue('#fafafa', 'gray.800')}
                                             color='white'
                                             position="sticky"
                                             top={0}
@@ -711,9 +654,9 @@ const Dashboard = () => {
                                         </Thead>
                                         <Tbody>
                                             {data && data?.data.map((item, index) => (
-                                                <Tr key={index}>
+                                                <Tr key={index} bg={useColorModeValue('gray.50', 'gray.900')}>
                                                     {item.slice(0, -1).map((item2, index2) => (
-                                                        <Td key={index2}>{item2}</Td>
+                                                        <Td color={useColorModeValue('gray.600', 'gray.50')} key={index2}>{item2}</Td>
                                                     ))}
                                                     <Td>
                                                         <NavLink w='100%' to={item.at(-1)[0]} style={{ display: 'block', borderRadius: '5px' }}>
@@ -778,13 +721,12 @@ const Dashboard = () => {
                                     <Box
                                         shadow="md"
                                         bg='white'
-                                        borderRadius='md'
                                         maxH='500px'
                                         overflowY='auto'
                                     >
                                         <Table>
                                             <Thead
-                                                bg='gray.100'
+                                                bg={useColorModeValue('#fafafa', 'gray.800')}
                                                 color='white'
                                                 position="sticky"
                                                 top={0}
@@ -801,7 +743,7 @@ const Dashboard = () => {
                                             <Tbody>
                                                 {!infoLoading && data && data?.data.map((item, index) =>
                                                 (
-                                                    <Tr key={index}>
+                                                    <Tr key={index} color={useColorModeValue('gray.600', 'gray.50')} bg={useColorModeValue('gray.50', 'gray.900')}>
                                                         <Td>{item.medicine.name}</Td>
                                                         <Td>{item.quantity}</Td>
                                                         {
@@ -824,14 +766,14 @@ const Dashboard = () => {
                         )}
                         {
                             !infoLoading && data && data?.data.length === 0 && (
-                                <Center p='10px' bg='white' borderBottomRadius='md' boxShadow='md'>
+                                <Center p='10px' bg={useColorModeValue('white', 'gray.900')} borderBottomRadius='md' boxShadow='md'>
                                     <Text fontSize={20} color='gray.500'>No Data</Text>
                                 </Center>
                             )
                         }
                         {
                             infoLoading && (
-                                <Box bg='white' borderBottomRadius='md' boxShadow='md'>
+                                <Box bg={useColorModeValue('white', 'gray.900')} borderBottomRadius='md' boxShadow='md'>
                                     {[1, 2].map((i) => (
                                         <Box display='flex' p='10px' key={i}>
                                             <Skeleton w='100%' h='50px'>

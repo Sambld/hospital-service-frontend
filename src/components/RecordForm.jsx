@@ -21,6 +21,7 @@ import {
     InputLeftAddon,
     Divider,
     Heading,
+    useColorModeValue,
 } from '@chakra-ui/react';
 import { Form } from 'react-router-dom';
 import { BsPersonAdd } from 'react-icons/bs';
@@ -32,7 +33,7 @@ import useLoader from '../hooks/useLoader';
 import { useTranslation } from 'react-i18next';
 
 const SummaryItem = ({ label, children }) => (
-    <HStack>
+    <HStack color={useColorModeValue('gray.600', 'gray.400')} >
         <Text w='230px' pt='2' fontSize='lg' fontWeight="bold">{label}:</Text>
         <Text pl='10' pt='2' fontSize='lg'>{children}</Text>
     </HStack>
@@ -162,7 +163,7 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
     };
 
     return (
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit} color={useColorModeValue('gray.700', 'whiteAlpha.900')}>
             <FormControl mb={3} id="patient_id" isRequired>
                 <FormLabel>
                     {t('patient.patientID')}
@@ -195,13 +196,13 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
             {LoadingPatient && <Text textAlign='center'>Loading Patient...</Text>}
             {!LoadingPatient && !Patient && formData.patient_id != '' && <Text textAlign='center'>Patient not found</Text>}
 
-            <Box mt={3} p={5} border='2px' borderColor='gray.300' borderRadius={10} color="blue.900">
+            <Box mt={3} p={5} border='2px' borderColor='gray.300' borderRadius={10} color={useColorModeValue('blue.700', 'whiteAlpha.900')}>
                 <Text
                     fontSize="xl"
                     fontWeight="bold"
                     textAlign="center"
                     mb={5}
-                    color='blue.900'
+                    color={useColorModeValue('blue.900', 'whiteAlpha.900')}
                 >
                     {t('medicalRecord.basicInformation')}
                 </Text>
@@ -294,7 +295,7 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
                         fontWeight="bold"
                         textAlign="center"
                         mb={5}
-                        color='blue.900'
+                        color={useColorModeValue('blue.900', 'whiteAlpha.900')}
                     >
                         {t('medicalRecord.leavingInformation')}
                     </Text>

@@ -1,4 +1,4 @@
-import { HStack, List, ListIcon, ListItem, Spacer, Text } from "@chakra-ui/react";
+import { HStack, List, ListIcon, ListItem, Spacer, Text, useColorModeValue } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import { RiFolderOpenLine, RiDashboardLine } from 'react-icons/ri'
 import { FiUsers } from 'react-icons/fi'
@@ -50,10 +50,10 @@ const SideBar = ({ user }) => {
   return (
     <List pl={{base:'0px',lg:'10px'}} pt='10px' fontSize="1.2em" spacing={0}>
       {SidebarItem && SidebarItem.map((item, index) => (
-        <ListItem color="#3a3e54" key={index}>
-          <NavLink to={item.link} >
+        <ListItem color={useColorModeValue("#3a3e54", "white")} key={index}>
+          <NavLink to={item.link} _activeLink={{ color: useColorModeValue("#374083", "grey") }}>
             <HStack p='10px' border='2px' borderColor='transparent' _hover={{
-              color: "#374083",
+              color: useColorModeValue("#374083", "grey"),
             }}>
               {item.icon}
               {/* if is below lg then don't show text */}

@@ -1,4 +1,4 @@
-import { Table, Thead, Tbody, Tr, Th, Td, InputGroup, InputLeftElement, Input, Image, Spinner, Center, Box, Icon, Text, IconButton, Button, Skeleton } from '@chakra-ui/react';
+import { Table, Thead, Tbody, Tr, Th, Td, InputGroup, InputLeftElement, Input, Image, Spinner, Center, Box, Icon, Text, IconButton, Button, Skeleton, useColorModeValue } from '@chakra-ui/react';
 import { NavLink } from 'react-router-dom';
 import { SearchIcon } from '@chakra-ui/icons';
 import { TbMedicineSyrup } from 'react-icons/tb';
@@ -10,7 +10,7 @@ const MedicinesTable = ({ initValue, medicines, count, search }) => {
             <Text fontSize='sm' color='gray.500' p='10px' align='right'>{count ? count : medicines ? '0' : '-'} Medicines</Text>
             <Table variant='simple' colorScheme='blackAlpha'>
                 <Thead>
-                    <Tr bg='#fafafa'>
+                    <Tr bg={useColorModeValue('#fafafa', 'gray.800')}>
                         <Th>
                             <InputGroup>
                                 <InputLeftElement
@@ -28,9 +28,9 @@ const MedicinesTable = ({ initValue, medicines, count, search }) => {
                 <Tbody>
                     {medicines && medicines.map((medicine, index) => (
                         <Tr key={index}>
-                            <Td><Text fontWeight='normal' fontSize={20}>{medicine.name}</Text></Td>
-                            <Td display={{ base: 'none', lg: 'table-cell' }}>{medicine.quantity}</Td>
-                            <Td display={{ base: 'none', xl: 'table-cell' }}>{medicine.expiration_date}</Td>
+                            <Td><Text color={useColorModeValue('gray.600', 'gray.50')} fontWeight='normal' fontSize={20}>{medicine.name}</Text></Td>
+                            <Td color={useColorModeValue('gray.600', 'gray.50')} display={{ base: 'none', lg: 'table-cell' }}>{medicine.quantity}</Td>
+                            <Td color={useColorModeValue('gray.600', 'gray.50')} display={{ base: 'none', xl: 'table-cell' }}>{medicine.expiration_date}</Td>
                             <Td><NavLink to={medicine.id.toString()}><Button colorScheme='blue' w='100%'>Detail</Button></NavLink></Td>
                         </Tr>
                     ))}

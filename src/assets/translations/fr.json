@@ -39,6 +39,10 @@
         "about": "À propos",
         "statistics": "Statistiques"
     },
+    "settings": {
+        "settingsChanged": "Paramètres modifiés avec succès"
+    },
+
     "dashboard.doctor.Today_Medical_Records": "Dossiers médicaux aujourd'hui",
     "dashboard.doctor.Patient_Number": "Nombre de patients",
 

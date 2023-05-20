@@ -19,6 +19,7 @@ import {
     Skeleton,
     SkeletonCircle,
     SkeletonText,
+    useColorModeValue,
 } from '@chakra-ui/react';
 import { FiExternalLink } from 'react-icons/fi';
 import { NavLink } from 'react-router-dom';
@@ -39,7 +40,7 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
         <>
             <Table variant='simple' colorScheme='blackAlpha'>
                 <Thead>
-                    <Tr bg='#fafafa'>
+                    <Tr bg={useColorModeValue('#fafafa', 'gray.800')}>
                         <Th w='50px' p='5'><Text fontSize='sm' p='0px'>#</Text></Th>
                         <Th>
                             <InputGroup>
@@ -67,20 +68,21 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                 </Thead>
                 <Tbody>
                     {patients && patients.map((patient, index) => (
-                        <Tr key={index} bg={(patient.gender == 'Male') ? 'blue.50' : 'pink.50'}>
+                        <Tr key={index} bg={(patient.gender == 'Male') ? useColorModeValue('blue.50', 'blue.900') : useColorModeValue('pink.50', 'pink.900')} >
                             <Td p='2'>
                                 <IconButton
                                     colorScheme={(patient.gender == 'Male') ? 'blue' : 'pink'}
+                                    color={useColorModeValue('gray.50', 'gray.50')}
                                     aria-label='Gender'
                                     size='md'
                                     icon={(patient.gender == 'Male') ? <BsGenderMale size={25} /> : <BsGenderFemale size={25} />}
                                 />
                             </Td>
-                            <Td><Text fontWeight='normal' fontSize={{ base: 'sm', lg: 'lg' }}>{patient.first_name + " " + patient.last_name}</Text></Td>
-                            <Td display={{ base: 'none', lg: 'table-cell' }} fontSize={{ base: 'sm', lg: 'lg' }}>{patient.phone_number}</Td>
+                            <Td><Text color={useColorModeValue('gray.600', 'gray.50')} fontWeight='normal' fontSize={{ base: 'sm', lg: 'lg' }}>{patient.first_name + " " + patient.last_name}</Text></Td>
+                            <Td color={useColorModeValue('gray.600', 'gray.50')} display={{ base: 'none', lg: 'table-cell' }} fontSize={{ base: 'sm', lg: 'lg' }}>{patient.phone_number}</Td>
                             <Td display={{ base: 'none', xl: 'table-cell' }} fontSize={{ base: 'sm', lg: 'lg' }}>
-                                <Text fontSize={{ base: 'sm', lg: 'lg' }}>{patient.birth_date}</Text>
-                                <Text fontSize={{ base: 'xs', lg: 'sm' }} color='gray.500'>{patient.place_of_birth}</Text>
+                                <Text color={useColorModeValue('gray.600', 'gray.50')} fontSize={{ base: 'sm', lg: 'lg' }}>{patient.birth_date}</Text>
+                                <Text fontSize={{ base: 'xs', lg: 'sm' }}  color={useColorModeValue('gray.500', 'gray.300')}>{patient.place_of_birth}</Text>
                             </Td>
                             <Td p={1}>
                                 <NavLink to={patient.id.toString()} style={{ 'display': 'block', 'borderRadius': '5px' }}>

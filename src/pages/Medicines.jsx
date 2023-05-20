@@ -20,7 +20,8 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    Spinner
+    Spinner,
+    useColorModeValue
 } from "@chakra-ui/react";
 import { NavLink, Link, Outlet, useNavigate, useOutletContext, useOutlet, useSearchParams } from "react-router-dom";
 
@@ -158,12 +159,12 @@ const Medicines = () => {
     return (
         <Box>
             <Flex mr={3}>
-                <Breadcrumb fontSize={{ base: "md", lg: '3xl' }} mt={1}>
+                <Breadcrumb fontSize={{ base: "md", lg: '3xl' }} mt={1} separator={<Text fontSize={25} color={useColorModeValue('gray.500', 'gray.100')}>/</Text>}>
                     <BreadcrumbItem>
                         <Link to='/medicines' color='blue.500'>
                             <Text
                                 fontSize={{ base: "md", lg: '3xl' }}
-                                color={outlet ? 'blue.700' : 'gray.500'}
+                                color={outlet ? useColorModeValue('blue.700', 'blue.400') : useColorModeValue('gray.500', 'gray.200')}
                                 ml='20px'
                             >
                                 Medicines
@@ -173,7 +174,7 @@ const Medicines = () => {
 
                     {outlet && (
                         <BreadcrumbItem>
-                            {medicine ? <Text fontSize={{ base: "md", lg: '3xl' }} color='#2e3149' >{medicine?.name}</Text> : <Spinner thickness='4px' />}
+                            {medicine ? <Text fontSize={{ base: "md", lg: '3xl' }} color={useColorModeValue('#2e3149', 'gray.100')} >{medicine?.name}</Text> : <Spinner thickness='4px' />}
                         </BreadcrumbItem>
                     )
                     }
@@ -188,14 +189,14 @@ const Medicines = () => {
                         </MenuButton>
                         <MenuList>
                             <MenuItem onClick={onMedicineModalOpen}>
-                                <FaBriefcaseMedical />
-                                <Text ml={3}>
+                                <FaBriefcaseMedical  color={useColorModeValue('gray', 'white')} />
+                                <Text ml={3} color={useColorModeValue('gray.700', 'gray.100')}>
                                     NEW MEDICINE
                                 </Text>
                             </MenuItem>
                             <MenuItem onClick={onQuantityModalOpen}>
-                                <GoDiffAdded />
-                                <Text ml={3}>
+                                <GoDiffAdded  color={useColorModeValue('gray', 'white')} />
+                                <Text ml={3} color={useColorModeValue('gray.700', 'gray.100')}>
                                     ADD QUANTITY
                                 </Text>
                             </MenuItem>
@@ -203,7 +204,7 @@ const Medicines = () => {
                     </Menu>
                 )}
             </Flex>
-            <Box bg='white' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
+            <Box bg={useColorModeValue('white', 'gray.900')} m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
                 {outlet ? <Outlet context={{ setMedicine, enableMedicineEditMode, user }} /> : <MedicinesTable initValue={searchParams.get('q') || ''} medicines={data?.data} search={handleSearch} count={data?.total} />}
                 {
                     data && data.last_page > 1 &&

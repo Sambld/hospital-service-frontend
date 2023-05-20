@@ -28,7 +28,8 @@ import {
     IconButton,
     Heading,
     Select,
-    Progress
+    Progress,
+    useColorModeValue
 } from '@chakra-ui/react';
 import { Form } from 'react-router-dom';
 import usePost from '../hooks/usePost';
@@ -245,7 +246,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                         <Tbody>
                             {formData.medicines.length === 0 && <Tr><Td textAlign='center'>{t('medicalRecord.noData')}</Td></Tr>}
                             {formData.medicines.map((medicine) => (
-                                <Tr bg='gray.50' key={medicine.value}>
+                                <Tr bg='gray.50' key={medicine.value} color='gray.700'>
                                     <Td fontSize={13}>{t('medicalRecord.name')}: {medicine.label}</Td>
                                     <Td fontSize={13}>{t('medicalRecord.dose')}: {medicine.dose}</Td>
                                     <Td fontSize={13}>{t('medicalRecord.type')}: {medicine.type}</Td>
@@ -271,6 +272,18 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                         <AsyncSelect
                             placeholder="Select Medicines"
                             name='medicineSearch'
+                            styles={{
+                                control: (provided, state) => ({
+                                    ...provided,
+                                    background: useColorModeValue('white', 'white'),
+                                    color: useColorModeValue('white', 'green'),
+                                }),
+                                option: (provided, state) => ({
+                                    ...provided,
+                                    color: useColorModeValue('black', 'white'),
+                                    background: useColorModeValue('white', '#2d3748'),
+                                }),
+                            }}
                             loadOptions={loadOptions}
                             value={selectedMedicine}
                             onChange={(value) => setSelectedMedicine(value)}
@@ -287,6 +300,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                     <Box mt={3} display='flex' gap={3}>
                         <Select
                             name='type'
+                            bg={useColorModeValue('gray.50', 'gray.700')}
                             value={type}
                             onChange={(e) => setType(e.target.value)}
                         >
@@ -318,8 +332,8 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                     bg='gray.50'
                     p={2}
                 >
-                    <Text fontSize={13}> {t('medicalRecord.name')}: {selectedMedicine ? selectedMedicine.label : ''}</Text>
-                    <Text fontSize={13}> {t('medicalRecord.quantity')}: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
+                    <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}> {t('medicalRecord.name')}: {selectedMedicine ? selectedMedicine.label : ''}</Text>
+                    <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}> {t('medicalRecord.quantity')}: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
                 </Box>
             )}
             {loading && (

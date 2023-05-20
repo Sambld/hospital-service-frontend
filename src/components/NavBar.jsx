@@ -25,6 +25,8 @@ import {
     ModalOverlay,
     ModalHeader,
     ModalContent,
+    Badge,
+    useColorModeValue,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { FaShieldVirus, FaUserNurse, FaUserMd } from "react-icons/fa";
@@ -64,6 +66,7 @@ const NavBar = ({ logout, user }) => {
 
     const [Leading, setLeading] = useState(false);
 
+
     useEffect(() => {
         setUserRoleItem(UserRoleItem(user));
     }, [user])
@@ -78,10 +81,18 @@ const NavBar = ({ logout, user }) => {
 
     return (
         <Flex justifyContent={'space-between'} p={{ base: '5px', lg: '10px' }}>
-            <HStack color="#374083">
+            <HStack color={useColorModeValue('#374083', 'white')} spacing={{ base: '5px', lg: '10px' }}>
                 <FaShieldVirus fontSize='40px' />
-                <Text fontSize={{ base: 'md', lg: '3xl' }}>
+                <Text fontSize={{ base: 'md', lg: '3xl' }} color={useColorModeValue('blue.900', 'gray.50')}>
                     {t('navbar.webSiteName')}
+                    <Badge
+                        mb={5}
+                        bg={useColorModeValue('blue.900', 'gray.50')}
+                        color={useColorModeValue('blue.50', 'gray.900')}
+                        borderRadius='8px'
+                    >
+                        {i18n.language.toUpperCase()}
+                    </Badge>
                 </Text>
             </HStack>
             <Spacer />
@@ -91,13 +102,20 @@ const NavBar = ({ logout, user }) => {
                     bg={UserRoleIcon && UserRoleIcon[2]}
                     size={{ base: 'sm', lg: 'md' }}
                     icon={UserRoleIcon && UserRoleIcon[0]}
+                    border='2px'
+                    mr={2}
+                    borderColor={useColorModeValue('gray.900', 'gray.50')}
                 />
                 <Menu isLazy>
                     <MenuButton>
-                        <Box p='5px'>
+                        <Box p='5px' color={useColorModeValue('blue.900', 'gray.50')}>
                             <HStack>
-                                <Text fontSize={{ base: 'sm', lg: 'md' }}>{user.first_name + " " + user.last_name}</Text>
-                                <Icon as={ChevronDownIcon} boxSize={8} color='black' />
+                                <Text
+                                    fontSize={{ base: 'sm', lg: 'md' }}
+                                >
+                                    {user.first_name + " " + user.last_name}
+                                </Text>
+                                <Icon as={ChevronDownIcon} boxSize={8} color={useColorModeValue('blue.900', 'gray.50')} />
                             </HStack>
                         </Box>
                     </MenuButton>
@@ -108,29 +126,35 @@ const NavBar = ({ logout, user }) => {
                                 bg={UserRoleIcon && UserRoleIcon[2]}
                                 size={'2xl'}
                                 icon={UserRoleIcon && UserRoleIcon[1]}
+                                border='2px'
+                                borderColor={useColorModeValue('gray.900', 'gray.50')}
                             />
                         </Center>
                         <br />
-                        <Center>
+                        <Center color={useColorModeValue('blue.900', 'gray.50')}>
                             <p>{user.first_name + " " + user.last_name}</p>
                         </Center>
                         <br />
                         <Divider />
                         <NavLink to='/profile'>
                             <MenuItem>
-                                <Text>
+                                <Text color={useColorModeValue('blue.900', 'gray.50')}>
                                     {t('navbar.profile')}
                                 </Text>
                             </MenuItem>
                         </NavLink>
                         <MenuItem onClick={onOpenSettings}>
-                            <Text>
+                            <Text color={useColorModeValue('blue.900', 'gray.50')}>
                                 {t('navbar.settings')}
                             </Text>
                         </MenuItem>
                         <Divider mt='10px' />
                         <MenuItem onClick={onOpen}>
-                            <Text color='red.500' fontWeight='normal'>
+                            <Text
+                                color='red.500'
+                                fontWeight='normal'
+                                
+                            >
                                 {t('navbar.signOut')}
                             </Text>
                             <Spacer />

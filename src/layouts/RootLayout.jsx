@@ -1,4 +1,4 @@
-import { Box, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Grid, GridItem, Spacer, Spinner, Text, useDisclosure, useToast } from '@chakra-ui/react';
+import { Box, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Grid, GridItem, Spacer, Spinner, Text, useColorModeValue, useDisclosure, useToast } from '@chakra-ui/react';
 import { Outlet, useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 
 // Components
@@ -25,9 +25,9 @@ import { useTranslation } from 'react-i18next';
 
 const RootLayout = () => {
     const { user, setUser, deleteUser } = useUser();
-    const [loadingUserInformation, setLoadingUserInformation] = useState(true);
+    const [loadingPage, setLoadingPage] = useState(true);
 
-    const { t:TextTranslated,i18n } = useTranslation();
+    const { i18n } = useTranslation();
     // const [allData, setAllData] = useState([]);
 
     const navigate = useNavigate();
@@ -48,108 +48,124 @@ const RootLayout = () => {
         })
 
     }
+    const pathPermissions = () => {
+        if (location.pathname.includes('medical-records')) {
+            if (!user || user?.role != 'doctor') {
+                goHomePage();
+                toast({
+                    title: "You don't have permission to access this page",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                })
+            }
+        } else if (location.pathname.includes('patients')) {
+            if (!user || user?.role != 'doctor' && user?.role != 'nurse') {
+                goHomePage();
+                toast({
+                    title: "You don't have permission to access this page",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                })
+            }
+        } else if (location.pathname.includes('staff')) {
+            if (!user || user?.role != 'administrator') {
+                goHomePage();
+                toast({
+                    title: "You don't have permission to access this page",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                })
+            }
+        } else if (location.pathname.includes('prescription') || location.pathname.includes('medicines')) {
+            if (!user || user?.role != 'pharmacist') {
+                goHomePage();
+                toast({
+                    title: "You don't have permission to access this page",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                })
 
-    useEffect(() => {
-        try {
-            if (user) {
-                if (location.pathname.includes('medical-records')) {
-                    if (!user || user?.role != 'doctor') {
-                        goHomePage();
-                        toast({
-                            title: "You don't have permission to access this page",
-                            status: "error",
-                            duration: 5000,
-                            isClosable: true,
-                        })
-                    }
-                } else if (location.pathname.includes('patients')) {
-                    if (!user || user?.role != 'doctor' && user?.role != 'nurse') {
-                        goHomePage();
-                        toast({
-                            title: "You don't have permission to access this page",
-                            status: "error",
-                            duration: 5000,
-                            isClosable: true,
-                        })
-                    }
-                } else if (location.pathname.includes('staff')) {
-                    if (!user || user?.role != 'administrator') {
-                        goHomePage();
-                        toast({
-                            title: "You don't have permission to access this page",
-                            status: "error",
-                            duration: 5000,
-                            isClosable: true,
-                        })
-                    }
-                } else if (location.pathname.includes('prescription') || location.pathname.includes('medicines')) {
-                    if (!user || user?.role != 'pharmacist') {
-                        goHomePage();
-                        toast({
-                            title: "You don't have permission to access this page",
-                            status: "error",
-                            duration: 5000,
-                            isClosable: true,
-                        })
+            }
+        } else if (location.pathname.includes('statistics')) {
+            if (!user || user?.role != 'doctor' && user?.role != 'nurse' && user?.role != 'pharmacist') {
+                goHomePage();
+                toast({
+                    title: "You don't have permission to access this page",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                })
+            }
+        }
+    }
 
-                    }
-                } else if (location.pathname.includes('statistics')) {
-                    if (!user || user?.role != 'doctor' && user?.role != 'nurse' && user?.role != 'pharmacist') {
-                        goHomePage();
-                        toast({
-                            title: "You don't have permission to access this page",
-                            status: "error",
-                            duration: 5000,
-                            isClosable: true,
-                        })
-                    }
+    const getUserInformation = () => {
+        setLoadingPage(true)
+        axios.get('/user')
+            .then(res => {
+                if (user.role != res.data.role) {
+                    setUser({
+                        "user": res.data,
+                        "access_token": axios.defaults.headers.common['Authorization'].split(' ')[1]
+                    })
                 }
+            })
+            .catch(err => {
+                if (err.response.status === 401) {
+                    toast({
+                        title: "Your session has expired",
+                        status: "error",
+                        duration: 5000,
+                        isClosable: true,
+                    })
+                    console.log('LOGOUT')
+                    deleteUser()
+                }
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    setLoadingPage(false)
+                }, 100)
+            })
+    }
+
+    const settingsLoader = () => {
+        const language = localStorage.getItem('language');
+        if (language) {
+            i18n.changeLanguage(language)
+        }
+    }
+
+    useEffect(() => {
+        settingsLoader()
+    }, [])
+
+    useEffect(() => {
+        try {
+            if (location.pathname) {
+                pathPermissions();
             }
         } catch (err) {
-            console.log(err)
+            console.log(err);
         }
+    }, [location.pathname]);
 
-    }, [location.pathname])
     useEffect(() => {
-        // CHECK IF USER EXISTS
         try {
             if (user) {
-                setLoadingUserInformation(true)
-                axios.get('/user')
-                    .then(res => {
-                        if (user.role != res.data.role) {
-                            setUser({
-                                "user": res.data,
-                                "access_token": axios.defaults.headers.common['Authorization'].split(' ')[1]
-                            })
-                        }
-                    })
-                    .catch(err => {
-                        if (err.response.status === 401) {
-                            toast({
-                                title: "Your session has expired",
-                                status: "error",
-                                duration: 5000,
-                                isClosable: true,
-                            })
-                            console.log('LOGOUT')
-                            deleteUser()
-                        }
-                    })
-                    .finally(() => {
-                        setTimeout(() => {
-                            setLoadingUserInformation(false)
-                        }, 100)
-                    })
+                getUserInformation();
             }
         } catch (err) {
-            console.log(err)
+            console.log(err);
         }
-        // 
+    }, [user]);
 
-    }, [user])
 
-    // if (loadingUserInformation) {
+    // if (loadingPage) {
     //     return (
     //         <Box w='100%' h='100vh' display='flex' justifyContent='center' alignItems='center' position='relative'>
     //             <FaShieldVirus fontSize='150px' color='#374083' className={styles.icon} />
@@ -165,8 +181,8 @@ const RootLayout = () => {
     }
 
     return (
-        <Box>
-            {loadingUserInformation &&
+        <Box bg={useColorModeValue('#f8f8fb', '#333542')}>
+            {loadingPage &&
                 <Box w='100%' h='100vh' display='flex' justifyContent='center' alignItems='center' position='absolute' zIndex='1000'>
                     <Box position='absolute' top='0' left='0' w='100%' h='100%' bg='white' opacity='0.8'>
 
@@ -185,10 +201,10 @@ const RootLayout = () => {
                 gap='1'
                 color='blackAlpha.700'
             >
-                <GridItem bg='white' p='0' borderBottom='2px' borderColor='gray.200' area={'nav'}>
+                <GridItem bg={useColorModeValue('white', 'gray.900')} p='0' borderBottom='2px' borderColor={useColorModeValue('gray.200','gray.900')} area={'nav'}>
                     <NavBar logout={logout} user={user} />
                 </GridItem>
-                {user && <GridItem h='calc(100vh - 71px)' mt='-3px' bg='white' area={'side'} >
+                {user && <GridItem h='calc(100vh - 71px)' mt='-3px' bg={useColorModeValue('white', 'gray.900')} area={'side'} >
                     <SideBar user={user} />
                 </GridItem>}
                 <GridItem pl='2' maxH='calc(100vh - 75px)' p={5} overflow='auto' area={'main'} style={{ overflowY: 'auto', 'scrollbarGutter': 'stable' }}>

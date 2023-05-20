@@ -28,7 +28,8 @@ import {
     MenuDivider,
     Flex,
     useToast,
-    Center
+    Center,
+    useColorModeValue,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Link, Outlet, useOutlet, useSearchParams, useNavigate, useOutletContext } from "react-router-dom";
@@ -220,12 +221,13 @@ const Patients = () => {
     return (
         <Box>
             <Flex mr={3}>
-                <Breadcrumb fontSize={{ base: "md", sm: '3xl' }}>
+                <Breadcrumb fontSize={{ base: "md", sm: '3xl' }} separator={<Text fontSize={25} color={useColorModeValue('gray.500', 'gray.100')}>/</Text>}>
                     <BreadcrumbItem>
                         <Link to='/patients' color='red'>
                             <Text
                                 fontSize={{ base: "md", sm: '3xl' }}
-                                color={outlet ? 'blue.700' : 'gray.500'}
+                                // color={outlet ? 'blue.700' : 'gray.500'}
+                                color={outlet ? useColorModeValue('blue.700', 'blue.400') : useColorModeValue('gray.500', 'gray.200')}
                                 ml='20px'
                             >
                                 {t('patient.title')}
@@ -237,12 +239,12 @@ const Patients = () => {
                         {outlet && (
                             <Center h='54px' w='100%' >
                                 {
-                                patient ? <Text  fontSize={{ base: "md", sm: '3xl' }} color='#2e3149' >{patient.first_name + " " + patient.last_name}</Text> : <Spinner thickness='4px' />
+                                patient ? <Text  fontSize={{ base: "md", sm: '3xl' }} color={useColorModeValue('#2e3149', 'gray.100')} >{patient.first_name + " " + patient.last_name}</Text> : <Spinner thickness='4px' />
                                 }
                             </Center>
                         )}
                         {!outlet &&
-                            <Editable fontSize={{ base: 'md', sm: '3xl' }} color='#2e3149' onSubmit={handleSubmit} placeholder={t('patient.all').toUpperCase()} >
+                            <Editable fontSize={{ base: 'md', sm: '3xl' }} color={useColorModeValue('#2e3149', 'gray.100')} onSubmit={handleSubmit} placeholder={t('patient.all').toUpperCase()} >
                                 <EditablePreview ref={EditableSpanValue} />
                                 <EditableInput />
                             </Editable>
@@ -257,14 +259,14 @@ const Patients = () => {
                         </MenuButton>
                         <MenuList>
                             <MenuItem onClick={onPatientOpen}>
-                                <FaUserMd />
-                                <Text ml={3}>
+                                <FaUserMd color={useColorModeValue('gray', 'white')} />
+                                <Text ml={3} color={useColorModeValue('gray.700', 'gray.100')}>
                                     {t('patient.newPatient').toUpperCase()}
                                 </Text>
                             </MenuItem>
                             <MenuItem onClick={onRecordOpen}>
-                                <AiFillFolderOpen />
-                                <Text ml={3}>
+                                <AiFillFolderOpen color={useColorModeValue('gray', 'white')} />
+                                <Text ml={3} color={useColorModeValue('gray.700', 'gray.100')}>
                                     {t('patient.newRecord').toUpperCase()}
                                 </Text>
                             </MenuItem>
@@ -274,7 +276,7 @@ const Patients = () => {
                 {/* <Button colorScheme='blue' variant='outline' fontWeight='normal'>CREATE NEW RECORD</Button> */}
             </Flex>
 
-            <Box bg='white' m='10px' p='10px' pb={2} border='2px' borderColor='gray.200' borderRadius='2xl' overflow='hidden'>
+            <Box bg={useColorModeValue('white', 'gray.900')} m='10px' p='10px' pb={2} border='2px' borderColor='gray.200' borderRadius='2xl' overflow='hidden'>
                 {(outlet && !rerender) ? <Outlet context={{ setPatient, user, handleRecordEdit, handlePatientEdit }} /> : (
                     <>
                         <PatientsTable initValue={searchParams.get('q') || ''} patients={data?.data} search={handleSearch} count={data?.total} />

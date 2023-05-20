@@ -38,6 +38,9 @@
         "about": "About",
         "statistics": "Statistics"
     },
+    "settings": {
+        "settingsChanged": "Settings Changed Successfully"
+    },
 
     "dashboard.doctor.Today_Medical_Records": "Today Medical Records",
     "dashboard.doctor.Patient_Number": "Patient Number",

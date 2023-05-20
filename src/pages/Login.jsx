@@ -23,6 +23,7 @@ import {
   FormLabel,
   Checkbox,
   useToast,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock, FaShieldVirus, FaUserMd, FaFileMedical, FaPrescriptionBottleAlt, FaMicroscope, FaMedkit } from "react-icons/fa";
 import { Form, redirect } from "react-router-dom";
@@ -61,7 +62,7 @@ const Login = ({ setUser }) => {
       username,
       password
     }).then(res => {
-      setUser(res);
+      setUser(res, rememberMe);
     }).catch(err => {
       toast({
         title: "Error Logging In",
@@ -138,7 +139,7 @@ const Login = ({ setUser }) => {
       <Box p={{ base: 0, lg: 2 }} pr={{ base: 0, lg: 0 }} w={{ base: "100%", lg: "50%", xl: '40%' }} >
         <Stack
           h='100%'
-          bg="#e2e8f0"
+          bg={useColorModeValue("#e2e8f0", "gray.900")}
           borderLeftRadius={{ base: "0", lg: "50" }}
           alignItems="center"
           justify="center"
@@ -152,12 +153,13 @@ const Login = ({ setUser }) => {
               <Stack
                 spacing={4}
                 p="1rem"
-                backgroundColor="whiteAlpha.900"
+                backgroundColor={useColorModeValue("whiteAlpha.900", 'gray.700')}
                 boxShadow="md"
                 borderRadius='2xl'
                 gap={3}
               >
-                <Text fontSize="4xl" color="blue.900" fontWeight="bold">
+                <Text fontSize="4xl" color={useColorModeValue("blue.900", "white")}
+                fontWeight="bold">
                   Login
                 </Text>
                 <FormControl>
@@ -173,8 +175,8 @@ const Login = ({ setUser }) => {
                       type="text"
                       value={username}
                       placeholder="user name"
+                      _placeholder={{ color: useColorModeValue("gray.500", "gray.100") }}
                       name="username"
-                      bg="white"
                       onChange={({ target }) => setUsername(target.value)} />
                   </InputGroup>
                 </FormControl>
@@ -191,10 +193,9 @@ const Login = ({ setUser }) => {
                     <Input
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
+                      _placeholder={{ color: useColorModeValue("gray.500", "gray.100") }}
                       name="password"
                       value={password}
-                      bg="white"
-
                       onChange={({ target }) => setPassword(target.value)}
                     />
                     <InputRightElement width="4.5rem">

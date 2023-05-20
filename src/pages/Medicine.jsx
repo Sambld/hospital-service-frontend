@@ -14,7 +14,7 @@ import { Box,
     AlertDialogContent,
     AlertDialogOverlay,
     useDisclosure,
-
+    useColorModeValue,
 } from "@chakra-ui/react";
 // Icons
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
@@ -137,25 +137,9 @@ const Medicine = () => {
                     p={5}
                 >
                     {user.role == 'administrator' || user.role == 'pharmacist' && (
-                        <Flex justifyContent='space-between' bg='gray.100' borderRadius='md' pt='1px' mb={3} overflow='hidden'>
+                        <Flex justifyContent='space-between' bg={useColorModeValue('gray.300', 'gray.700')} borderRadius='md' pt='1px' mb={3} overflow='hidden'>
                             <Button
-                                bg='white'
-                                leftIcon={<DeleteIcon />}
-                                colorScheme='red'
-                                variant='outline'
-                                borderRadius={0}
-                                borderLeftRadius='md'
-                                border={0}
-                                p='10px'
-                                px={5}
-                                w='50%'
-                                onClick={onDeleteOpen}
-                            >
-                                <Text mr='5px' fontSize={15} fontWeight='normal'>Delete</Text>
-                            </Button>
-
-                            <Button
-                                bg='white'
+                                bg={useColorModeValue('white', 'gray.700')}
                                 leftIcon={<EditIcon />}
                                 colorScheme='green'
                                 borderRadius={0}
@@ -169,9 +153,25 @@ const Medicine = () => {
                             >
                                 <Text mr='5px' fontSize={15} fontWeight='normal'>Edit</Text>
                             </Button>
+
+                            <Button
+                                bg={useColorModeValue('white', 'gray.700')}
+                                leftIcon={<DeleteIcon />}
+                                colorScheme='red'
+                                variant='outline'
+                                borderRadius={0}
+                                borderLeftRadius='md'
+                                border={0}
+                                p='10px'
+                                px={5}
+                                w='50%'
+                                onClick={onDeleteOpen}
+                            >
+                                <Text mr='5px' fontSize={15} fontWeight='normal'>Delete</Text>
+                            </Button>
                         </Flex>
                     )}
-                    <Stack p={5} spacing={4} border='1px' borderColor='gray.200' borderRadius='md'>
+                    <Stack p={5} spacing={4} border='1px' borderColor='gray.200' borderRadius='md' color={useColorModeValue('gray.700', 'gray.50')}>
                         <Box>
                             <Text fontSize="2xl" fontWeight="bold">
                                 {medicine.name}

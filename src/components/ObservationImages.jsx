@@ -1,4 +1,4 @@
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, Flex, Grid, GridItem, HStack, Image, Text, useDisclosure } from "@chakra-ui/react";
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, Flex, Grid, GridItem, HStack, Image, Text, useDisclosure, useColorModeValue } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { AiFillEye, AiFillPrinter, AiFillSave } from "react-icons/ai";
 import { BsCaretLeftFill, BsCaretRightFill } from "react-icons/bs";
@@ -8,7 +8,7 @@ import axios from "./axios";
 import { useTranslation } from "react-i18next";
 
 const SummaryItem = ({ label, children }) => (
-    <HStack>
+    <HStack color={useColorModeValue('gray.700', 'gray.200')}>
         <Text pt='2' fontSize='lg' fontWeight="bold">{label}:</Text>
         <Text pl='10' pt='2' fontSize='lg'>{children}</Text>
     </HStack>

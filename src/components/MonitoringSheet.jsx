@@ -1,4 +1,4 @@
-import { Badge, Box, Flex, Select, Table, TableContainer, Tbody, Td, Th, Thead, Tr, Text, Center, Button, Spinner, useToast } from "@chakra-ui/react";
+import { Badge, Box, Flex, Select, Table, TableContainer, Tbody, Td, Th, Thead, Tr, Text, Center, Button, Spinner, useToast, useColorModeValue } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { AiFillCaretLeft, AiFillCaretRight, AiFillPrinter } from "react-icons/ai";
 
@@ -101,6 +101,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                             <Button
                                 colorScheme='blackAlpha'
                                 bg='gray.600'
+                                color='white'
                                 leftIcon={<BiRefresh size={25} />}
                                 onClick={refresh}
                             >
@@ -120,9 +121,9 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                 }}
                                 isDisabled={selected == 0 || currentDay === 0}
                             >
-                                <AiFillCaretLeft />
+                                <AiFillCaretLeft color='black' />
                             </Button>
-                            <Select bg='white' w='200px' value={selected} onChange={(e) => setSelected(parseInt(e.target.value))}>
+                            <Select bg={useColorModeValue('white', 'gray.800')} color={useColorModeValue('black', 'white')} w='200px' value={selected} onChange={(e) => setSelected(parseInt(e.target.value))}>
                                 <option value='1'>
                                     {t('global.1day')}
                                 </option>
@@ -145,7 +146,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                 }}
                                 isDisabled={selected == 0 || currentDay + selected >= data.length}
                             >
-                                <AiFillCaretRight />
+                                <AiFillCaretRight color='black' />
                             </Button>
                         </Flex>
                     </Flex>
@@ -153,7 +154,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                         <Table mb={5} border='2px' borderColor='gray.600' borderRadius="md" className={styles.table}>
                             <Thead>
                                 <Tr>
-                                    <Th border='2px' w='150px'>
+                                    <Th border='2px' w='150px' borderColor='gray.100' textAlign='center'>
                                         {t('medicalRecord.examinations')}
                                     </Th>
                                     {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
@@ -162,7 +163,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                             bg={item.filling_date == formatDate(new Date()) ? 'gray.500' : 'white'}
                                             color={item.filling_date == formatDate(new Date()) ? 'white' : 'black'}
                                             borderY='2px'
-                                            borderColor='gray.600'
+                                            borderColor={useColorModeValue('gray.600', 'gray.100')}
                                             textAlign='center'
                                             onClick={() => {
                                                 if (user.role === 'nurse' || user.role === 'doctor') {

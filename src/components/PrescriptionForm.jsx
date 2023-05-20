@@ -35,7 +35,8 @@ import {
     AlertDialogOverlay,
     AlertDialogContent,
     AlertDialogBody,
-    AlertDialogFooter
+    AlertDialogFooter,
+    useColorModeValue
 } from '@chakra-ui/react';
 import { Form } from 'react-router-dom';
 import usePost from '../hooks/usePost';
@@ -393,9 +394,10 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                         <Tbody>
                             {formData.medicines.length === 0 && <Tr><Td colSpan={4} textAlign='center'>No medicines added yet</Td></Tr>}
                             {formData.medicines.map((medicine) => (
-                                <Tr key={medicine.value} bg={EditMode ? prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) ? 'gray.50' : 'green.50' : 'gray.50'}>
+                                <Tr key={medicine.value} bg={EditMode ? prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) ? useColorModeValue('gray.50', 'gray.600') : useColorModeValue('green.50','green.900') :
+                                 'gray.50'}>
                                     <Td fontSize={13}>
-                                        {EditMode ? !prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) && <Text color='green.700'>New !</Text> : ""}
+                                        {EditMode ? !prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) && <Text color={useColorModeValue('green.700','green.300')} >New !</Text> : ""}
                                         {medicine.label}
                                     </Td>
                                     <Td fontSize={13}>{medicine.quantity}</Td>
@@ -405,7 +407,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                                             <IconButton
                                                 aria-label="Edit"
                                                 icon={<EditIcon />}
-                                                color="green.500"
+                                                color={useColorModeValue('green.500','green.300')}
                                                 colorScheme='green'
                                                 borderRadius={5}
                                                 isDisabled={!medicine.editable}
@@ -422,7 +424,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                                         <IconButton
                                             aria-label="Remove"
                                             icon={<CloseIcon />}
-                                            color="red.500"
+                                            color={useColorModeValue('red.500','red.300')}
                                             colorScheme='red'
                                             isDisabled={!medicine.editable}
                                             borderRadius={5}
@@ -442,6 +444,18 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                         <AsyncSelect
                             placeholder="Select Medicines"
                             name='medicineSearch'
+                            styles={{
+                                control: (provided, state) => ({
+                                    ...provided,
+                                    background: useColorModeValue('white', 'white'),
+                                    color: useColorModeValue('white', 'green'),
+                                }),
+                                option: (provided, state) => ({
+                                    ...provided,
+                                    color: useColorModeValue('black', 'white'),
+                                    background: useColorModeValue('white', '#2d3748'),
+                                }),
+                            }}
                             loadOptions={loadOptions}
                             value={selectedMedicine}
                             onChange={(value) => setSelectedMedicine(value)}
@@ -486,8 +500,8 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                     bg='gray.50'
                     p={2}
                 >
-                    <Text fontSize={13}> Name: {selectedMedicine ? selectedMedicine.label : ''}</Text>
-                    <Text fontSize={13}> Quantity: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
+                    <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}> Name: {selectedMedicine ? selectedMedicine.label : ''}</Text>
+                    <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}> Quantity: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
                 </Box>
             )}
             {loading && (
