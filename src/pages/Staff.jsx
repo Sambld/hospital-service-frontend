@@ -110,6 +110,17 @@ const Staff = () => {
     const navigate = useNavigate()
 
     const { t, i18n } = useTranslation()
+    const colorModeValue = useColorModeValue('white', 'gray.800')
+    const colorModeValue2 = useColorModeValue('gray.600', 'gray.300')
+    const colorModeValue3 = useColorModeValue('gray.200', 'gray.700')
+    const colorModeValue4 = useColorModeValue('gray.600', 'gray.600')
+    const colorModeValue5 = useColorModeValue('gray.50', 'gray.700')
+    const colorModeValue6 = useColorModeValue('gray.600', 'gray.100')
+    const colorModeValue7 = useColorModeValue('gray.500', 'gray.300')
+    const colorModeValue8 = useColorModeValue('white', 'gray.700')
+    const colorModeValue9 = useColorModeValue('red.600', 'red.400')
+    const colorModeValue10 = useColorModeValue('gray.200','gray.700')
+
 
 
     useEffect(() => {
@@ -265,20 +276,20 @@ const Staff = () => {
                     {t('staff.addStaff')}
                 </Button>
             </HStack>
-            <Box bg={useColorModeValue('white', 'gray.800')} w='100%' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
+            <Box bg={colorModeValue} w='100%' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
                 <Text fontSize='sm' color='gray.500' p='10px' align='right'>Showing {data && data.data.length} of {data && data.total} staff</Text>
                 <Box p='10px' mb='10px' w='100%' display='flex' justifyContent='space-between' gap={2}>
-                    <InputGroup color={useColorModeValue('gray.600', 'gray.300')} borderColor={useColorModeValue('gray.200', 'gray.700')}>
+                    <InputGroup color={colorModeValue2} borderColor={colorModeValue3}>
                         <InputLeftElement
                             pointerEvents='none'
                             children={<SearchIcon color='gray.300' />}
                         />
-                        <Input bg={useColorModeValue('white', 'gray.800')} defaultValue={searchParams.get('q') || ''} variant='outline' type='text' placeholder={t('staff.searchByName')} onChange={({ target }) => { handleSearch(target.value) }} _placeholder={{ color: useColorModeValue('gray.500', 'gray.300') }} />
+                        <Input bg={colorModeValue} defaultValue={searchParams.get('q') || ''} variant='outline' type='text' placeholder={t('staff.searchByName')} onChange={({ target }) => { handleSearch(target.value) }} _placeholder={{ color: colorModeValue7 }} />
                     </InputGroup>
                     <IconButton
                         colorScheme='blackAlpha'
-                        bg={useColorModeValue('gray.600', 'gray.600')}
-                        color={useColorModeValue('white', 'white')}
+                        bg={colorModeValue4}
+                        color='white'
                         aria-label='Refresh'
                         onClick={handleRefresh}
                         icon={<BiRefresh size={25} />}
@@ -288,22 +299,22 @@ const Staff = () => {
                     {
                         data && data.data.map((item, index) => (
                             <GridItem key={index}>
-                                <Box bg={useColorModeValue('gray.50', 'gray.700')} borderRadius='md' border='2px' borderColor={useColorModeValue('gray.200','gray.700')} overflow='hidden'>
+                                <Box bg={colorModeValue5} borderRadius='md' border='2px' borderColor={colorModeValue10} overflow='hidden'>
 
                                     <Box p='10px' textAlign='center'>
                                         <Avatar
                                             bg={UserRoleItem(item)[2]}
                                             icon={UserRoleItem(item)[0]}
                                         />
-                                        <Text color={useColorModeValue('gray.600', 'gray.100')}fontWeight='normal' fontSize={{ base: 'sm', lg: 'lg' }}>{item.first_name + " " + item.last_name}</Text>
-                                        <Text fontSize='sm' color={useColorModeValue('gray.500', 'gray.300')}>{t('staff.role')}: {item.role} </Text>
-                                        <Text fontSize='sm' color={useColorModeValue('gray.500', 'gray.300')}>{t('staff.createdAt')}: {new Date(item.created_at).toLocaleDateString()} </Text>
+                                        <Text color={colorModeValue6}fontWeight='normal' fontSize={{ base: 'sm', lg: 'lg' }}>{item.first_name + " " + item.last_name}</Text>
+                                        <Text fontSize='sm' color={colorModeValue7}>{t('staff.role')}: {item.role} </Text>
+                                        <Text fontSize='sm' color={colorModeValue7}>{t('staff.createdAt')}: {new Date(item.created_at).toLocaleDateString()} </Text>
 
                                     </Box>
                                     <Flex justifyContent='space-between' bg='gray.100' borderBottomRadius='md' pt='1px' gap='1px'>
                                         <Button
-                                            bg={useColorModeValue('white', 'gray.700')}
-                                            color={useColorModeValue('red.600', 'red.400')}
+                                            bg={colorModeValue8}
+                                            color={colorModeValue9}
                                             leftIcon={<DeleteIcon />}
                                             colorScheme='red'
                                             borderRadius={0}
@@ -323,7 +334,7 @@ const Staff = () => {
                                         </Button>
 
                                         <Button
-                                            bg={useColorModeValue('white', 'gray.700')}
+                                            bg={colorModeValue8}
                                             leftIcon={<EditIcon />}
                                             colorScheme='green'
                                             borderRadius={0}

@@ -141,6 +141,11 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const colorModeValue6 = useColorModeValue('#fafafa', 'gray.800')
   const colorModeValue7 = useColorModeValue('gray.50','gray.900')
   const colorModeValue8 = useColorModeValue('gray.200','gray.700')
+  const colorModeValue9 = useColorModeValue('gray.300', 'gray.700')
+  const colorModeValue10 = useColorModeValue('blue.900','gray.500')
+  const colorModeValue11 = useColorModeValue('white', 'gray.900')
+  const colorModeValue12 = useColorModeValue('blue.700','gray.300')
+  const colorModeValue13 = useColorModeValue('#1a365d','#718096')
 
 
   const breakpointss = {
@@ -620,7 +625,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         <>
           {/* Medical Record Examination, Observation, Monitoring Sheet */}
           <Tabs isFitted variant='unstyled' color={colorModeValue3} mb={5} index={tabIndex} onChange={handleTabsChange}>
-            <TabList mb='1em' bg={useColorModeValue('gray.300', 'gray.700')} borderRadius={10} overflow='auto'>
+            <TabList mb='1em' bg={colorModeValue9} borderRadius={10} overflow='auto'>
               
               <Tab borderLeftRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}>
                 <Icon h='30px' fontSize='30px' as={BsInfoCircle} display={{ base: 'block', lg: 'none' }} />
@@ -941,7 +946,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                           left="50%"
                           height="calc(100% + 15px)"
                           border="1px solid"
-                          borderColor={useColorModeValue('blue.900','gray.500')}
+                          borderColor={colorModeValue10}
                           top="0px"
                         ></Box>
                         <Box pos="relative" p="10px">
@@ -957,8 +962,8 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             backgroundSize="cover"
                             backgroundRepeat="no-repeat"
                             backgroundPosition="center center"
-                            backgroundColor={useColorModeValue('white', 'gray.900')}
-                            color={useColorModeValue('blue.700','gray.300')}
+                            backgroundColor={colorModeValue11}
+                            color={colorModeValue12}
                             backgroundImage="none"
                             opacity={1}
                           >
@@ -980,7 +985,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             content: `""`,
                             w: '0',
                             h: '0',
-                            borderColor: i18n.dir() === 'rtl' ? `transparent transparent transparent ${useColorModeValue('#1a365d','#718096')}` : `transparent ${useColorModeValue('#1a365d','#718096')} transparent transparent`,
+                            borderColor: i18n.dir() === 'rtl' ? `transparent transparent transparent ${colorModeValue13}` : `transparent ${colorModeValue13} transparent transparent`,
                             borderStyle: 'solid',
                             borderWidth: i18n.dir() === 'rtl' ? '15px 15px 15px 15px' : '15px 15px 15px 0',
                             position: 'absolute',
@@ -989,7 +994,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             top: 'calc(50% - 15px)',
                             display: 'block',
                           }}>
-                          <Box bg={useColorModeValue('blue.900','gray.500')} p={2} w='100%' borderTopRadius={10} overflow='hidden'>
+                          <Box bg={colorModeValue10} p={2} w='100%' borderTopRadius={10} overflow='hidden'>
                             <Text
                               textAlign='center'
                               fontWeight='bold'
@@ -1001,7 +1006,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             </Text>
                           </Box>
 
-                          <Flex p='5px' gap='5px' maxW='780px' bg={useColorModeValue('blue.900','gray.500')} flexWrap='wrap' borderBottomRadius={10} overflow='hidden'>
+                          <Flex p='5px' gap='5px' maxW='780px' bg={colorModeValue10} flexWrap='wrap' borderBottomRadius={10} overflow='hidden'>
                             {obs.images && obs.images.map((img, index) => (
                               <Box
                                 key={index}

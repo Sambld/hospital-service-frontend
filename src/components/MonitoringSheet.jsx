@@ -14,6 +14,9 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
     const toast = useToast();
 
     const { t, i18n } = useTranslation();
+    const colorModeValue = useColorModeValue('white', 'gray.800')
+    const colorModeValue2 = useColorModeValue('black', 'white')
+    const colorModeValue3 = useColorModeValue('gray.600', 'gray.100')
 
     useEffect(() => {
         getToday();
@@ -123,7 +126,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                             >
                                 <AiFillCaretLeft color='black' />
                             </Button>
-                            <Select bg={useColorModeValue('white', 'gray.800')} color={useColorModeValue('black', 'white')} w='200px' value={selected} onChange={(e) => setSelected(parseInt(e.target.value))}>
+                            <Select bg={colorModeValue} color={colorModeValue2} w='200px' value={selected} onChange={(e) => setSelected(parseInt(e.target.value))}>
                                 <option value='1'>
                                     {t('global.1day')}
                                 </option>
@@ -154,7 +157,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                         <Table mb={5} border='2px' borderColor='gray.600' borderRadius="md" className={styles.table}>
                             <Thead>
                                 <Tr>
-                                    <Th border='2px' w='150px' borderColor={useColorModeValue('gray.600', 'gray.100')} textAlign='center'>
+                                    <Th border='2px' w='150px' borderColor={colorModeValue3} textAlign='center'>
                                         {t('medicalRecord.examinations')}
                                     </Th>
                                     {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
@@ -163,7 +166,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                             bg={item.filling_date == formatDate(new Date()) ? 'gray.500' : 'white'}
                                             color={item.filling_date == formatDate(new Date()) ? 'white' : 'black'}
                                             borderY='2px'
-                                            borderColor={useColorModeValue('gray.600', 'gray.100')}
+                                            borderColor={colorModeValue3}
                                             textAlign='center'
                                             onClick={() => {
                                                 if (user.role === 'nurse' || user.role === 'doctor') {

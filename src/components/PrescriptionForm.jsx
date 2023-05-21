@@ -78,8 +78,6 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
 
     const toast = useToast();
 
-    const { toggleLoading } = useLoader();
-
     const { t, i18n } = useTranslation();
 
     const formatDate = (date) => {
@@ -408,8 +406,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                         <Tbody>
                             {formData.medicines.length === 0 && <Tr><Td colSpan={4} textAlign='center'>{t('medicine.noMedicinesAddedYet')}</Td></Tr>}
                             {formData.medicines.map((medicine) => (
-                                <Tr key={medicine.value} bg={EditMode ? prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) ? useColorModeValue('gray.50', 'gray.600') : useColorModeValue('green.50','green.900') :
-                                 'gray.50'}>
+                                <Tr key={medicine.value} bg={EditMode ? prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) ? useColorModeValue('gray.50', 'gray.600') : useColorModeValue('green.50','green.900') :  useColorModeValue('gray.50', 'gray.600')}>
                                     <Td fontSize={13}>
                                         {EditMode ? !prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) && <Text color={useColorModeValue('green.700','green.300')} >{t('medicine.new')} !</Text> : ""}
                                         {medicine.label}
