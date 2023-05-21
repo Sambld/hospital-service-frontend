@@ -177,7 +177,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
         try {
             const progressUnit = 100 / formData.medicines.length;
             const promises = [];
-            const error = false;
+            let error = false;
             formData.medicines.map((medicine) => {
                 if (prescription.medicine_requests.find((med) => med.medicine.id == medicine.value && med.quantity != medicine.quantity)) {
                     const promise = usePut('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/prescriptions/' + prescription_id + '/medicine-requests/' + medicine.medicine_request_id, {
