@@ -48,6 +48,8 @@ import useLoader from '../hooks/useLoader';
 import usePut from '../hooks/usePut';
 import useDelete from '../hooks/useDelete';
 
+import { useTranslation } from 'react-i18next';
+
 const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMode, prescription }) => {
     const [formData, setFormData] = useState({
         name: prescription ? prescription.name : '',
@@ -75,6 +77,10 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
     const [loading, setLoading] = useState(false);
 
     const toast = useToast();
+
+    const { toggleLoading } = useLoader();
+
+    const { t, i18n } = useTranslation();
 
     const formatDate = (date) => {
         let date_ = new Date(date);
@@ -109,7 +115,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                     setLoading(false);
                     closeAndRefresh(
                         {
-                            title: 'Prescription created successfully.',
+                            title: t('prescription.prescriptionInfo.created'),
                             status: 'success',
                         }
                     )
@@ -139,7 +145,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                     setLoading(false);
                     closeAndRefresh(
                         {
-                            title: 'Prescription updated successfully.',
+                            title: t('prescription.prescriptionInfo.updated'),
                             status: 'success',
                         }
                     )
@@ -148,7 +154,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                     setLoading(false);
                     closeAndRefresh({
                         title: 'Error',
-                        description: 'Error updating medicines.',
+                        description: 'Error updating prescription.',
                         status: 'error',
                         duration: 5000,
                         isClosable: true,
@@ -303,7 +309,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                 .then(() => {
                     toast(
                         {
-                            title: 'Medicine removed successfully.',
+                            title: t('medicine.medicineInfo.deleted'),
                             status: 'success',
                         }
                     )
@@ -362,7 +368,9 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
     return (
         <Form onSubmit={handleSubmit}>
             <FormControl id='name' isRequired>
-                <FormLabel>Title</FormLabel>
+                <FormLabel>
+                    {t('global.title')}
+                </FormLabel>
                 <Input
                     type="text"
                     name="name"
@@ -380,24 +388,30 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
             {/* choose medicines */}
             <Box>
 
-                <Text mb={5} textAlign='center' fontSize={25}>Medicines List</Text>
+                <Text mb={5} textAlign='center' fontSize={25}>{t('medicine.medicinesList')}</Text>
                 <Box border='2px' borderColor='gray.200' boxShadow='md' p={1} mb={3} maxH='30vh' overflow='auto'>
                     <Table variant="simple" size="md" colorScheme='blackAlpha'>
                         <Thead>
                             <Tr>
-                                <Th fontSize={13}>Name</Th>
-                                <Th fontSize={13}>Quantity</Th>
-                                {EditMode && <Th fontSize={13} w='40px'>Edit</Th>}
-                                <Th fontSize={13} w='40px'>Remove</Th>
+                                <Th fontSize={13}>
+                                    {t('medicine.name')}
+                                </Th>
+                                <Th fontSize={13}>
+                                    {t('medicine.quantity')}
+                                </Th>
+                                {EditMode && <Th fontSize={13} w='40px'>{t('global.edit')}</Th>}
+                                <Th fontSize={13} w='40px'>
+                                    {t('global.delete')}
+                                </Th>
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {formData.medicines.length === 0 && <Tr><Td colSpan={4} textAlign='center'>No medicines added yet</Td></Tr>}
+                            {formData.medicines.length === 0 && <Tr><Td colSpan={4} textAlign='center'>{t('medicine.noMedicinesAddedYet')}</Td></Tr>}
                             {formData.medicines.map((medicine) => (
                                 <Tr key={medicine.value} bg={EditMode ? prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) ? useColorModeValue('gray.50', 'gray.600') : useColorModeValue('green.50','green.900') :
                                  'gray.50'}>
                                     <Td fontSize={13}>
-                                        {EditMode ? !prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) && <Text color={useColorModeValue('green.700','green.300')} >New !</Text> : ""}
+                                        {EditMode ? !prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) && <Text color={useColorModeValue('green.700','green.300')} >{t('medicine.new')} !</Text> : ""}
                                         {medicine.label}
                                     </Td>
                                     <Td fontSize={13}>{medicine.quantity}</Td>
@@ -442,7 +456,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                 <FormControl id='type' gap={3}>
                     <Box display='flex' flexDir='column' gap={3}>
                         <AsyncSelect
-                            placeholder="Select Medicines"
+                            placeholder={t('medicalRecord.selectMedicines')}
                             name='medicineSearch'
                             styles={{
                                 control: (provided, state) => ({
@@ -472,10 +486,10 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                             flexGrow={1}
                         >
                             <NumberInputField borderRightRadius={0} />
-                            <NumberInputStepper>
+                            {/* <NumberInputStepper>
                                 <NumberIncrementStepper />
                                 <NumberDecrementStepper />
-                            </NumberInputStepper>
+                            </NumberInputStepper> */}
                         </NumberInput>
                         <IconButton
                             aria-label="Add"
@@ -500,8 +514,8 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                     bg='gray.50'
                     p={2}
                 >
-                    <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}> Name: {selectedMedicine ? selectedMedicine.label : ''}</Text>
-                    <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}> Quantity: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
+                    <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}> {t('medicine.name')}: {selectedMedicine ? selectedMedicine.label : ''}</Text>
+                    <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}> {t('medicine.quantity')}: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
                 </Box>
             )}
             {loading && (
@@ -523,14 +537,14 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                     </Text>
                 </Box>
             )}
-            <Flex justifyContent='center' mt='10px'>
+            <Flex justifyContent='center' mt='10px' gap={3}>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
-                    Close
+                    {t('global.close')}
                 </Button>
                 <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" >
                     {/* add icon */}
                     {EditMode ? <EditIcon /> : <AiOutlinePlus />}
-                    <Text ml="5px" >{EditMode ? 'Update' : 'Add'}</Text>
+                    <Text mx="5px" >{EditMode ? t('global.edit') : t('global.add')}</Text>
                 </Button>
             </Flex>
             <AlertDialog isOpen={isDeleteOpen} onClose={onDeleteClose} isCentered>
@@ -538,15 +552,15 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                     <AlertDialogContent maxW='300px' p={5}>
 
                         <AlertDialogBody textAlign='center'>
-                            <Text fontSize='lg' fontWeight='bold'>Are you sure?</Text>
+                            <Text fontSize='lg' fontWeight='bold'>{t('global.areYouSure')}</Text>
                         </AlertDialogBody>
 
                         <AlertDialogFooter justifyContent='center'>
                             <Button onClick={onDeleteClose}>
-                                Cancel
+                                {t('global.cancel')}
                             </Button>
                             <Button colorScheme='red' onClick={removeMedicine} ml={3} isLoading={deleteLoading}>
-                                Delete
+                                {t('global.delete')}
                             </Button>
                         </AlertDialogFooter>
                     </AlertDialogContent>

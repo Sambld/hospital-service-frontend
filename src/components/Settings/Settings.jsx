@@ -17,8 +17,23 @@ const Settings = ({ onClose }) => {
     const [theme, setTheme] = useState(colorMode);
 
     const changeLanguage = () => {
-        i18n.changeLanguage(language);
-        localStorage.setItem('language', language);
+        if (language != i18n.language) {
+            localStorage.setItem('language', language);
+            toast({
+                title:  t('global.reloading'),
+                status: 'loading',
+                duration: 3000
+            });
+            window.location.reload();
+        } else {
+            toast({
+                title: t('settings.settingsChanged'),
+                status: 'success',
+                duration: 3000
+            });
+            onClose();
+        }
+
     };
 
     const changeTheme = () => {
@@ -27,20 +42,12 @@ const Settings = ({ onClose }) => {
         }
     };
 
-
-
     const handleSubmit = (event) => {
         event.preventDefault();
         try {
-            changeLanguage();
             changeTheme();
-            toast({
-                title: t('settings.settingsChanged'),
-                status: 'success',
-                duration: 3000,
-                isClosable: true,
-            });
-            onClose();
+            changeLanguage();
+
         } catch (err) {
             toast({
                 title: 'Error',
@@ -57,7 +64,9 @@ const Settings = ({ onClose }) => {
         <Form onSubmit={handleSubmit}>
             <Box mb={5} mt={5} display='flex' justifyContent='center' alignItems='center' gap={2}>
                 <Icon as={GoSettings} w={10} h={10} color={useColorModeValue('gray.500', 'gray.50')} />
-                <Text textAlign="center" color={useColorModeValue('gray.500', 'gray.50')} fontSize={{ base: "md", lg: '3xl' }}>Settings</Text>
+                <Text textAlign="center" color={useColorModeValue('gray.500', 'gray.50')} fontSize={{ base: "md", lg: '3xl' }}>
+                    {t('navbar.settings')}
+                </Text>
             </Box>
             <Box p={5} mt={5} display='flex' gap={2}>
                 {/* Theme */}
@@ -78,16 +87,16 @@ const Settings = ({ onClose }) => {
                             color={useColorModeValue('blue.900', 'white')}
                             fontSize={{ base: "md", lg: '2xl' }}
                         >
-                            Theme
+                            {t('navbar.theme')}
                         </Text>
                     </Box>
 
                     <Box display='flex' gap={2} w='100%'>
                         <Button colorScheme="gray" w='100%' leftIcon={<FaSun />} isDisabled={theme === 'light'} onClick={() => setTheme('light')}>
-                            Light
+                            {t('navbar.light')}
                         </Button>
                         <Button colorScheme="gray" bg="blue.900" w='100%' color='white' leftIcon={<BsFillMoonFill />} isDisabled={theme === 'dark'} onClick={() => setTheme('dark')}>
-                            Dark
+                            {t('navbar.dark')}
                         </Button>
 
                     </Box>
@@ -107,7 +116,7 @@ const Settings = ({ onClose }) => {
                     <Box display='flex' justifyContent='center' alignItems='center' gap={2}>
                         <Icon as={MdOutlineLanguage} w={7} h={7} color={useColorModeValue('blue.900', 'white')} />
                         <Text color={useColorModeValue('blue.900', 'white')} fontSize={{ base: "md", lg: '2xl' }}>
-                            Language
+                            {t('navbar.language')}
                         </Text>
                     </Box>
 
@@ -120,9 +129,15 @@ const Settings = ({ onClose }) => {
                         fontSize={{ base: "md", lg: '2xl' }}
                         cursor='pointer'
                     >
-                        <option value="en">English</option>
-                        <option value="ar">Arabic</option>
-                        <option value="fr">French</option>
+                        <option value="en">
+                            {t('navbar.languageList.en')}
+                        </option>
+                        <option value="ar">
+                            {t('navbar.languageList.ar')}
+                        </option>
+                        <option value="fr">
+                            {t('navbar.languageList.fr')}
+                        </option>
                     </Select>
                 </Box>
             </Box>

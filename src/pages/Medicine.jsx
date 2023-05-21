@@ -1,4 +1,5 @@
-import { Box,
+import {
+    Box,
     Button,
     Center,
     Divider,
@@ -33,7 +34,7 @@ const Medicine = () => {
     const { id } = useParams()
     const [medicine, setMedicine] = useState(null)
     const { setMedicine: setMedicineInfo, enableMedicineEditMode: openMedicineModel, user } = useOutletContext()
-    
+
     const [loading, setLoading] = useState(false)
     const [deleteLoading, setDeleteLoading] = useState(false)
 
@@ -46,6 +47,14 @@ const Medicine = () => {
     const { t, i18n } = useTranslation()
 
     const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
+
+    const buttonBgColor = useColorModeValue('white', 'gray.700');
+    const buttonTextColor = useColorModeValue('gray.700', 'gray.50');
+    const flexBgColor = useColorModeValue('gray.300', 'gray.700');
+    const editButtonColorScheme = useColorModeValue('green', 'green');
+    const deleteButtonColorScheme = useColorModeValue('red', 'red');
+    const textColor = useColorModeValue('gray.500', 'gray.50');
+
 
     useEffect(() => {
         getMedicine()
@@ -138,15 +147,13 @@ const Medicine = () => {
         <Box>
             {loading && <Center p='10px'><Spinner thickness='4px' /></Center>}
             {medicine && (
-                <Box
-                    p={5}
-                >
-                    {user.role == 'administrator' || user.role == 'pharmacist' && (
-                        <Flex justifyContent='space-between' bg={useColorModeValue('gray.300', 'gray.700')} borderRadius='md' pt='1px' mb={3} overflow='hidden'>
+                <Box p={5}>
+                    {(user.role === 'administrator' || user.role === 'pharmacist') && (
+                        <Flex justifyContent='space-between' bg={flexBgColor} borderRadius='md' pt='1px' mb={3} overflow='hidden'>
                             <Button
-                                bg={useColorModeValue('white', 'gray.700')}
+                                bg={buttonBgColor}
                                 leftIcon={<EditIcon />}
-                                colorScheme='green'
+                                colorScheme={editButtonColorScheme}
                                 borderRadius={0}
                                 borderRightRadius='md'
                                 variant='outline'
@@ -162,9 +169,9 @@ const Medicine = () => {
                             </Button>
 
                             <Button
-                                bg={useColorModeValue('white', 'gray.700')}
+                                bg={buttonBgColor}
                                 leftIcon={<DeleteIcon />}
-                                colorScheme='red'
+                                colorScheme={deleteButtonColorScheme}
                                 variant='outline'
                                 borderRadius={0}
                                 borderLeftRadius='md'
@@ -180,59 +187,58 @@ const Medicine = () => {
                             </Button>
                         </Flex>
                     )}
-                    <Stack p={5} spacing={4} border='1px' borderColor='gray.200' borderRadius='md' color={useColorModeValue('gray.700', 'gray.50')}>
+                    <Stack p={5} spacing={4} border='1px' borderColor='gray.200' borderRadius='md' color={buttonTextColor}>
                         <Box>
-                            <Text fontSize="2xl" fontWeight="bold">
+                            <Text fontSize='2xl' fontWeight='bold'>
                                 {medicine.name}
                             </Text>
-                            <Text color="gray.500">{medicine.category}</Text>
+                            <Text color='gray.500'>{medicine.category}</Text>
                         </Box>
                         <Divider />
                         <Box>
-                            <Text fontSize="lg" fontWeight="bold">
+                            <Text fontSize='lg' fontWeight='bold'>
                                 {t('medicine.description')}
                             </Text>
                             {medicine.description.split('\n').map((item, key) => {
-                                return <Text key={key} ml={5}>{item}</Text>
+                                return <Text key={key} ml={5}>{item}</Text>;
                             })}
                         </Box>
                         <Divider />
                         <Box>
-                            <Text fontSize="lg" fontWeight="bold">
+                            <Text fontSize='lg' fontWeight='bold'>
                                 {t('medicine.quantity')}
                             </Text>
                             <Text>{medicine.quantity}</Text>
                         </Box>
                         <Divider />
                         <Box>
-                            <Text fontSize="lg" fontWeight="bold">
+                            <Text fontSize='lg' fontWeight='bold'>
                                 {t('medicine.pharmaceutical')}
                             </Text>
-                            <Text>{medicine.is_pharmaceutical ? "Yes" : "No"}</Text>
+                            <Text>{medicine.is_pharmaceutical ? 'Yes' : 'No'}</Text>
                         </Box>
                         <Divider />
                         <Box>
-                            <Text fontSize="lg" fontWeight="bold">
+                            <Text fontSize='lg' fontWeight='bold'>
                                 {t('medicine.manufacturer')}
                             </Text>
                             <Text>{medicine.manufacturer}</Text>
                         </Box>
                         <Divider />
                         <Box>
-                            <Text fontSize="lg" fontWeight="bold">
+                            <Text fontSize='lg' fontWeight='bold'>
                                 {t('medicine.supplier')}
                             </Text>
                             <Text>{medicine.supplier}</Text>
                         </Box>
                         <Divider />
                         <Box>
-                            <Text fontSize="lg" fontWeight="bold">
+                            <Text fontSize='lg' fontWeight='bold'>
                                 {t('medicine.expirationDate')}
                             </Text>
                             <Text>{medicine.expiration_date}</Text>
                         </Box>
                     </Stack>
-
                 </Box>
             )}
             <AlertDialog

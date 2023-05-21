@@ -21,8 +21,8 @@ i18n
                 translation: ar
             }
         },
-        fallbackLng: 'en',
-        debug: true,
+        fallbackLng: localStorage.getItem('language') || 'en',
+        debug: false,
 
         interpolation: {
             escapeValue: false, // not needed for react as it escapes by default

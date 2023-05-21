@@ -9,6 +9,8 @@ import { useTranslation } from "react-i18next";
 const MedicinesTable = ({ initValue, medicines, count, search }) => {
 
     const { t, i18n } = useTranslation();
+    const colorModeValue = useColorModeValue('gray.600', 'gray.50');
+
     return (
         <>
             <Text fontSize='sm' color='gray.500' p='10px' align='right'>{count ? count : medicines ? '0' : '-'} Medicines</Text>
@@ -40,19 +42,41 @@ const MedicinesTable = ({ initValue, medicines, count, search }) => {
                 <Tbody>
                     {medicines && medicines.map((medicine, index) => (
                         <Tr key={index}>
-                            <Td><Text color={useColorModeValue('gray.600', 'gray.50')} fontWeight='normal' fontSize={20}>{medicine.name}</Text></Td>
-                            <Td color={useColorModeValue('gray.600', 'gray.50')} display={{ base: 'none', lg: 'table-cell' }}>{medicine.quantity}</Td>
-                            <Td color={useColorModeValue('gray.600', 'gray.50')} display={{ base: 'none', xl: 'table-cell' }}>{medicine.expiration_date}</Td>
-                            <Td><NavLink to={medicine.id.toString()}><Button colorScheme='blue' w='100%'>{t('medicine.detail')}</Button></NavLink></Td>
+                            <Td>
+                                <Text color={colorModeValue} fontWeight='normal' fontSize={20}>
+                                    {medicine.name}
+                                </Text>
+                            </Td>
+                            <Td color={colorModeValue} display={{ base: 'none', lg: 'table-cell' }}>
+                                {medicine.quantity}
+                            </Td>
+                            <Td color={colorModeValue} display={{ base: 'none', xl: 'table-cell' }}>
+                                {medicine.expiration_date}
+                            </Td>
+                            <Td>
+                                <NavLink to={medicine.id.toString()}>
+                                    <Button colorScheme='blue' w='100%'>
+                                        {t('medicine.detail')}
+                                    </Button>
+                                </NavLink>
+                            </Td>
                         </Tr>
                     ))}
-                    {medicines && medicines.length == 0 && <Tr><Td colSpan='5'><Text textAlign='center' fontWeight='bold' fontSize='xl'>{t('global.noData')}</Text></Td></Tr>}
+                    {medicines && medicines.length === 0 && (
+                        <Tr>
+                            <Td colSpan='5'>
+                                <Text textAlign='center' fontWeight='bold' fontSize='xl'>
+                                    {t('global.noData')}
+                                </Text>
+                            </Td>
+                        </Tr>
+                    )}
                 </Tbody>
             </Table>
             {!medicines && (
                 <Box>
-                    {[...Array(15)].map((i) => (
-                        <Box display='flex' p='10px' key={i}>
+                    {[...Array(15)].map((i, index) => (
+                        <Box display='flex' p='10px' key={index.toString() + 'skeleton'}>
                             <Skeleton w='60%' ml='5' h='50px'>
                                 <Text ml='5'>Loading...</Text>
                             </Skeleton>
@@ -68,7 +92,7 @@ const MedicinesTable = ({ initValue, medicines, count, search }) => {
                         </Box>
                     ))}
                     <Center p='10px' gap={2}>
-                        {[1, 2, 3].map((i) => (
+                        {['abc'].map((i) => (
                             <Skeleton key={i}>
                                 <Text p={2} ml='5'>1</Text>
                             </Skeleton>

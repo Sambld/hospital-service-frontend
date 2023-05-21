@@ -1,0 +1,8 @@
+@font-face {
+    font-family: "changa";
+    src: local("Hai Duong"), url("../../fonts/Changa.ttf") format("truetype");
+}
+
+* {
+    font-family: 'changa', sans-serif !important;
+}

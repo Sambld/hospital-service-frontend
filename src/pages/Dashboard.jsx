@@ -49,6 +49,7 @@ import { useTranslation } from "react-i18next";
 
 const Dashboard = () => {
     const user = useOutletContext()
+    const { t, i18n } = useTranslation()
     const [data, setData] = useState({
         headerTitle: '',
         column: [],
@@ -63,8 +64,17 @@ const Dashboard = () => {
     const [StaffInfo, setStaffInfo] = useState([])
 
     const [infoLoading, setInfoLoading] = useState(true)
+    const tableHeaderBgColor = useColorModeValue('#fafafa', 'gray.800');
+    const tableHeaderTextColor = 'white';
+    const tableRowBgColor = useColorModeValue('gray.50', 'gray.900');
+    const tableCellTextColor = useColorModeValue('gray.600', 'gray.50');
+    const tableHeaderBgColorTwo = useColorModeValue('#fafafa', 'gray.800');
+    const tableRowBgColorTwo = useColorModeValue('gray.50', 'gray.900');
+    const tableCellTextColorTwo = useColorModeValue('gray.600', 'gray.50');
 
-    const { t, i18n } = useTranslation()
+
+
+
     useEffect(() => {
         getDashboardData()
     }, [])
@@ -114,7 +124,7 @@ const Dashboard = () => {
             } else if (user.role === 'pharmacist') {
                 setData((prev) => ({
                     ...prev,
-                    column: [t('dashboard.medicine'), t('dashboard.quantity'),t('dashboard.status')],
+                    column: [t('dashboard.medicine'), t('dashboard.quantity'), t('dashboard.status')],
                     data: []
                 }))
                 getPendingMedicalRequests(selectedDate)
@@ -406,7 +416,7 @@ const Dashboard = () => {
                 }
                 setData((prev) => ({
                     ...prev,
-                    column: count ? [t('dashboard.medicine'), t('dashboard.quantity')] : [t('dashboard.medicine'), t('dashboard.quantity'),t('dashboard.status')],
+                    column: count ? [t('dashboard.medicine'), t('dashboard.quantity')] : [t('dashboard.medicine'), t('dashboard.quantity'), t('dashboard.status')],
                     data: res
                 }))
             })
@@ -651,26 +661,24 @@ const Dashboard = () => {
                                 >
                                     <Table variant='simple' colorScheme='blackAlpha'>
                                         <Thead
-                                            bg={useColorModeValue('#fafafa', 'gray.800')}
-                                            color='white'
+                                            bg={tableHeaderBgColor}
+                                            color={tableHeaderTextColor}
                                             position="sticky"
                                             top={0}
                                             zIndex={1}
                                             boxShadow='md'
                                         >
                                             <Tr>
-                                                {data && data?.column.map((item, index) =>
-                                                (
+                                                {data && data?.column.map((item, index) => (
                                                     <Th key={index}>{item}</Th>
-                                                )
-                                                )}
+                                                ))}
                                             </Tr>
                                         </Thead>
                                         <Tbody>
                                             {data && data?.data.map((item, index) => (
-                                                <Tr key={index} bg={useColorModeValue('gray.50', 'gray.900')}>
+                                                <Tr key={index} bg={tableRowBgColor}>
                                                     {item.slice(0, -1).map((item2, index2) => (
-                                                        <Td color={useColorModeValue('gray.600', 'gray.50')} key={index2}>{item2}</Td>
+                                                        <Td color={tableCellTextColor} key={index2}>{item2}</Td>
                                                     ))}
                                                     <Td>
                                                         <NavLink w='100%' to={item.at(-1)[0]} style={{ display: 'block', borderRadius: '5px' }}>
@@ -679,7 +687,6 @@ const Dashboard = () => {
                                                             </Button>
                                                         </NavLink>
                                                     </Td>
-
                                                 </Tr>
                                             ))}
                                         </Tbody>
@@ -744,37 +751,28 @@ const Dashboard = () => {
                                     >
                                         <Table>
                                             <Thead
-                                                bg={useColorModeValue('#fafafa', 'gray.800')}
+                                                bg={tableHeaderBgColorTwo}
                                                 color='white'
                                                 position="sticky"
                                                 top={0}
                                                 zIndex={1}
                                             >
                                                 <Tr>
-                                                    {data && data?.column.map((item, index) =>
-                                                    (
+                                                    {data && data?.column.map((item, index) => (
                                                         <Th key={index} w='70%'>{item}</Th>
-                                                    )
-                                                    )}
+                                                    ))}
                                                 </Tr>
                                             </Thead>
                                             <Tbody>
-                                                {!infoLoading && data && data?.data.map((item, index) =>
-                                                (
-                                                    <Tr key={index} color={useColorModeValue('gray.600', 'gray.50')} bg={useColorModeValue('gray.50', 'gray.900')}>
+                                                {!infoLoading && data && data?.data.map((item, index) => (
+                                                    <Tr key={index} color={tableCellTextColorTwo} bg={tableRowBgColorTwo}>
                                                         <Td>{item.medicine.name}</Td>
                                                         <Td>{item.quantity}</Td>
-                                                        {
-                                                            item.status && (
-                                                                <Td>
-                                                                    {item.status}
-                                                                </Td>
-                                                            )
-                                                        }
-
+                                                        {item.status && (
+                                                            <Td>{item.status}</Td>
+                                                        )}
                                                     </Tr>
-                                                )
-                                                )}
+                                                ))}
                                             </Tbody>
                                         </Table>
                                     </Box>

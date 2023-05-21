@@ -182,7 +182,7 @@ const NavBar = ({ logout, user }) => {
                 onClose={onClose}
             >
                 <AlertDialogOverlay>
-                    <AlertDialogContent maxW='300px' p='20px'>
+                    <AlertDialogContent style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "jf-flat" : 'Light' }} maxW='300px' p='20px'>
 
                         <AlertDialogBody textAlign='center'>
                             {t('logout.areYouSureWantToSignOut')}
@@ -199,7 +199,7 @@ const NavBar = ({ logout, user }) => {
 
             <Modal isOpen={isOpenSettings} onClose={onCloseSettings} size='xl'>
                 <ModalOverlay />
-                <ModalContent minW='50vw'>
+                <ModalContent style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "jf-flat" : 'Light' }} minW='50vw'>
                     <Settings onClose={onCloseSettings} />
                 </ModalContent>
             </Modal>

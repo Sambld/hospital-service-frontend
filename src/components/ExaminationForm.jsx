@@ -155,17 +155,13 @@ const ExaminationForm = ({ medical_record, closeModal, closeAndRefresh, editMode
                     onChange={handleChange} />
             </FormControl>
             <Flex justifyContent='center' mt='10px' gap='10px'>
-                {editMode && <Button w='120px' variant='solid' colorScheme='red' type="button" onClick={handleDeleteConfirm} isLoading={deleteLoading} loadingText="Deleting" onMouseLeave={() => setDeleteConfirmation(false)}>
-                    {/* add icon */}
-                    <DeleteIcon />
-                    <Text ml="5px" fontSize={deleteConfirmation? 16:16} >{deleteConfirmation ? 'Sure ?' : 'Delete'}</Text>
-                </Button>}
-
-                
+                <Button variant='solid' colorScheme='blue' onClick={closeModal} >
+                    {t('global.cancel')}
+                </Button>
                 <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText={editMode ? "Updating" : "Adding"}>
                     {/* add icon */}
                     {editMode ? <EditIcon /> : <AddIcon />}
-                    <Text ml="5px" >{editMode ? t('global.edit') : t('global.add')}</Text>
+                    <Text mx="5px" >{editMode ? t('global.edit') : t('global.add')}</Text>
                 </Button>
             </Flex>
         </Form>)

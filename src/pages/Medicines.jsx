@@ -59,6 +59,9 @@ const Medicines = () => {
     const navigate = useNavigate()
 
     const { t, i18n } = useTranslation()
+    const breadcrumbSeparatorColor = useColorModeValue('gray.500', 'gray.100');
+    const medicineLinkColor = outlet ? useColorModeValue('blue.700', 'blue.400') : useColorModeValue('gray.500', 'gray.200');
+    const breadcrumbItemColor = useColorModeValue('#2e3149', 'gray.100');
 
     const { isOpen: isQuantityModalOpen, onOpen: onQuantityModalOpen, onClose: onQuantityModalClose } = useDisclosure()
     const { isOpen: isMedicineModalOpen, onOpen: onMedicineModalOpen, onClose: onMedicineModalClose } = useDisclosure()
@@ -164,13 +167,13 @@ const Medicines = () => {
     return (
         <Box>
             <Flex mr={3}>
-                <Breadcrumb fontSize={{ base: "md", lg: '3xl' }} mt={1} separator={<Text fontSize={25} color={useColorModeValue('gray.500', 'gray.100')}>/</Text>}>
+                <Breadcrumb fontSize={{ base: "md", lg: '3xl' }} mt={1} separator={<Text fontSize={25} color={breadcrumbSeparatorColor}>/</Text>}>
                     <BreadcrumbItem>
                         <Link to='/medicines' color='blue.500'>
                             <Text
                                 fontSize={{ base: "md", lg: '3xl' }}
-                                color={outlet ? useColorModeValue('blue.700', 'blue.400') : useColorModeValue('gray.500', 'gray.200')}
-                                ml='20px'
+                                color={medicineLinkColor}
+                                mx='20px'
                             >
                                 Medicines
                             </Text>
@@ -179,11 +182,13 @@ const Medicines = () => {
 
                     {outlet && (
                         <BreadcrumbItem>
-                            {medicine ? <Text fontSize={{ base: "md", lg: '3xl' }} color={useColorModeValue('#2e3149', 'gray.100')} >{medicine?.name}</Text> : <Spinner thickness='4px' />}
+                            {medicine ? (
+                                <Text fontSize={{ base: "md", lg: '3xl' }} color={breadcrumbItemColor}>{medicine.name}</Text>
+                            ) : (
+                                <Spinner thickness='4px' />
+                            )}
                         </BreadcrumbItem>
-                    )
-                    }
-
+                    )}
                 </Breadcrumb>
 
                 <Spacer />
@@ -194,14 +199,14 @@ const Medicines = () => {
                         </MenuButton>
                         <MenuList>
                             <MenuItem onClick={onMedicineModalOpen}>
-                                <FaBriefcaseMedical  color={useColorModeValue('gray', 'white')} />
-                                <Text ml={3} color={useColorModeValue('gray.700', 'gray.100')}>
+                                <FaBriefcaseMedical color={useColorModeValue('gray', 'white')} />
+                                <Text mx={3} color={useColorModeValue('gray.700', 'gray.100')}>
                                     {t('medicine.addMedicine').toUpperCase()}
                                 </Text>
                             </MenuItem>
                             <MenuItem onClick={onQuantityModalOpen}>
-                                <GoDiffAdded  color={useColorModeValue('gray', 'white')} />
-                                <Text ml={3} color={useColorModeValue('gray.700', 'gray.100')}>
+                                <GoDiffAdded color={useColorModeValue('gray', 'white')} />
+                                <Text mx={3} color={useColorModeValue('gray.700', 'gray.100')}>
                                     {t('medicine.addQuantity').toUpperCase()}
                                 </Text>
                             </MenuItem>
@@ -219,11 +224,11 @@ const Medicines = () => {
 
             <Modal closeOnOverlayClick={false} isOpen={isQuantityModalOpen} onClose={onQuantityModalClose}>
                 <ModalOverlay />
-                <ModalContent>
+                <ModalContent style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }}>
                     <ModalHeader>
                         {t('medicine.addQuantity').toUpperCase()}
                     </ModalHeader>
-                    <ModalCloseButton />
+                    <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
                     <ModalBody>
                         <MedicineQuantityForm closeModal={onQuantityModalClose} closeAndRefresh={handleMedicineActions} />
                     </ModalBody>
@@ -232,11 +237,11 @@ const Medicines = () => {
 
             <Modal closeOnOverlayClick={false} isOpen={isMedicineModalOpen} onClose={onMedicineModalClose}>
                 <ModalOverlay />
-                <ModalContent maxW='700px'>
+                <ModalContent style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW='700px'>
                     <ModalHeader>
                         {t('medicine.addMedicine').toUpperCase()}
                     </ModalHeader>
-                    <ModalCloseButton />
+                    <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
                     <ModalBody>
                         <MedicineForm closeModal={onMedicineModalClose} closeAndRefresh={handleMedicineActions} editMode={medicineEditMode} medicine={medicine} />
                     </ModalBody>

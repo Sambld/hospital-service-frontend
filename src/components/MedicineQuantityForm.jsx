@@ -276,14 +276,14 @@ const MedicineQuantityForm = ({ closeModal, closeAndRefresh }) => {
                     </Text>
                 </Box>
             )}
-            <Flex justifyContent='center' mt='10px'>
+            <Flex justifyContent='center' mt='10px' gap={3}>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
                     {t('global.cancel')}
                 </Button>
                 <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" >
                     {/* add icon */}
                     <AiOutlinePlus />
-                    <Text ml="5px" >
+                    <Text mx="5px" >
                         {t('global.add')}
                     </Text>
                 </Button>

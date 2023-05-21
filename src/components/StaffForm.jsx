@@ -123,7 +123,7 @@ const StaffForm = ({ closeModal, closeAndRefresh, editMode, selectedStaff }) => 
     };
 
     return (
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit} style={{ direction: i18n.dir() }}>
             <Box mt='10px' mb='10px' display='flex' justifyContent='space-between' gap={5}>
                 <FormControl id="first_name">
                     <FormLabel>
@@ -214,7 +214,7 @@ const StaffForm = ({ closeModal, closeAndRefresh, editMode, selectedStaff }) => 
                         onClick={() => closeModal()}
                     >
                         <AiOutlineEdit />
-                        <Text ml="5px" >
+                        <Text mx="5px" >
                             {t('global.edit')}
                         </Text>
                     </Button>
@@ -227,7 +227,7 @@ const StaffForm = ({ closeModal, closeAndRefresh, editMode, selectedStaff }) => 
                         loadingText="Adding"
                     >
                         <AiOutlinePlus />
-                        <Text ml="5px" >
+                        <Text mx="5px" >
                             {t('staff.addStaff')}
                         </Text>
                     </Button>

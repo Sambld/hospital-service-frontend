@@ -26,13 +26,29 @@
         "detail": "Détail",
         "details": "Détails",
         "submit": "Soumettre",
-        "open": "Ouvrir"
+        "open": "Ouvrir",
+        "reloading": "Rechargement"
     },
     "navbar": {
         "webSiteName": "Maladies Infectieuses",
         "profile": "Compte",
         "settings": "Paramètres",
-        "signOut": "Déconnexion"
+        "signOut": "Déconnexion",
+        "theme": "Thème",
+        "light": "Clair",
+        "dark": "Sombre",
+        "language": "Langue",
+        "languageList": {
+            "en": "Anglais",
+            "fr": "Français",
+            "ar": "Arabe",
+            "de": "Allemand",
+            "es": "Espagnol",
+            "zh": "Chinois",
+            "pt": "Portugais",
+            "ru": "Russe",
+            "ja": "Japonais"
+        }
     },
     "sideBar": {
         "dashboard": "Tableau de bord",
@@ -82,7 +98,9 @@
         "phoneNumber": "Numéro de téléphone",
         "birthDate": "Date de naissance",
         "newPatient": "Nouveau patient",
+        "editPatient": "Modifier le patient",
         "newRecord": "Nouvel enregistrement",
+        "editRecord": "Modifier le dossier médical",
         "details": {
             "information": "Information",
             "name": "Nom",
@@ -102,7 +120,9 @@
         },
         "firstName": "Prénom",
         "lastName": "Nom de famille",
-        "patientID": "Identifiant du patient"
+        "patientID": "Identifiant du patient",
+        "navigate": "Naviguer",
+        "navigationToPatient": "Navigation vers le patient"
     },
 
     "medicalRecord": {
@@ -231,7 +251,16 @@
         "supplier": "Fournisseur",
         "isPharmaceutical": "Est pharmaceutique",
         "medicinesList": "Liste des médicaments",
-        "oldQuantity": "Ancienne quantité"
+        "oldQuantity": "Ancienne quantité",
+        "medicineInfo": {
+            "created": "Médicament créé avec succès.",
+            "updated": "Médicament mis à jour",
+            "deleted": "Médicament supprimé",
+            "quantityAdded": "Quantité ajoutée",
+            "quantitySubtracted": "Quantité soustraite"
+        },
+        "noMedicinesAddedYet": "Aucun médicament ajouté pour le moment",
+        "new": "Nouveau"
     },
 
     "prescription": {

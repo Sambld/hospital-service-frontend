@@ -383,11 +383,11 @@ const Staff = () => {
             </Box>
             <Modal closeOnOverlayClick={false} isOpen={isStaffOpen} onClose={handleStaffFormClose}>
                 <ModalOverlay />
-                <ModalContent>
+                <ModalContent style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "jf-flat" : 'Light' }}>
                     <ModalHeader>
                         {t('staff.addStaff').toUpperCase()}
                     </ModalHeader>
-                    <ModalCloseButton />
+                    <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0', left: i18n.dir() == 'rtl' ? '0' : 'unset' }} />
                     <ModalBody>
                         <StaffForm
                             closeModal={handleStaffFormClose}

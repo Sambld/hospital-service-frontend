@@ -69,6 +69,25 @@ const Patient = () => {
     const toast = useToast()
 
     const { t, i18n } = useTranslation()
+    const boxBgLight = useColorModeValue('white', 'gray.700');
+    const boxBgDark = useColorModeValue('gray.700', 'white');
+
+    const textColorLight = useColorModeValue('gray.700', 'gray.200');
+    const textColorDark = useColorModeValue('gray.200', 'gray.700');
+
+    const tableTdColorLight = useColorModeValue('gray.500', 'gray.400');
+    const tableTdColorDark = useColorModeValue('gray.400', 'gray.500');
+
+    const redTextColorLight = useColorModeValue('red.700', 'red.200');
+    const redTextColorDark = useColorModeValue('red.200', 'red.700');
+
+    const textColorLightTwo = useColorModeValue('gray.700', 'gray.200');
+    const bgColorLightTwo = useColorModeValue('gray.300', 'gray.700');
+    const bgColorDarkTwo = useColorModeValue('gray.50', 'gray.700');
+    const textColorDarkTwo = useColorModeValue('gray.900', 'gray.200');
+    const buttonBgLightTwo = useColorModeValue('white', 'gray.700');
+
+    const colorModeValue1 = useColorModeValue('gray.50', 'gray.700');
 
     const [patient, setpatient] = useState(null)
     const { setPatient: setPatientInfo, user, handleRecordEdit, handlePatientEdit } = useOutletContext()
@@ -242,70 +261,68 @@ const Patient = () => {
                             {patient && <Box>
                                 <Card bg='transparent' boxShadow='none' >
                                     <CardBody >
-                                        <Grid  maxW='100%' templateColumns={{ base: '1fr', xl: 'repeat(2, 1fr)' }} gap={4}>
-                                            <GridItem>
+                                        <Grid maxW='100%' templateColumns={{ base: '1fr', xl: 'repeat(2, 1fr)' }} gap={4}>
+                                        <GridItem>
                                                 <Stack spacing={4} divider={<StackDivider borderColor='gray.200' />}>
                                                     <Box>
                                                         <Stack spacing={4}>
-                                                            <Box bg={useColorModeValue('white', 'gray.700')} border='2px' borderRadius='lg' borderColor='gray.300' p='20px' px='20px' boxShadow='sm'>
-                                                                <Text
-                                                                    fontSize={25}
-                                                                    color={useColorModeValue('gray.700', 'gray.200')}
-                                                                >
+                                                            <Box bg={boxBgLight} border='2px' borderRadius='lg' borderColor='gray.300' p='20px' px='20px' boxShadow='sm'>
+                                                                <Text fontSize={25} color={textColorLight}>
                                                                     {t('patient.details.information')}:
                                                                 </Text>
                                                                 <Box mt={4}>
                                                                     <Table className={styles.table} variant="unstyled">
                                                                         <Tbody fontSize={18}>
-                                                                            <Tr >
-                                                                                <Td color={useColorModeValue('gray.700', 'gray.200')}><Text>{t('patient.details.name')}::</Text></Td>
-                                                                                <Td color={useColorModeValue('gray.500', 'gray.400')}>{patient.first_name + " " + patient.last_name}</Td>
+                                                                            <Tr>
+                                                                                <Td color={textColorLight}>
+                                                                                    <Text>{t('patient.details.name')}:</Text>
+                                                                                </Td>
+                                                                                <Td color={tableTdColorLight}>{patient.first_name + " " + patient.last_name}</Td>
                                                                             </Tr>
                                                                             <Tr>
-                                                                                <Td color={useColorModeValue('gray.700', 'gray.200')}>{t('patient.phoneNumber')}::</Td>
-                                                                                <Td color={useColorModeValue('gray.500', 'gray.400')}>{patient.phone_number}</Td>
+                                                                                <Td color={textColorLight}>{t('patient.phoneNumber')}:</Td>
+                                                                                <Td color={tableTdColorLight}>{patient.phone_number}</Td>
                                                                             </Tr>
                                                                             <Tr>
-                                                                                <Td color={useColorModeValue('gray.700', 'gray.200')}>{t('patient.birthDate')}:</Td>
-                                                                                <Td color={useColorModeValue('gray.500', 'gray.400')}>{patient.birth_date}</Td>
+                                                                                <Td color={textColorLight}>{t('patient.birthDate')}:</Td>
+                                                                                <Td color={tableTdColorLight}>{patient.birth_date}</Td>
                                                                             </Tr>
                                                                             <Tr>
-                                                                                <Td color={useColorModeValue('gray.700', 'gray.200')}>{t('patient.details.placeOfBirth')}:</Td>
-                                                                                <Td color={useColorModeValue('gray.500', 'gray.400')}>{patient.place_of_birth}</Td>
+                                                                                <Td color={textColorLight}>{t('patient.details.placeOfBirth')}:</Td>
+                                                                                <Td color={tableTdColorLight}>{patient.place_of_birth}</Td>
                                                                             </Tr>
                                                                             <Tr>
-                                                                                <Td color={useColorModeValue('gray.700', 'gray.200')}>{t('patient.details.gender')}:</Td>
-                                                                                <Td color={useColorModeValue('gray.500', 'gray.400')}>{patient.gender}</Td>
+                                                                                <Td color={textColorLight}>{t('patient.details.gender')}:</Td>
+                                                                                <Td color={tableTdColorLight}>{patient.gender}</Td>
                                                                             </Tr>
                                                                             <Tr>
-                                                                                <Td color={useColorModeValue('gray.700', 'gray.200')}>{t('patient.details.nationality')}:</Td>
-                                                                                <Td color={useColorModeValue('gray.500', 'gray.400')}>{patient.nationality}</Td>
+                                                                                <Td color={textColorLight}>{t('patient.details.nationality')}:</Td>
+                                                                                <Td color={tableTdColorLight}>{patient.nationality}</Td>
                                                                             </Tr>
                                                                             <Tr>
-                                                                                <Td color={useColorModeValue('gray.700', 'gray.200')}>{t('patient.details.address')}:</Td>
-                                                                                <Td color={useColorModeValue('gray.500', 'gray.400')}>{patient.address}</Td>
+                                                                                <Td color={textColorLight}>{t('patient.details.address')}:</Td>
+                                                                                <Td color={tableTdColorLight}>{patient.address}</Td>
                                                                             </Tr>
                                                                         </Tbody>
                                                                     </Table>
                                                                 </Box>
                                                             </Box>
-                                                            <Box bg={useColorModeValue('gray.50', 'gray.700')} border='2px' borderRadius='lg' borderColor='red.300' p='20px' px='20px' boxShadow='sm'>
-                                                                <Text
-                                                                    fontSize={25}
-                                                                    color={useColorModeValue('red.700', 'red.200')}
-                                                                >
+                                                            <Box bg={colorModeValue1} border='2px' borderRadius='lg' borderColor='red.300' p='20px' px='20px' boxShadow='sm'>
+                                                                <Text fontSize={25} color={redTextColorLight}>
                                                                     {t('patient.details.emergencyInformation')}:
                                                                 </Text>
                                                                 <Box mt={4}>
                                                                     <Table className={styles.tableRed} variant="unstyled">
                                                                         <Tbody fontSize={18}>
-                                                                            <Tr >
-                                                                                <Td color={useColorModeValue('red.700', 'red.200')}><Text>{t('patient.details.emergencyContactName')}:</Text></Td>
-                                                                                <Td color={useColorModeValue('gray.500', 'gray.400')}>{patient.emergency_contact_name}</Td>
+                                                                            <Tr>
+                                                                                <Td color={redTextColorLight}>
+                                                                                    <Text>{t('patient.details.emergencyContactName')}:</Text>
+                                                                                </Td>
+                                                                                <Td color={tableTdColorLight}>{patient.emergency_contact_name}</Td>
                                                                             </Tr>
                                                                             <Tr>
-                                                                                <Td color={useColorModeValue('red.700', 'red.200')}>{t('patient.details.emergencyContactPhone')}:</Td>
-                                                                                <Td color={useColorModeValue('gray.500', 'gray.400')}>{patient.emergency_contact_number}</Td>
+                                                                                <Td color={redTextColorLight}>{t('patient.details.emergencyContactPhone')}:</Td>
+                                                                                <Td color={tableTdColorLight}>{patient.emergency_contact_number}</Td>
                                                                             </Tr>
                                                                         </Tbody>
                                                                     </Table>
@@ -313,14 +330,13 @@ const Patient = () => {
                                                             </Box>
                                                         </Stack>
                                                     </Box>
-
                                                 </Stack>
                                             </GridItem>
                                             <GridItem>
-                                                {user.role == 'doctor' && (
+                                                {user.role === 'doctor' && (
                                                     <Box
                                                         mb={4}
-                                                        bg={useColorModeValue('gray.300', 'gray.700')}
+                                                        bg={bgColorLightTwo}
                                                         display='flex'
                                                         border='1px'
                                                         borderColor='gray.300'
@@ -328,37 +344,106 @@ const Patient = () => {
                                                         overflow='hidden'
                                                         gap='1px'
                                                     >
-                                                        <Button leftIcon={<EditIcon />} bg={useColorModeValue('white', 'gray.700')} w='50%' variant='outline' border={0} colorScheme="green" type="submit" borderRadius={0} onClick={() => handlePatientEdit(patient)}>
+                                                        <Button
+                                                            leftIcon={<EditIcon />}
+                                                            bg={buttonBgLightTwo}
+                                                            w='50%'
+                                                            variant='outline'
+                                                            border={0}
+                                                            colorScheme="green"
+                                                            type="submit"
+                                                            borderRadius={0}
+                                                            onClick={() => handlePatientEdit(patient)}
+                                                        >
                                                             {t('patient.details.edit')}
                                                         </Button>
-                                                        <Button leftIcon={<DeleteIcon />} bg={useColorModeValue('white', 'gray.700')} w='50%' variant='outline' border={0} colorScheme="red" type="submit" borderRadius={0} onClick={() => onPatientDeleteOpen()}>
+                                                        <Button
+                                                            leftIcon={<DeleteIcon />}
+                                                            bg={buttonBgLightTwo}
+                                                            w='50%'
+                                                            variant='outline'
+                                                            border={0}
+                                                            colorScheme="red"
+                                                            type="submit"
+                                                            borderRadius={0}
+                                                            onClick={() => onPatientDeleteOpen()}
+                                                        >
                                                             {t('patient.details.delete')}
                                                         </Button>
                                                     </Box>
                                                 )}
-                                                <Box p={0} bg={useColorModeValue('gray.50', 'gray.700')} boxShadow='lg' borderRadius='lg' border='2px' borderColor='gray.300' overflow='hidden'>
-                                                    <Heading p='10px' size='md' color={useColorModeValue('gray.700', 'gray.200')} textTransform='uppercase' w='100%'>
+                                                <Box
+                                                    p={0}
+                                                    bg={bgColorDarkTwo}
+                                                    boxShadow='lg'
+                                                    borderRadius='lg'
+                                                    border='2px'
+                                                    borderColor='gray.300'
+                                                    overflow='hidden'
+                                                >
+                                                    <Heading
+                                                        p='10px'
+                                                        size='md'
+                                                        color={textColorLightTwo}
+                                                        textTransform='uppercase'
+                                                        w='100%'
+                                                    >
                                                         {t('medicalRecord.title')}
                                                     </Heading>
-                                                    {/* only doctor  */}
-                                                    <Box p={2} >
-                                                        <Accordion p={0} bg={useColorModeValue('gray.50', 'gray.700')} width='100%' border='4px' borderColor='gray.300' borderRadius='md' allowToggle>
+                                                    {/* only doctor */}
+                                                    <Box p={2}>
+                                                        <Accordion
+                                                            p={0}
+                                                            bg={bgColorDarkTwo}
+                                                            width='100%'
+                                                            border='4px'
+                                                            borderColor='gray.300'
+                                                            borderRadius='md'
+                                                            allowToggle
+                                                        >
                                                             {/* if there is no record */}
-                                                            {RecordList && RecordList.length === 0 && <Text bg={useColorModeValue('white', 'gray.700')} textAlign='center' p={2} mt='0' fontSize={20}>{t('patient.details.noMedicalRecordFound')}</Text>}
+                                                            {RecordList && RecordList.length === 0 && (
+                                                                <Text
+                                                                    bg={buttonBgLightTwo}
+                                                                    textAlign='center'
+                                                                    p={2}
+                                                                    mt='0'
+                                                                    fontSize={20}
+                                                                >
+                                                                    {t('patient.details.noMedicalRecordFound')}
+                                                                </Text>
+                                                            )}
                                                             {RecordList && RecordList.map((record, index) => (
-                                                                <AccordionItem bg={useColorModeValue('white', 'gray.700')} key={index}>
+                                                                <AccordionItem
+                                                                    bg={buttonBgLightTwo}
+                                                                    key={index}
+                                                                >
                                                                     <h2>
-                                                                        <AccordionButton _expanded={{ bg: record.patient_leaving_date ? 'red.500' : 'green.500', color: 'white' }}>
+                                                                        <AccordionButton
+                                                                            _expanded={{
+                                                                                bg: record.patient_leaving_date ? 'red.500' : 'green.500',
+                                                                                color: 'white'
+                                                                            }}
+                                                                        >
                                                                             <Box fontSize='lg' as="span" flex='1' textAlign='left'>
-                                                                                <Text>{t('medicalRecord.medicalRecord')} #{record.id}
-                                                                                    {record.patient_leaving_date ? ' - ' + t('medicalRecord.discharged') + " " : ' - ' + t('medicalRecord.inHospital') + " "}
+                                                                                <Text>
+                                                                                    {t('medicalRecord.medicalRecord')} #{record.id}
+                                                                                    {record.patient_leaving_date
+                                                                                        ? ' - ' + t('medicalRecord.discharged') + ' '
+                                                                                        : ' - ' + t('medicalRecord.inHospital') + ' '}
                                                                                     {record.user_id == user.id ? '(' + t('medicalRecord.owned') + ')' : ''}
                                                                                 </Text>
                                                                             </Box>
                                                                             <AccordionIcon />
                                                                         </AccordionButton>
                                                                     </h2>
-                                                                    <AccordionPanel border='4px' borderTop={0} borderColor={record.patient_leaving_date ? 'red.500' : 'green.500'} pb={4} color={useColorModeValue('gray.900', 'gray.200')}>
+                                                                    <AccordionPanel
+                                                                        border='4px'
+                                                                        borderTop={0}
+                                                                        borderColor={record.patient_leaving_date ? 'red.500' : 'green.500'}
+                                                                        pb={4}
+                                                                        color={textColorDarkTwo}
+                                                                    >
                                                                         <Text pt='2' fontSize='md'>
                                                                             {t('medicalRecord.entry_Day')}: {record.patient_entry_date}
                                                                         </Text>
@@ -366,7 +451,12 @@ const Patient = () => {
                                                                             {t('medicalRecord.discharge_Day')}: {record.patient_leaving_date ? record.patient_leaving_date : t('medicalRecord.stillInHospital')}
                                                                         </Text>
                                                                         <NavLink to={"?med=" + record.id} onClick={() => handleMedChange(record.id)}>
-                                                                            <Button colorScheme={record.patient_leaving_date ? 'red' : 'green'} width='100%' variant='solid' isLoading={loading}>
+                                                                            <Button
+                                                                                colorScheme={record.patient_leaving_date ? 'red' : 'green'}
+                                                                                width='100%'
+                                                                                variant='solid'
+                                                                                isLoading={loading}
+                                                                            >
                                                                                 {t('patient.open')}
                                                                             </Button>
                                                                         </NavLink>
@@ -376,7 +466,6 @@ const Patient = () => {
                                                             {!RecordList && <Center p='10px'><Spinner thickness='4px' /></Center>}
                                                         </Accordion>
                                                     </Box>
-
                                                 </Box>
                                             </GridItem>
                                         </Grid>
@@ -419,15 +508,17 @@ const Patient = () => {
                     <AlertDialogContent maxW='300px' p={5}>
 
                         <AlertDialogBody textAlign='center'>
-                            <Text fontSize='lg' fontWeight='bold'>Are you sure?</Text>
+                            <Text fontSize='lg' fontWeight='bold'>
+                                {t('global.areYouSure')}
+                            </Text>
                         </AlertDialogBody>
 
                         <AlertDialogFooter justifyContent='center'>
                             <Button onClick={onPatientDeleteClose}>
-                                Cancel
+                                {t('global.cancel')}
                             </Button>
                             <Button colorScheme='red' onClick={handlePatientDelete} ml={3} isLoading={deleteLoading}>
-                                Delete
+                                {t('global.delete')}
                             </Button>
                         </AlertDialogFooter>
                     </AlertDialogContent>

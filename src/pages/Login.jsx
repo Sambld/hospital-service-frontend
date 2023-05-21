@@ -166,17 +166,15 @@ const Login = ({ setUser }) => {
                   <FormLabel color="gray.400" fontSize="12px">
                     Username
                   </FormLabel>
-                  <InputGroup>
-                    <InputLeftElement
-                      pointerEvents="none"
-                      children={<CFaUserAlt color="gray.300" />}
-                    />
+                  <InputGroup position="relative">
+                    <Icon as={FaUserAlt} color='gray.300' boxSize={4} mr={2} position="absolute" left={3} top={3} />
                     <Input
                       type="text"
                       value={username}
                       placeholder="user name"
                       _placeholder={{ color: useColorModeValue("gray.500", "gray.100") }}
                       name="username"
+                      pl={10}
                       onChange={({ target }) => setUsername(target.value)} />
                   </InputGroup>
                 </FormControl>
@@ -184,25 +182,20 @@ const Login = ({ setUser }) => {
                   <FormLabel color="gray.400" fontSize="12px">
                     Password
                   </FormLabel>
-                  <InputGroup>
-                    <InputLeftElement
-                      pointerEvents="none"
-                      color="gray.300"
-                      children={<CFaLock color="gray.300" />}
-                    />
+                  <InputGroup position="relative">
+                    <Icon as={CFaLock} color='gray.300' boxSize={4} mr={2} position="absolute" left={3} top={3} />
                     <Input
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       _placeholder={{ color: useColorModeValue("gray.500", "gray.100") }}
                       name="password"
                       value={password}
+                      pl={10}
                       onChange={({ target }) => setPassword(target.value)}
                     />
-                    <InputRightElement width="4.5rem">
-                      <Button h="1.75rem" size="sm" onClick={handleShowClick}>
+                      <Button h="1.75rem" size="sm" onClick={handleShowClick} position="absolute" right={2} top="6px" zIndex={2}>
                         {showPassword ? "Hide" : "Show"}
                       </Button>
-                    </InputRightElement>
                   </InputGroup>
                 </FormControl>
                 <FormControl>

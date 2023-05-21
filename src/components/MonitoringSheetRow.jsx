@@ -529,7 +529,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     </Text>
                 </Box>
             )}
-            <Flex justifyContent='center' mt='10px'>
+            <Flex justifyContent='center' mt='10px' gap={3}>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
                     {t('global.cancel')}
                 </Button>
@@ -543,7 +543,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     >
                         {/* add icon */}
                         <BiPencil />
-                        <Text ml="5px" >
+                        <Text mx="5px" >
                             {t('global.edit')}
                         </Text>
                     </Button>
@@ -559,7 +559,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     >
                         {/* add icon */}
                         <BiPencil />
-                        <Text ml="5px" >
+                        <Text mx="5px" >
                             {t('global.edit')}
                         </Text>
                     </Button>) : (
@@ -573,7 +573,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     >
                         {/* add icon */}
                         <AiOutlinePlus />
-                        <Text ml="5px" >
+                        <Text mx="5px" >
                             {t('global.apply')}
                         </Text>
                     </Button>

@@ -94,7 +94,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                 onClick={() => getToday()}
                             >
                                 <IoTodayOutline fontSize={20} />
-                                <Text ml={2}>
+                                <Text mx={2}>
                                     {t('medicalRecord.today')}
                                 </Text>
                             </Button>
@@ -154,7 +154,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                         <Table mb={5} border='2px' borderColor='gray.600' borderRadius="md" className={styles.table}>
                             <Thead>
                                 <Tr>
-                                    <Th border='2px' w='150px' borderColor='gray.100' textAlign='center'>
+                                    <Th border='2px' w='150px' borderColor={useColorModeValue('gray.600', 'gray.100')} textAlign='center'>
                                         {t('medicalRecord.examinations')}
                                     </Th>
                                     {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (

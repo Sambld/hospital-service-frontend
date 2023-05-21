@@ -51,7 +51,7 @@ const SideBar = ({ user }) => {
     <List pl={{base:'0px',lg:'10px'}} pt='10px' fontSize="1.2em" spacing={0}>
       {SidebarItem && SidebarItem.map((item, index) => (
         <ListItem color={useColorModeValue("#3a3e54", "white")} key={index}>
-          <NavLink to={item.link} _activeLink={{ color: useColorModeValue("#374083", "grey") }}>
+          <NavLink to={item.link} >
             <HStack p='10px' border='2px' borderColor='transparent' _hover={{
               color: useColorModeValue("#374083", "grey"),
             }}>

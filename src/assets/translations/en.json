@@ -26,13 +26,29 @@
         "detail": "Detail",
         "details": "Details",
         "submit": "Submit",
-        "open": "Open"
+        "open": "Open",
+        "reloading": "Reloading"
     },
     "navbar": {
         "webSiteName": "Infectious Diseases",
         "profile": "Profile",
         "settings": "Settings",
-        "signOut": "Sign Out"
+        "signOut": "Sign Out",
+        "Language": "Language",
+        "Theme": "Theme",
+        "light": "Light",
+        "dark": "Dark",
+        "languageList": {
+            "en": "English",
+            "fr": "French",
+            "ar": "Arabic",
+            "de": "German",
+            "es": "Spanish",
+            "zh": "Chinese",
+            "pt": "Portuguese",
+            "ru": "Russian",
+            "ja": "Japanese"
+        }
     },
     "sideBar": {
         "dashboard": "Dashboard",
@@ -84,7 +100,9 @@
         "phoneNumber": "Phone Number",
         "birthDate": "Birth Date",
         "newPatient": "New Patient",
+        "editPatient": "Edit Patient",
         "newRecord": "New Record",
+        "editRecord": "Edit Record",
         "details": {
             "information": "Information",
             "name": "Name",
@@ -104,7 +122,9 @@
         },
         "firstName": "First Name",
         "lastName": "Last Name",
-        "patientID": "Patient ID"
+        "patientID": "Patient ID",
+        "navigate": "Navigate",
+        "navigationToPatient": "Navigation to Patient"
     },
     "medicalRecord": {
         "title": "Medical Records",
@@ -233,7 +253,16 @@
         "supplier": "Supplier",
         "isPharmaceutical": "Is Pharmaceutical",
         "medicinesList": "Medicines List",
-        "oldQuantity": "Old Quantity"
+        "oldQuantity": "Old Quantity",
+        "medicineInfo": {
+            "created": "Medicine created successfully.",
+            "updated": "Medicine Updated",
+            "deleted": "Medicine Deleted",
+            "quantityAdded": "Quantity Added",
+            "quantitySubtracted": "Quantity Subtracted"
+        },
+        "noMedicinesAddedYet": "No Medicines Added Yet",
+        "new": "New"
     },
     "prescription": {
         "pendingPrescription": "Pending Prescription",

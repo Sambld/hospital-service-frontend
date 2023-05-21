@@ -22,6 +22,9 @@ import useDelete from '../../hooks/useDelete';
 import { DeleteIcon, EditIcon, SearchIcon, AddIcon } from "@chakra-ui/icons";
 import { AiOutlineCheck } from 'react-icons/ai';
 
+// Translation
+import { useTranslation } from 'react-i18next';
+
 const MandatoryDeclarationForm = ({ medical_record, closeModal, closeAndRefresh, EditMode, mandatory_declaration }) => {
     const [formData, setFormData] = useState({
         diagnosis: EditMode ? mandatory_declaration.diagnosis : '',
@@ -31,6 +34,8 @@ const MandatoryDeclarationForm = ({ medical_record, closeModal, closeAndRefresh,
     const [deleteLoading, setDeleteLoading] = useState(false);
 
     const [deleteConfirmation, setDeleteConfirmation] = useState(false);
+
+    const { t, i18n } = useTranslation();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -129,7 +134,7 @@ const MandatoryDeclarationForm = ({ medical_record, closeModal, closeAndRefresh,
         <Form onSubmit={handleSubmit}>
             <br />
             <FormControl id='diagnosis'>
-                <FormLabel>Mandatory Declaration Diagnosis</FormLabel>
+                <FormLabel>{t('medicalRecord.diagnosis')}</FormLabel>
                 <Input
                     type="text"
                     name="diagnosis"
@@ -138,7 +143,7 @@ const MandatoryDeclarationForm = ({ medical_record, closeModal, closeAndRefresh,
             </FormControl>
             <br />
             <FormControl id='detail'>
-                <FormLabel>Mandatory Declaration Detail</FormLabel>
+                <FormLabel>{t('medicalRecord.detailedDiagnosis')}</FormLabel>
 
                 <Textarea
                     type="text"
@@ -148,17 +153,15 @@ const MandatoryDeclarationForm = ({ medical_record, closeModal, closeAndRefresh,
 
             </FormControl>
             <Flex justifyContent='center' mt='10px' gap='10px'>
-                {EditMode && <Button w='120px' variant='solid' colorScheme='red' type="button" onClick={handleDeleteConfirm} isLoading={deleteLoading} loadingText="Deleting" onMouseLeave={() => setDeleteConfirmation(false)}>
-                    {/* add icon */}
-                    <DeleteIcon />
-                    <Text ml="5px" fontSize={deleteConfirmation? 16:16} >{deleteConfirmation ? 'Sure ?' : 'Delete'}</Text>
-                </Button>}
+                <Button variant='solid' colorScheme='red' onClick={closeModal} >
+                    {t('global.cancel')}
+                </Button>
 
                 
                 <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText={EditMode ? "Updating" : "Adding"}>
                     {/* add icon */}
                     {EditMode ? <EditIcon /> : <AddIcon />}
-                    <Text ml="5px" >{EditMode ? 'Update' : 'Add'}</Text>
+                    <Text ml="5px" >{EditMode ? t('global.edit') : t('global.add')}</Text>
                 </Button>
             </Flex>
         </Form>)

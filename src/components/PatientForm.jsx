@@ -268,14 +268,14 @@ const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation
                 </GridItem>
             </Grid>
 
-            <Flex justifyContent='center' mt='10px'>
-                <Button colorScheme='blue' mr={3} onClick={closeModal}>
+            <Flex justifyContent='center' mt='10px' gap={3}>
+                <Button colorScheme='blue' mء={3} onClick={closeModal}>
                     {t('global.cancel')}
                 </Button>
                 <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText={EditMode ? 'Updating' : 'Adding'}>
                     {/* add icon */}
                     { EditMode ? <EditIcon /> :<BsPersonAdd /> }
-                    <Text ml="5px" >
+                    <Text mx="5px" >
                         {EditMode ? t('global.edit') : t('global.add')}
                     </Text>
                 </Button>

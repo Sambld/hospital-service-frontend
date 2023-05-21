@@ -1,0 +1,8 @@
+@font-face {
+    font-family: "Light";
+    src: local("Hai Duong"), url("../../fonts/Rubik-Medium.ttf") format("truetype");
+}
+
+* {
+    font-family: 'Light', sans-serif !important;
+}

@@ -34,6 +34,12 @@ import { useTranslation } from 'react-i18next';
 
 const PatientsTable = ({ initValue, patients, count, search }) => {
 
+    const colorModeValue = useColorModeValue('gray.600', 'gray.50');
+    const colorModeValue2 = useColorModeValue('gray.500', 'gray.300');
+    const colorModeValue3 = useColorModeValue('blue.50', 'blue.900');
+    const colorModeValue4 = useColorModeValue('pink.50', 'pink.900');
+    const colorModeValue5 = useColorModeValue('gray.50', 'gray.50');
+
     const { t, i18n } = useTranslation();
 
     return (
@@ -60,7 +66,7 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                         <Th w='200px'>
                             <Text fontSize='sm' color='gray.500' p='10px' align='right'>
                                 {count ? count : patients ? '0' : '-'} {" "}
-                                {t('patient.title')} 
+                                {t('patient.title')}
                             </Text>
 
                         </Th>
@@ -68,25 +74,38 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                 </Thead>
                 <Tbody>
                     {patients && patients.map((patient, index) => (
-                        <Tr key={index} bg={(patient.gender == 'Male') ? useColorModeValue('blue.50', 'blue.900') : useColorModeValue('pink.50', 'pink.900')} >
+                        <Tr
+                            key={index}
+                            bg={(patient.gender === 'Male') ? colorModeValue3 : colorModeValue4}
+                        >
                             <Td p='2'>
                                 <IconButton
-                                    colorScheme={(patient.gender == 'Male') ? 'blue' : 'pink'}
-                                    color={useColorModeValue('gray.50', 'gray.50')}
+                                    colorScheme={(patient.gender === 'Male') ? 'blue' : 'pink'}
+                                    color={colorModeValue5}
                                     aria-label='Gender'
                                     size='md'
-                                    icon={(patient.gender == 'Male') ? <BsGenderMale size={25} /> : <BsGenderFemale size={25} />}
+                                    icon={(patient.gender === 'Male') ? <BsGenderMale size={25} /> : <BsGenderFemale size={25} />}
                                 />
                             </Td>
-                            <Td><Text color={useColorModeValue('gray.600', 'gray.50')} fontWeight='normal' fontSize={{ base: 'sm', lg: 'lg' }}>{patient.first_name + " " + patient.last_name}</Text></Td>
-                            <Td color={useColorModeValue('gray.600', 'gray.50')} display={{ base: 'none', lg: 'table-cell' }} fontSize={{ base: 'sm', lg: 'lg' }}>{patient.phone_number}</Td>
+                            <Td>
+                                <Text color={colorModeValue} fontWeight='normal' fontSize={{ base: 'sm', lg: 'lg' }}>
+                                    {patient.first_name + " " + patient.last_name}
+                                </Text>
+                            </Td>
+                            <Td color={colorModeValue} display={{ base: 'none', lg: 'table-cell' }} fontSize={{ base: 'sm', lg: 'lg' }}>
+                                {patient.phone_number}
+                            </Td>
                             <Td display={{ base: 'none', xl: 'table-cell' }} fontSize={{ base: 'sm', lg: 'lg' }}>
-                                <Text color={useColorModeValue('gray.600', 'gray.50')} fontSize={{ base: 'sm', lg: 'lg' }}>{patient.birth_date}</Text>
-                                <Text fontSize={{ base: 'xs', lg: 'sm' }}  color={useColorModeValue('gray.500', 'gray.300')}>{patient.place_of_birth}</Text>
+                                <Text color={colorModeValue} fontSize={{ base: 'sm', lg: 'lg' }}>
+                                    {patient.birth_date}
+                                </Text>
+                                <Text fontSize={{ base: 'xs', lg: 'sm' }} color={colorModeValue2}>
+                                    {patient.place_of_birth}
+                                </Text>
                             </Td>
                             <Td p={1}>
                                 <NavLink to={patient.id.toString()} style={{ 'display': 'block', 'borderRadius': '5px' }}>
-                                    <Button colorScheme={(patient.gender == 'Male') ? 'blue' : 'pink'} w='100%' p={0}>
+                                    <Button colorScheme={(patient.gender === 'Male') ? 'blue' : 'pink'} w='100%' p={0}>
                                         <AiFillFolderOpen size={20} />
                                         <Text mx={3}>
                                             {t('patient.open')}
@@ -96,7 +115,15 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                             </Td>
                         </Tr>
                     ))}
-                    {patients && patients.length == 0 && <Tr><Td colSpan='5'><Text textAlign='center' fontWeight='bold' fontSize='xl'>No Data</Text></Td></Tr>}
+                    {patients && patients.length === 0 && (
+                        <Tr>
+                            <Td colSpan='5'>
+                                <Text textAlign='center' fontWeight='bold' fontSize='xl'>
+                                    No Data
+                                </Text>
+                            </Td>
+                        </Tr>
+                    )}
                 </Tbody>
             </Table>
             {/* {!patients && <Center p='10px'>
@@ -109,8 +136,8 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
             {!patients && (
                 <Box>
                     {/* array 1 to 15 */}
-                    {[...Array(15)].map((i) => (
-                        <Box display='flex' p='10px' key={i}>
+                    {[...Array(15)].map((i,index) => (
+                        <Box display='flex' p='10px' key={index.toString() + 'skeleton'}>
                             <Skeleton boxSize='50px' borderRadius='md'>
                                 <Text>Loading...</Text>
                             </Skeleton>

@@ -56,7 +56,20 @@ const Patients = () => {
     const [data, setData] = useState(null)
     const [rerender, setRerender] = useState(false)
 
-    const { t,i18n } = useTranslation()
+    const { t, i18n } = useTranslation()
+    const breadcrumbFontSize = { base: "md", sm: '3xl' };
+
+    const separatorColorLight = useColorModeValue('gray.500', 'gray.100');
+    const separatorColorDark = useColorModeValue('gray.100', 'gray.500');
+
+    const linkColorLight = useColorModeValue('blue.700', 'blue.400');
+    const linkColorDark = useColorModeValue('blue.400', 'blue.700');
+
+    const textColorLight = useColorModeValue('gray.500', 'gray.200');
+    const textColorDark = useColorModeValue('gray.200', 'gray.500');
+
+    const patientNameColorLight = useColorModeValue('#2e3149', 'gray.100');
+    const patientNameColorDark = useColorModeValue('gray.100', '#2e3149');
 
     const [patient, setPatient] = useState(null)
     const [patientEditMode, setPatientEditMode] = useState(false)
@@ -221,13 +234,12 @@ const Patients = () => {
     return (
         <Box>
             <Flex mr={3}>
-                <Breadcrumb fontSize={{ base: "md", sm: '3xl' }} separator={<Text fontSize={25} color={useColorModeValue('gray.500', 'gray.100')}>/</Text>}>
+                <Breadcrumb fontSize={breadcrumbFontSize} separator={<Text fontSize={25} color={separatorColorLight}>/</Text>}>
                     <BreadcrumbItem>
                         <Link to='/patients' color='red'>
                             <Text
-                                fontSize={{ base: "md", sm: '3xl' }}
-                                // color={outlet ? 'blue.700' : 'gray.500'}
-                                color={outlet ? useColorModeValue('blue.700', 'blue.400') : useColorModeValue('gray.500', 'gray.200')}
+                                fontSize={breadcrumbFontSize}
+                                color={outlet ? linkColorLight : textColorLight}
                                 ml='20px'
                             >
                                 {t('patient.title')}
@@ -237,18 +249,22 @@ const Patients = () => {
 
                     <BreadcrumbItem>
                         {outlet && (
-                            <Center h='54px' w='100%' >
-                                {
-                                patient ? <Text  fontSize={{ base: "md", sm: '3xl' }} color={useColorModeValue('#2e3149', 'gray.100')} >{patient.first_name + " " + patient.last_name}</Text> : <Spinner thickness='4px' />
-                                }
+                            <Center h='60px' w='100%'>
+                                {patient ? (
+                                    <Text fontSize={breadcrumbFontSize} color={patientNameColorLight}>
+                                        {patient.first_name + " " + patient.last_name}
+                                    </Text>
+                                ) : (
+                                    <Spinner thickness='4px' />
+                                )}
                             </Center>
                         )}
-                        {!outlet &&
-                            <Editable fontSize={{ base: 'md', sm: '3xl' }} color={useColorModeValue('#2e3149', 'gray.100')} onSubmit={handleSubmit} placeholder={t('patient.all').toUpperCase()} >
+                        {!outlet && (
+                            <Editable h='60px' fontSize={breadcrumbFontSize} color={patientNameColorLight} onSubmit={handleSubmit} placeholder={t('patient.all').toUpperCase()}>
                                 <EditablePreview ref={EditableSpanValue} />
                                 <EditableInput />
                             </Editable>
-                        }
+                        )}
                     </BreadcrumbItem>
                 </Breadcrumb>
                 <Spacer />
@@ -260,13 +276,13 @@ const Patients = () => {
                         <MenuList>
                             <MenuItem onClick={onPatientOpen}>
                                 <FaUserMd color={useColorModeValue('gray', 'white')} />
-                                <Text ml={3} color={useColorModeValue('gray.700', 'gray.100')}>
+                                <Text mx={3} color={useColorModeValue('gray.700', 'gray.100')}>
                                     {t('patient.newPatient').toUpperCase()}
                                 </Text>
                             </MenuItem>
                             <MenuItem onClick={onRecordOpen}>
                                 <AiFillFolderOpen color={useColorModeValue('gray', 'white')} />
-                                <Text ml={3} color={useColorModeValue('gray.700', 'gray.100')}>
+                                <Text mx={3} color={useColorModeValue('gray.700', 'gray.100')}>
                                     {t('patient.newRecord').toUpperCase()}
                                 </Text>
                             </MenuItem>
@@ -291,12 +307,17 @@ const Patients = () => {
 
             <Modal isOpen={isNavigateOpen} onClose={onNavigateClose} initialFocusRef={NavigateButton}>
                 <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>Navigation to Patient#{id}</ModalHeader>
-                    <ModalCloseButton />
+                <ModalContent style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }}>
+                    <ModalHeader>
+                        {t('patient.navigationToPatient')} {" "}
+                        #{id}
+                    </ModalHeader>
+                    <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
                     <ModalFooter>
                         <NavLink to={`/patients/${id}`} onClick={onNavigateClose} onKeyDown={onNavigateClose}>
-                            <Button ref={NavigateButton} colorScheme='green' onClick={onNavigateClose} >Navigate</Button>
+                            <Button ref={NavigateButton} colorScheme='green' onClick={onNavigateClose} >
+                                {t('patient.navigate')}
+                            </Button>
                         </NavLink>
                     </ModalFooter>
                 </ModalContent>
@@ -304,9 +325,11 @@ const Patients = () => {
 
             <Modal closeOnOverlayClick={false} isOpen={isPatientOpen} onClose={onPatientClose}>
                 <ModalOverlay />
-                <ModalContent maxW="56rem">
-                    <ModalHeader>Add Patient</ModalHeader>
-                    <ModalCloseButton />
+                <ModalContent style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW="56rem">
+                    <ModalHeader>
+                        {patientEditMode ? t('patient.editPatient') : t('patient.newPatient')}
+                    </ModalHeader>
+                    <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
                     <ModalBody>
                         <PatientForm closeModal={onPatientClose} closeAndRefresh={handlePatientAdd} EditMode={patientEditMode} PatientInformation={patient} />
                     </ModalBody>
@@ -315,11 +338,11 @@ const Patients = () => {
 
             <Modal closeOnOverlayClick={false} isOpen={isRecordOpen} onClose={RecordFormExit}>
                 <ModalOverlay />
-                <ModalContent maxW="56rem">
+                <ModalContent style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW="56rem">
                     <ModalHeader>{
-                        medicalrecordEditMode ? 'Edit Medical Record' : 'Add Medical Record'
+                        medicalrecordEditMode ? t('patient.editRecord') : t('patient.newRecord')
                     }</ModalHeader>
-                    <ModalCloseButton />
+                    <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
                     <ModalBody>
                         <RecordForm
                             closeModal={onRecordClose}

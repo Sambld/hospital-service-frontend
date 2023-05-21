@@ -324,7 +324,7 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
                     </FormControl>
                 </Box>
             )}
-            <Flex justifyContent='center' mt='10px'>
+            <Flex justifyContent='center' mt='10px' gap={2}>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
                     {t('global.cancel')}
                 </Button>
@@ -332,7 +332,7 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
                     <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Updating" >
                         {/* add icon */}
                         <AiOutlineEdit />
-                        <Text ml="5px" >
+                        <Text mx="5px" >
                             {t('global.edit')}
                         </Text>
                     </Button>
@@ -340,7 +340,7 @@ const RecordForm = ({ closeModal, closeAndRefresh, userId, patientId, editMode, 
                     <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" >
                         {/* add icon */}
                         <AiOutlinePlus />
-                        <Text ml="5px" >
+                        <Text mx="5px" >
                             {t('global.add')}
                         </Text>
                     </Button>

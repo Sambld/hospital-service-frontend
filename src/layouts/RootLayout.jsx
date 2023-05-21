@@ -27,7 +27,7 @@ const RootLayout = () => {
     const { user, setUser, deleteUser } = useUser();
     const [loadingPage, setLoadingPage] = useState(true);
 
-    const { i18n } = useTranslation();
+    const { t,i18n } = useTranslation();
     // const [allData, setAllData] = useState([]);
 
     const navigate = useNavigate();
@@ -133,17 +133,6 @@ const RootLayout = () => {
             })
     }
 
-    const settingsLoader = () => {
-        const language = localStorage.getItem('language');
-        if (language) {
-            i18n.changeLanguage(language)
-        }
-    }
-
-    useEffect(() => {
-        settingsLoader()
-    }, [])
-
     useEffect(() => {
         try {
             if (location.pathname) {
@@ -181,15 +170,15 @@ const RootLayout = () => {
     }
 
     return (
-        <Box bg={useColorModeValue('#f8f8fb', '#333542')} style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "jf-flat" : 'Light' }}>
+        <Box bg={useColorModeValue('#f8f8fb', '#333542')} style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }}>
             {loadingPage &&
                 <Box w='100%' h='100vh' display='flex' justifyContent='center' alignItems='center' position='absolute' zIndex='1000'>
-                    <Box position='absolute' top='0' left='0' w='100%' h='100%' bg='white' opacity='0.8'>
+                    <Box position='absolute' top='0' left='0' w='100%' h='100%' bg='white' opacity='0.9'>
 
                     </Box>
                     <FaShieldVirus fontSize='150px' color='#374083' className={styles.icon} />
-                    <Text fontSize='40px' position='absolute' bottom='0' color='#374083' fontWeight='bold' textShadow='1px 1px 4px #000'>
-                        Infectious Diseases
+                    <Text fontSize='40px' position='absolute' bottom='10px' color='#374083' fontWeight='bold' textShadow='1px 1px 4px #000'>
+                        {t('navbar.webSiteName')}
                     </Text>
                 </Box>
             }
@@ -201,7 +190,7 @@ const RootLayout = () => {
                 gap='1'
                 color='blackAlpha.700'
             >
-                <GridItem bg={useColorModeValue('white', 'gray.900')} p='0' borderBottom='2px' borderColor={useColorModeValue('gray.200','gray.900')} area={'nav'}>
+                <GridItem bg={useColorModeValue('white', 'gray.900')} p='0' borderBottom='2px' borderColor={useColorModeValue('gray.200', 'gray.900')} area={'nav'}>
                     <NavBar logout={logout} user={user} />
                 </GridItem>
                 {user && <GridItem h='calc(100vh - 71px)' mt='-3px' bg={useColorModeValue('white', 'gray.900')} area={'side'} >

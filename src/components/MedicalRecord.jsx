@@ -133,6 +133,16 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const { isOpen: isOpenPrescriptionForm, onOpen: onOpenPrescriptionForm, onClose: onClosePrescriptionForm } = useDisclosure()
   const { isOpen: isOpenMandatoryDeclaration, onOpen: onOpenMandatoryDeclaration, onClose: onCloseMandatoryDeclaration } = useDisclosure()
 
+  const colorModeValue1 = useColorModeValue('gray.700', 'gray.50')
+  const colorModeValue2 = useColorModeValue('blue.900', 'gray.300')
+  const colorModeValue3 = useColorModeValue('blue.900', 'white')
+  const colorModeValue4 = useColorModeValue('gray.50', 'gray.700')
+  const colorModeValue5 = useColorModeValue('white', 'gray.700')
+  const colorModeValue6 = useColorModeValue('#fafafa', 'gray.800')
+  const colorModeValue7 = useColorModeValue('gray.50','gray.900')
+  const colorModeValue8 = useColorModeValue('gray.200','gray.700')
+
+
   const breakpointss = {
     sm: '30em', // 480px
     md: '48em', // 768px
@@ -609,7 +619,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       {medical_record && (
         <>
           {/* Medical Record Examination, Observation, Monitoring Sheet */}
-          <Tabs isFitted variant='unstyled' color={useColorModeValue('blue.900', 'white')} mb={5} index={tabIndex} onChange={handleTabsChange}>
+          <Tabs isFitted variant='unstyled' color={colorModeValue3} mb={5} index={tabIndex} onChange={handleTabsChange}>
             <TabList mb='1em' bg={useColorModeValue('gray.300', 'gray.700')} borderRadius={10} overflow='auto'>
               
               <Tab borderLeftRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}>
@@ -664,7 +674,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                 {/* Medical Record main information */}
                 <Box
                   p={0}
-                  color={useColorModeValue('blue.900', 'white')}
+                  color={colorModeValue3}
                   borderWidth="2px"
                   borderColor='gray.300'
                   borderRadius={10}
@@ -672,10 +682,10 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                 >
                   {/* <Heading p={5}> Medical Record #{medical_record.id}</Heading> */}
 
-                  <Box bg={useColorModeValue('gray.50', 'gray.700')} p='20px' px='20px' boxShadow='sm'>
+                  <Box bg={colorModeValue4} p='20px' px='20px' boxShadow='sm'>
                     <Text
                       fontSize={25}
-                      color={useColorModeValue('gray.700', 'gray.50')}
+                      color={colorModeValue1}
                     >
                       {t('medicalRecord.medicalRecord')}
                       #{medical_record.id}
@@ -684,32 +694,32 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                       <Table className={styles.table} variant="unstyled">
                         <Tbody fontSize={18}>
                           <Tr >
-                            <Td color={useColorModeValue('gray.700', 'gray.50')}><Text>{t('medicalRecord.conditionDescription')}:</Text></Td>
-                            <Td color={useColorModeValue('blue.900', 'gray.300')}>
+                            <Td color={colorModeValue1}><Text>{t('medicalRecord.conditionDescription')}:</Text></Td>
+                            <Td color={colorModeValue2}>
                               {medical_record.condition_description.split('\n').map((item, key) => {
                                 return <Text key={key} mt={2}>{item}</Text>
                               })}
                             </Td>
                           </Tr>
                           <Tr>
-                            <Td color={useColorModeValue('gray.700', 'gray.50')}><Text>{t('medicalRecord.standardTreatment')}:</Text></Td>
-                            <Td color={useColorModeValue('blue.900', 'gray.300')}>
+                            <Td color={colorModeValue1}><Text>{t('medicalRecord.standardTreatment')}:</Text></Td>
+                            <Td color={colorModeValue2}>
                               {medical_record.standard_treatment.split('\n').map((item, key) => {
                                 return <Text key={key} mt={2}>{item}</Text>
                               })}
                             </Td>
                           </Tr>
                           <Tr>
-                            <Td color={useColorModeValue('gray.700', 'gray.50')}><Text>{t('medicalRecord.stateUponEnter')}:</Text></Td>
-                            <Td color={useColorModeValue('blue.900', 'gray.300')}><Text>{medical_record.state_upon_enter}</Text></Td>
+                            <Td color={colorModeValue1}><Text>{t('medicalRecord.stateUponEnter')}:</Text></Td>
+                            <Td color={colorModeValue2}><Text>{medical_record.state_upon_enter}</Text></Td>
                           </Tr>
                           <Tr>
-                            <Td color={useColorModeValue('gray.700', 'gray.50')}><Text>{t('medicalRecord.patientEntryDate')}:</Text></Td>
-                            <Td color={useColorModeValue('blue.900', 'gray.300')}><Text>{medical_record.patient_entry_date}</Text></Td>
+                            <Td color={colorModeValue1}><Text>{t('medicalRecord.patientEntryDate')}:</Text></Td>
+                            <Td color={colorModeValue2}><Text>{medical_record.patient_entry_date}</Text></Td>
                           </Tr>
                           <Tr>
-                            <Td color={useColorModeValue('gray.700', 'gray.50')}><Text>{t('medicalRecord.bedNumber')}:</Text></Td>
-                            <Td color={useColorModeValue('blue.900', 'gray.300')}><Text>{medical_record.bed_number}</Text></Td>
+                            <Td color={colorModeValue1}><Text>{t('medicalRecord.bedNumber')}:</Text></Td>
+                            <Td color={colorModeValue2}><Text>{medical_record.bed_number}</Text></Td>
                           </Tr>
                           {medical_record.patient_leaving_date && (
                             <>
@@ -717,8 +727,8 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                                 <Td color='green.400' colSpan={2}><Text>{t('medicalRecord.leavingInformation')}:</Text></Td>
                               </Tr>
                               <Tr>
-                                <Td color={useColorModeValue('gray.700', 'gray.50')}><Text>{t('medicalRecord.stateUponExit')}:</Text></Td>
-                                <Td color={useColorModeValue('blue.900', 'gray.300')}>
+                                <Td color={colorModeValue1}><Text>{t('medicalRecord.stateUponExit')}:</Text></Td>
+                                <Td color={colorModeValue2}>
                                   <Text>
                                     {medical_record.state_upon_exit || "Still in hospital"}
                                   </Text>
@@ -726,8 +736,8 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
 
                               </Tr>
                               <Tr>
-                                <Td color={useColorModeValue('gray.700', 'gray.50')}><Text>{t('medicalRecord.patientLeavingDate')}:</Text></Td>
-                                <Td color={useColorModeValue('blue.900', 'gray.300')}>
+                                <Td color={colorModeValue1}><Text>{t('medicalRecord.patientLeavingDate')}:</Text></Td>
+                                <Td color={colorModeValue2}>
                                   <Text>
                                     {medical_record.patient_leaving_date
                                       ? medical_record.patient_leaving_date
@@ -743,8 +753,8 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                   </Box>
                   {user.id == medical_record.user_id && (
                     <Box
-                      color={useColorModeValue('blue.900', 'white')}
-                      bg={useColorModeValue('white', 'gray.700')}
+                      color={colorModeValue3}
+                      bg={colorModeValue5}
                       display='flex'
                       borderTop='1px'
                       borderColor='gray.300'
@@ -763,7 +773,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                 <Box
                   mt={3}
                   p="6"
-                  color={useColorModeValue('blue.900', 'white')}
+                  color={colorModeValue3}
                   borderWidth="2px"
                   borderColor='gray.300'
                   borderRadius={10}
@@ -789,7 +799,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                         </Box>
                         <Table variant='simple' colorScheme='blackAlpha' >
                           <Thead>
-                            <Tr bg={useColorModeValue('#fafafa', 'gray.800')}>
+                            <Tr bg={colorModeValue6}>
                               <Th><Text>{t('medicalRecord.declarationDate')}</Text></Th>
                               <Th><Text>{t('medicalRecord.diagnosis')}</Text></Th>
                               <Th><Text>{t('medicalRecord.detailedDiagnosis')}</Text></Th>
@@ -829,7 +839,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                 <Box >
                   <Table variant='simple' colorScheme='blackAlpha' >
                     <Thead>
-                      <Tr bg={useColorModeValue('#fafafa', 'gray.800')}>
+                      <Tr bg={colorModeValue6}>
                         <Th>
                           <Text>
                             {t('medicalRecord.examinationDate')}
@@ -870,7 +880,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                               <>
                                 <IconButton
                                   borderRadius='100%'
-                                  mr={2}
+                                  mx={2}
                                   size='sm'
                                   color='white'
                                   bg='green.400'
@@ -940,9 +950,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             width="70px"
                             height="35px"
                             bottom="0"
-                            right="0"
-                            top="0"
-                            left="-20px"
+                            right={i18n.dir() === 'rtl' ? "-20px" : 'unset'}
+                            top="-8px"
+                            left={i18n.dir() === 'rtl' ? 'unset' : "-20px"}
                             fontSize="2xl"
                             backgroundSize="cover"
                             backgroundRepeat="no-repeat"
@@ -970,11 +980,12 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             content: `""`,
                             w: '0',
                             h: '0',
-                            borderColor: `transparent ${useColorModeValue('#1a365d','#718096')} transparent transparent`,
+                            borderColor: i18n.dir() === 'rtl' ? `transparent transparent transparent ${useColorModeValue('#1a365d','#718096')}` : `transparent ${useColorModeValue('#1a365d','#718096')} transparent transparent`,
                             borderStyle: 'solid',
-                            borderWidth: '15px 15px 15px 0',
+                            borderWidth: i18n.dir() === 'rtl' ? '15px 15px 15px 15px' : '15px 15px 15px 0',
                             position: 'absolute',
-                            left: '-15px',
+                            left: i18n.dir() === 'rtl' ? 'unset' : '-15px',
+                            right: i18n.dir() === 'rtl' ? '-30px' : 'unset',
                             top: 'calc(50% - 15px)',
                             display: 'block',
                           }}>
@@ -1059,7 +1070,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                       </Button>
                     </Flex>
                   </Box>
-                  <Box p={0} bg={useColorModeValue('gray.50','gray.900')} boxShadow='lg' border='1px' borderColor='gray.300' borderRadius='lg' overflow='hidden'>
+                  <Box p={0} bg={colorModeValue7} boxShadow='lg' border='1px' borderColor='gray.300' borderRadius='lg' overflow='hidden'>
 
                     {loadingPrescription ? (
                       <Center p='10px'>
@@ -1074,7 +1085,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                       <Accordion border='4px' borderColor='gray.300' allowMultiple>
                         {Prescriptions && Prescriptions.map((pres, index) => (
                           <AccordionItem key={index} >
-                            <AccordionButton _hover={{ bg: useColorModeValue('gray.200','gray.700') }}>
+                            <AccordionButton _hover={{ bg: colorModeValue8 }}>
                               <Box flex="1" textAlign="left">
                                 <Text fontWeight='bold' fontSize='xl'>{pres.name} #{pres.id}</Text>
                               </Box>
@@ -1099,7 +1110,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                               </Box>
 
                               <Table variant="simple" colorScheme='blackAlpha' className={MonitoringSheetStyles.table} border='2px' borderColor='gray.300'>
-                                <Thead bg={useColorModeValue('#fafafa', 'gray.800')}>
+                                <Thead bg={colorModeValue6}>
                                   <Tr>
                                     <Th>
                                       {t('medicalRecord.medicine')}
@@ -1213,11 +1224,11 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         {/* examination modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenExamination} onClose={onCloseExamination}>
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent  style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "changa" : 'Light' }}>
             <ModalHeader>
               {t('medicalRecord.addExamination').toUpperCase()}
             </ModalHeader>
-            <ModalCloseButton />
+            <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
             <ModalBody pb={5} pt={0}>
               <ExaminationForm medical_record={medical_record} closeModal={onCloseExamination} closeAndRefresh={handleExaminationActions} editMode={ExaminationEditMode} examination={ExaminationEditInfo} />
             </ModalBody>
@@ -1227,11 +1238,11 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         {/* observation modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenObservation} onClose={onCloseObservation}>
           <ModalOverlay />
-          <ModalContent maxW='1000px'>
+          <ModalContent  style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW='1000px'>
             <ModalHeader>
               {t('medicalRecord.addObservation').toUpperCase()}
             </ModalHeader>
-            <ModalCloseButton />
+            <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
             <ModalBody pb={5} pt={0}>
               <ObservationForm medical_record={medical_record} closeModal={onCloseObservation} closeAndRefresh={handleObservationAdd} />
             </ModalBody>
@@ -1241,11 +1252,11 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         {/* observation images modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenObservationImages} onClose={onCloseObservationImages}>
           <ModalOverlay />
-          <ModalContent maxW='1000px'>
+          <ModalContent  style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW='1000px'>
             <ModalHeader>
               {t('medicalRecord.observationInformation')}
             </ModalHeader>
-            <ModalCloseButton />
+            <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
             <ModalBody pb={5} pt={0}>
               <OBservationImages Observation={Observation} closeAndRefresh={handleObservationAdd} patientId={medical_record.patient_id} />
             </ModalBody>
@@ -1255,11 +1266,11 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         {/* monitoring sheet modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenMonitoring} onClose={onCloseMonitoring}>
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent  style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "changa" : 'Light' }}>
             <ModalHeader>
               {t('medicalRecord.monitoringSheet')}
             </ModalHeader>
-            <ModalCloseButton />
+            <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
             <ModalBody pb={5} pt={0}>
               <MonitoringSheetForm medical_record={medical_record} closeModal={onCloseMonitoring} closeAndRefresh={handleMonitoringSheetAdd} EditInfo={MonitoringSheetEditInfo} />
             </ModalBody>
@@ -1269,11 +1280,11 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         {/* monitoring sheet row edit model */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenMonitoringSheetRow} onClose={onCloseMonitoringSheetRow}>
           <ModalOverlay />
-          <ModalContent maxW='600px'>
+          <ModalContent  style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW='600px'>
             <ModalHeader>
               {t('medicalRecord.monitoringSheetInfo.monitoringSheetRow')}
             </ModalHeader>
-            <ModalCloseButton />
+            <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
             <ModalBody pb={5} pt={0}>
               <MonitoringSheetRow  user={user} medical_record={medical_record} data={MonitoringSheetRowData} closeModal={onCloseMonitoringSheetRow} closeAndRefresh={handleMonitoringSheetAdd} loadingData={loadingMonitoringSheetRow} />
             </ModalBody>
@@ -1283,11 +1294,11 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         {/* prescription modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenPrescriptionForm} onClose={handlePrescriptionFormClose}>
           <ModalOverlay />
-          <ModalContent maxW='1000px'>
+          <ModalContent  style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW='1000px'>
             <ModalHeader>
               {t('medicalRecord.prescription')}
             </ModalHeader>
-            <ModalCloseButton />
+            <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
             <ModalBody pb={5} pt={0}>
               <PrescriptionForm medical_record={medical_record} closeModal={handlePrescriptionFormClose} closeAndRefresh={handlePrescriptionAdd} EditMode={PrescriptionEditMode} prescription={PrescriptionEditInfo} />
             </ModalBody>
@@ -1297,11 +1308,11 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         {/* mandatory declaration modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenMandatoryDeclaration} onClose={onCloseMandatoryDeclaration}>
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "changa" : 'Light' }}>
             <ModalHeader>
               {t('medicalRecord.mandatoryDeclaration')}
             </ModalHeader>
-            <ModalCloseButton />
+            <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
             <ModalBody pb={5} pt={0}>
               <MandatoryDeclarationForm medical_record={medical_record} closeModal={onCloseMandatoryDeclaration} closeAndRefresh={handleMandatoryDeclarationAdd} EditMode={MandatoryDeclarationEditMode} mandatory_declaration={MandatoryDeclaration} />
             </ModalBody>

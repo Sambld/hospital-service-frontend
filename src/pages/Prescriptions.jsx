@@ -90,6 +90,22 @@ const Prescriptions = () => {
 
     const { t, i18n } = useTranslation();
 
+    const colorModeValue = useColorModeValue('white', 'gray.700');
+    const colorModeValueGray = useColorModeValue('gray.500', 'gray.300');
+    const colorModeValueBlue = useColorModeValue('blue.600', 'blue.200');
+    const colorModeValueBlueHover = useColorModeValue('gray.100', 'gray.700');
+    const colorModeValueGrayBg = useColorModeValue('gray.50', 'gray.600');
+    const colorModeValueGrayText = useColorModeValue('gray.50', 'gray.50');
+    const tableBorderColor = useColorModeValue(null, 'gray.900');
+    const acceptButtonColorScheme = useColorModeValue('green', 'green');
+    const rejectButtonColorScheme = useColorModeValue('red', 'red');
+    const acceptedTagColorScheme = useColorModeValue('green', 'green');
+    const rejectedTagColorScheme = useColorModeValue('red', 'red');
+    const colorModeValue1 = useColorModeValue(null, '2px');
+
+
+
+
 
     const toast = useToast()
 
@@ -320,7 +336,7 @@ const Prescriptions = () => {
     }
 
     return (
-        <Box bg={useColorModeValue('white', 'gray.800')} m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
+        <Box style={{ direction: i18n.dir() }} bg={useColorModeValue('white', 'gray.800')} m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
             <Tabs index={tabIndex} variant='unstyled' colorScheme='green' onChange={handleTabsChange} isFitted>
                 <TabList bg={useColorModeValue('gray.300', 'gray.700')} color={useColorModeValue('gray.700', 'gray.300')} p='3px' borderRadius='md'>
                     <Tab
@@ -340,43 +356,40 @@ const Prescriptions = () => {
                     {
                         <>
                             <Grid templateColumns={{ base: '1f', lg: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)' }} gap={6}>
-                                {(tabIndex == 0 ? PendingPrescriptions : PastPrescriptions)
-                                    .map((item, index) => (
+                                {(tabIndex === 0 ? PendingPrescriptions : PastPrescriptions).map((item, index) => {
+                                    const prescriptionCount = item.prescriptions.length;
+                                    const doctorFullName = item.assigned_doctor.first_name + " " + item.assigned_doctor.last_name;
+                                    const patientFullName = item.patient.first_name + " " + item.patient.last_name;
+                                    const conditionDescription = item.condition_description;
+
+                                    return (
                                         <GridItem key={index}>
-                                            <Box bg={useColorModeValue('white', 'gray.700')}
-                                            borderRadius='md' boxShadow='md' overflow='hidden'>
+                                            <Box bg={colorModeValue} borderRadius='md' boxShadow='md' overflow='hidden'>
                                                 <Flex alignItems='center' bg='blue.500' p={3} color='white' borderTopRadius='md' gap={1}>
                                                     <Icon as={FaPrescriptionBottleAlt} fontSize='20px' mr='5px' />
                                                     <Text>
                                                         {t('prescription.prescription')}
                                                     </Text>
-                                                    <Tag colorScheme='gray' ml='auto'>{item.prescriptions.length}</Tag>
+                                                    <Tag colorScheme='gray' ml='auto'>{prescriptionCount}</Tag>
                                                 </Flex>
                                                 <Flex justifyContent='flex-start' flexDirection='column' gap={3} p={3}>
-                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>{t('medicalRecord.medicalRecord')} <Tag colorScheme='blue'>#{item.id}</Tag></Text>
-                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>{t('prescription.doctor')}: {item.assigned_doctor.first_name + " " + item.assigned_doctor.last_name}</Text>
-                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>{t('prescription.patient')}: {item.patient.first_name + " " + item.patient.last_name}</Text>
-                                                    <Text color={useColorModeValue('gray.500', 'gray.300')}>{t('prescription.description')}: {item.condition_description}</Text>
+                                                    <Text color={colorModeValueGray}>
+                                                        {t('medicalRecord.medicalRecord')} <Tag colorScheme='blue'>#{item.id}</Tag>
+                                                    </Text>
+                                                    <Text color={colorModeValueGray}>
+                                                        {t('prescription.doctor')}: {doctorFullName}
+                                                    </Text>
+                                                    <Text color={colorModeValueGray}>
+                                                        {t('prescription.patient')}: {patientFullName}
+                                                    </Text>
+                                                    <Text color={colorModeValueGray}>
+                                                        {t('prescription.description')}: {conditionDescription}
+                                                    </Text>
                                                 </Flex>
                                                 <Flex justifyContent='space-between' bg='gray.100' borderBottomRadius='md' pt='1px' gap='1px'>
-
-                                                    {/* <Button
-                                                    bg='white'
-                                                    leftIcon={<IoClose color="red.700" />}
-                                                    colorScheme='red'
-                                                    borderRadius={0}
-                                                    border={0}
-                                                    variant='outline'
-                                                    p='10px'
-                                                    px={5}
-                                                    w='50%'
-                                                    onClick={() => changeAllMedicineRequestStatus(item, 'Rejected')}
-                                                >
-                                                    <Text mr='5px' fontSize={15} fontWeight='normal'>Reject</Text>
-                                                </Button> */}
                                                     <Button
-                                                        bg={useColorModeValue('gray.50', 'gray.600')}
-                                                        color={useColorModeValue('blue.600', 'blue.200')}
+                                                        bg={colorModeValueGrayBg}
+                                                        color={colorModeValueBlue}
                                                         leftIcon={<AiFillFile color='blue.700' />}
                                                         colorScheme='blue'
                                                         borderRadius={0}
@@ -385,7 +398,7 @@ const Prescriptions = () => {
                                                         p='10px'
                                                         px={5}
                                                         w='100%'
-                                                        _hover={{ bg: useColorModeValue('gray.100', 'gray.700') }}
+                                                        _hover={{ bg: colorModeValueBlueHover }}
                                                         onClick={() => handlePrescriptionDetail(item)}
                                                     >
                                                         <Text mr='5px' fontSize={15} fontWeight='normal'>
@@ -395,7 +408,8 @@ const Prescriptions = () => {
                                                 </Flex>
                                             </Box>
                                         </GridItem>
-                                    ))}
+                                    );
+                                })}
                             </Grid>
                             {(tabIndex == 0 ? PendingLoading : PastLoading) && (
                                 <Box>
@@ -419,7 +433,7 @@ const Prescriptions = () => {
                             )}
                             {(tabIndex == 0 ? PendingPrescriptions : PastPrescriptions) && (tabIndex == 0 ? PendingPrescriptions : PastPrescriptions).length === 0 && !(tabIndex == 0 ? PendingLoading : PastLoading) &&
                                 <Flex justifyContent='center' alignItems='center' h='100px'>
-                                    <Icon as={FaExclamationCircle} fontSize='50px' color='gray.500'/>
+                                    <Icon as={FaExclamationCircle} fontSize='50px' color='gray.500' />
                                     <Text ml={2} fontSize='20px' fontWeight='bold' color='gray.500'>
                                         No {tabIndex == 0 ? 'Pending' : 'Past'} Prescriptions
                                     </Text>
@@ -439,9 +453,9 @@ const Prescriptions = () => {
             <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={handleClose}>
                 <ModalOverlay />
                 {PrescriptionDetail && (
-                    <ModalContent maxW='800px' p={3}>
+                    <ModalContent style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW='800px' p={3}>
                         <ModalHeader>{t('medicalRecord.medicalRecord')} #{PrescriptionDetail.id} {t('prescription.prescriptions')} </ModalHeader>
-                        <ModalCloseButton />
+                        <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
                         <ModalBody>
                             {/* doctor name */}
                             <Flex justifyContent='flex-start' alignItems='center' gap={3} mb={2}>
@@ -465,87 +479,89 @@ const Prescriptions = () => {
                             </Select>
                             <Divider mt={3} mb={3} />
                             {PrescriptionDetail.prescriptions[SelectedPrescription] && (
-                                <Box maxH='50vh' overflow='auto'>
+                                <Box maxH='50vh' overflow='auto' >
                                     <Text mb={2} fontSize='20px' fontWeight='bold'>
                                         {t('prescription.prescriptionDetail')}
                                     </Text>
-                                    <Table variant='simple' colorScheme='blackAlpha' border={useColorModeValue(null, '2px')} borderColor={useColorModeValue(null, 'gray.900')}>
+                                    <Table variant='simple' colorScheme='blackAlpha' border={colorModeValue1} borderColor={tableBorderColor}>
                                         <Thead>
                                             <Tr>
-                                                <Th w='300px'>
-                                                    {t('prescription.medicine')}
-                                                </Th>
-                                                <Th textAlign='center'>
-                                                    {t('medicine.quantity')}
-                                                </Th>
-                                                {tabIndex == 0 && (<Th textAlign='center'>
-                                                    {t('prescription.available')}
-                                                </Th>)}
+                                                <Th w='300px'>{t('prescription.medicine')}</Th>
+                                                <Th textAlign='center'>{t('medicine.quantity')}</Th>
+                                                {tabIndex === 0 && <Th textAlign='center'>{t('prescription.available')}</Th>}
                                                 <Th></Th>
                                             </Tr>
                                         </Thead>
                                         <Tbody>
-                                            {PrescriptionDetail.prescriptions[SelectedPrescription].medicine_requests.length > 0 && PrescriptionDetail.prescriptions[SelectedPrescription].medicine_requests
-                                                .map((item, index) => (
-                                                    <Tr key={index}>
-                                                        <Td>{item.medicine.name}</Td>
-                                                        <Td textAlign='center'>{item.quantity}</Td>
-                                                        {tabIndex == 0 && (<Td textAlign='center'>{item.medicine.quantity}</Td>)}
-                                                        <Td>
-                                                            {item.status.toLowerCase() === 'pending' ? (
-                                                                <>
-                                                                    <IconButton
-                                                                        mr={2}
-                                                                        aria-label='Accept'
-                                                                        icon={<CheckIcon />}
-                                                                        colorScheme='green'
-                                                                        isLoading={
-                                                                            singleButtonLoading.isLoading &&
-                                                                            singleButtonLoading.index == index &&
-                                                                            singleButtonLoading.status == 'Approved'
-                                                                        }
-                                                                        onClick={() => changeMedicineRequestStatus(PrescriptionDetail, item, 'Approved', {
-                                                                            index,
-                                                                            status: 'Approved',
-                                                                        })}
-                                                                    />
+                                            {PrescriptionDetail.prescriptions[SelectedPrescription].medicine_requests.length > 0 &&
+                                                PrescriptionDetail.prescriptions[SelectedPrescription].medicine_requests.map((item, index) => {
+                                                    const isPending = item.status.toLowerCase() === 'pending';
+                                                    const isApproved = item.status.toLowerCase() === 'approved';
+                                                    const isRejected = item.status.toLowerCase() === 'rejected';
 
-                                                                    <IconButton
-                                                                        aria-label='Decline'
-                                                                        icon={<CloseIcon />}
-                                                                        colorScheme='red'
-                                                                        isLoading={
-                                                                            singleButtonLoading.isLoading &&
-                                                                            singleButtonLoading.index == index &&
-                                                                            singleButtonLoading.status == 'Rejected'
-                                                                        }
-                                                                        onClick={(event) => {
-                                                                            setRejectSelecteItem(item);
-                                                                            onReviewOpen();
-                                                                        }}
-                                                                    />
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    {item.status.toLowerCase() == 'approved' && (
-                                                                        <Tag w='100%' h='40px' colorScheme='green'>
-                                                                            <Text w='100%' textAlign='center' fontSize='15px' fontWeight='bold'>
-                                                                                {t('prescription.accepted')}
-                                                                            </Text>
-                                                                        </Tag>
-                                                                    )}
-                                                                    {item.status.toLowerCase() == 'rejected' && (
-                                                                        <Tag w='100%' h='40px' colorScheme='red'>
-                                                                            <Text w='100%' textAlign='center' fontSize='15px' fontWeight='bold'>
-                                                                                {t('prescription.rejected')}
-                                                                            </Text>
-                                                                        </Tag>
-                                                                    )}
-                                                                </>
-                                                            )}
-                                                        </Td>
-                                                    </Tr>
-                                                ))}
+                                                    return (
+                                                        <Tr key={index}>
+                                                            <Td>{item.medicine.name}</Td>
+                                                            <Td textAlign='center'>{item.quantity}</Td>
+                                                            {tabIndex === 0 && <Td textAlign='center'>{item.medicine.quantity}</Td>}
+                                                            <Td>
+                                                                {isPending ? (
+                                                                    <>
+                                                                        <IconButton
+                                                                            mx={2}
+                                                                            aria-label='Accept'
+                                                                            icon={<CheckIcon />}
+                                                                            colorScheme={acceptButtonColorScheme}
+                                                                            isLoading={
+                                                                                singleButtonLoading.isLoading &&
+                                                                                singleButtonLoading.index === index &&
+                                                                                singleButtonLoading.status === 'Approved'
+                                                                            }
+                                                                            onClick={() =>
+                                                                                changeMedicineRequestStatus(PrescriptionDetail, item, 'Approved', {
+                                                                                    index,
+                                                                                    status: 'Approved',
+                                                                                })
+                                                                            }
+                                                                        />
+
+                                                                        <IconButton
+                                                                            aria-label='Decline'
+                                                                            icon={<CloseIcon />}
+                                                                            colorScheme={rejectButtonColorScheme}
+                                                                            isLoading={
+                                                                                singleButtonLoading.isLoading &&
+                                                                                singleButtonLoading.index === index &&
+                                                                                singleButtonLoading.status === 'Rejected'
+                                                                            }
+                                                                            onClick={(event) => {
+                                                                                setRejectSelecteItem(item);
+                                                                                onReviewOpen();
+                                                                            }}
+                                                                        />
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        {isApproved && (
+                                                                            <Tag w='100%' h='40px' colorScheme={acceptedTagColorScheme}>
+                                                                                <Text w='100%' textAlign='center' fontSize='15px' fontWeight='bold'>
+                                                                                    {t('prescription.accepted')}
+                                                                                </Text>
+                                                                            </Tag>
+                                                                        )}
+                                                                        {isRejected && (
+                                                                            <Tag w='100%' h='40px' colorScheme={rejectedTagColorScheme}>
+                                                                                <Text w='100%' textAlign='center' fontSize='15px' fontWeight='bold'>
+                                                                                    {t('prescription.rejected')}
+                                                                                </Text>
+                                                                            </Tag>
+                                                                        )}
+                                                                    </>
+                                                                )}
+                                                            </Td>
+                                                        </Tr>
+                                                    );
+                                                })}
                                         </Tbody>
                                     </Table>
                                 </Box>
@@ -597,11 +613,11 @@ const Prescriptions = () => {
             </Modal>
             <Modal blockScrollOnMount={false} isOpen={isReviewOpen} onClose={onReviewClose}>
                 <ModalOverlay />
-                <ModalContent maxW='800px'>
+                <ModalContent style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW='800px'>
                     <ModalHeader>
                         {t('prescription.reviewPrescription')}
                     </ModalHeader>
-                    <ModalCloseButton />
+                    <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
                     <ModalBody>
                         <Textarea placeholder={t('prescription.writeYourReviewHere')} value={review || ''} onChange={(event) => setReview(event.target.value)} />
                     </ModalBody>
