@@ -262,7 +262,7 @@ const Patient = () => {
                                 <Card bg='transparent' boxShadow='none' >
                                     <CardBody >
                                         <Grid maxW='100%' templateColumns={{ base: '1fr', xl: 'repeat(2, 1fr)' }} gap={4}>
-                                        <GridItem>
+                                            <GridItem>
                                                 <Stack spacing={4} divider={<StackDivider borderColor='gray.200' />}>
                                                     <Box>
                                                         <Stack spacing={4}>
@@ -280,54 +280,62 @@ const Patient = () => {
                                                                                 <Td color={tableTdColorLight}>{patient.first_name + " " + patient.last_name}</Td>
                                                                             </Tr>
                                                                             <Tr>
-                                                                                <Td color={textColorLight}>{t('patient.phoneNumber')}:</Td>
-                                                                                <Td color={tableTdColorLight}>{patient.phone_number}</Td>
-                                                                            </Tr>
-                                                                            <Tr>
-                                                                                <Td color={textColorLight}>{t('patient.birthDate')}:</Td>
-                                                                                <Td color={tableTdColorLight}>{patient.birth_date}</Td>
-                                                                            </Tr>
-                                                                            <Tr>
-                                                                                <Td color={textColorLight}>{t('patient.details.placeOfBirth')}:</Td>
-                                                                                <Td color={tableTdColorLight}>{patient.place_of_birth}</Td>
-                                                                            </Tr>
-                                                                            <Tr>
                                                                                 <Td color={textColorLight}>{t('patient.details.gender')}:</Td>
                                                                                 <Td color={tableTdColorLight}>{patient.gender}</Td>
                                                                             </Tr>
-                                                                            <Tr>
-                                                                                <Td color={textColorLight}>{t('patient.details.nationality')}:</Td>
-                                                                                <Td color={tableTdColorLight}>{patient.nationality}</Td>
-                                                                            </Tr>
-                                                                            <Tr>
-                                                                                <Td color={textColorLight}>{t('patient.details.address')}:</Td>
-                                                                                <Td color={tableTdColorLight}>{patient.address}</Td>
-                                                                            </Tr>
+
+                                                                            {user?.role == 'doctor' && (
+                                                                                <>
+                                                                                    <Tr>
+                                                                                        <Td color={textColorLight}>{t('patient.phoneNumber')}:</Td>
+                                                                                        <Td color={tableTdColorLight}>{patient.phone_number}</Td>
+                                                                                    </Tr>
+                                                                                    <Tr>
+                                                                                        <Td color={textColorLight}>{t('patient.birthDate')}:</Td>
+                                                                                        <Td color={tableTdColorLight}>{patient.birth_date}</Td>
+                                                                                    </Tr>
+                                                                                    <Tr>
+                                                                                        <Td color={textColorLight}>{t('patient.details.placeOfBirth')}:</Td>
+                                                                                        <Td color={tableTdColorLight}>{patient.place_of_birth}</Td>
+                                                                                    </Tr>
+
+                                                                                    <Tr>
+                                                                                        <Td color={textColorLight}>{t('patient.details.nationality')}:</Td>
+                                                                                        <Td color={tableTdColorLight}>{patient.nationality}</Td>
+                                                                                    </Tr>
+                                                                                    <Tr>
+                                                                                        <Td color={textColorLight}>{t('patient.details.address')}:</Td>
+                                                                                        <Td color={tableTdColorLight}>{patient.address}</Td>
+                                                                                    </Tr>
+                                                                                </>
+                                                                            )}
                                                                         </Tbody>
                                                                     </Table>
                                                                 </Box>
                                                             </Box>
-                                                            <Box bg={colorModeValue1} border='2px' borderRadius='lg' borderColor='red.300' p='20px' px='20px' boxShadow='sm'>
-                                                                <Text fontSize={25} color={redTextColorLight}>
-                                                                    {t('patient.details.emergencyInformation')}:
-                                                                </Text>
-                                                                <Box mt={4}>
-                                                                    <Table className={styles.tableRed} variant="unstyled">
-                                                                        <Tbody fontSize={18}>
-                                                                            <Tr>
-                                                                                <Td color={redTextColorLight}>
-                                                                                    <Text>{t('patient.details.emergencyContactName')}:</Text>
-                                                                                </Td>
-                                                                                <Td color={tableTdColorLight}>{patient.emergency_contact_name}</Td>
-                                                                            </Tr>
-                                                                            <Tr>
-                                                                                <Td color={redTextColorLight}>{t('patient.details.emergencyContactPhone')}:</Td>
-                                                                                <Td color={tableTdColorLight}>{patient.emergency_contact_number}</Td>
-                                                                            </Tr>
-                                                                        </Tbody>
-                                                                    </Table>
+                                                            {user?.role == 'doctor' && (
+                                                                <Box bg={colorModeValue1} border='2px' borderRadius='lg' borderColor='red.300' p='20px' px='20px' boxShadow='sm'>
+                                                                    <Text fontSize={25} color={redTextColorLight}>
+                                                                        {t('patient.details.emergencyInformation')}:
+                                                                    </Text>
+                                                                    <Box mt={4}>
+                                                                        <Table className={styles.tableRed} variant="unstyled">
+                                                                            <Tbody fontSize={18}>
+                                                                                <Tr>
+                                                                                    <Td color={redTextColorLight}>
+                                                                                        <Text>{t('patient.details.emergencyContactName')}:</Text>
+                                                                                    </Td>
+                                                                                    <Td color={tableTdColorLight}>{patient.emergency_contact_name}</Td>
+                                                                                </Tr>
+                                                                                <Tr>
+                                                                                    <Td color={redTextColorLight}>{t('patient.details.emergencyContactPhone')}:</Td>
+                                                                                    <Td color={tableTdColorLight}>{patient.emergency_contact_number}</Td>
+                                                                                </Tr>
+                                                                            </Tbody>
+                                                                        </Table>
+                                                                    </Box>
                                                                 </Box>
-                                                            </Box>
+                                                            )}
                                                         </Stack>
                                                     </Box>
                                                 </Stack>

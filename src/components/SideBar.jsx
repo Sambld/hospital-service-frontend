@@ -25,7 +25,7 @@ const SideBarItems = (user) => {
       items.push({ name: 'sideBar.medicalRecords' , icon: <RiFolderOpenLine size={23} />, link: '/medical-records' });
       items.push({ name: 'sideBar.statistics', icon: <AiOutlineBarChart size={23} />, link: '/statistics' })
     } else if (user.role === 'nurse') {
-      items.push({ name: 'sideBar.patients', icon: <MdOutlineSick size={23} />, link: '/patients' });
+      items.push({ name: 'sideBar.medicalRecords' , icon: <RiFolderOpenLine size={23} />, link: '/medical-records' });
       items.push({ name: 'sideBar.statistics', icon: <AiOutlineBarChart size={23} />, link: '/statistics' })
     } else if (user.role === 'pharmacist') {
       items.push({ name: 'sideBar.prescriptions', icon: <BsFileEarmarkMedical size={23} />, link: '/prescriptions' })

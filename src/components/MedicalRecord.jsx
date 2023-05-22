@@ -139,13 +139,13 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const colorModeValue4 = useColorModeValue('gray.50', 'gray.700')
   const colorModeValue5 = useColorModeValue('white', 'gray.700')
   const colorModeValue6 = useColorModeValue('#fafafa', 'gray.800')
-  const colorModeValue7 = useColorModeValue('gray.50','gray.900')
-  const colorModeValue8 = useColorModeValue('gray.200','gray.700')
+  const colorModeValue7 = useColorModeValue('gray.50', 'gray.900')
+  const colorModeValue8 = useColorModeValue('gray.200', 'gray.700')
   const colorModeValue9 = useColorModeValue('gray.300', 'gray.700')
-  const colorModeValue10 = useColorModeValue('blue.900','gray.500')
+  const colorModeValue10 = useColorModeValue('blue.900', 'gray.500')
   const colorModeValue11 = useColorModeValue('white', 'gray.900')
-  const colorModeValue12 = useColorModeValue('blue.700','gray.300')
-  const colorModeValue13 = useColorModeValue('#1a365d','#718096')
+  const colorModeValue12 = useColorModeValue('blue.700', 'gray.300')
+  const colorModeValue13 = useColorModeValue('#1a365d', '#718096')
 
 
   const breakpointss = {
@@ -165,8 +165,9 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     setMonitoringSheetEditInfo(null)
     setPrescriptions([])
 
-
-    handleMandatoryDeclaration()
+    if (user.id == medical_record.user_id) {
+      handleMandatoryDeclaration()
+    }
 
     // handleExamination(medical_record.id)
     // handleObservation(medical_record.id)
@@ -178,7 +179,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       let anchor = window.location.hash
       switch (anchor) {
         case '#examination':
-          if (user.role !== 'doctor') {
+          if (user.id !== medical_record.user_id) {
             NotAuthorized()
           } else {
             setTabIndex(1)
@@ -187,7 +188,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
 
           break;
         case '#observation':
-          if (user.role !== 'doctor') {
+          if (user.id !== medical_record.user_id) {
             NotAuthorized()
           } else {
             setTabIndex(2)
@@ -200,7 +201,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
           handleMonitoringSheet()
           break;
         case '#prescription':
-          if (user.role !== 'doctor') {
+          if (user.id !== medical_record.user_id) {
             NotAuthorized()
           } else {
             setTabIndex(4)
@@ -626,7 +627,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
           {/* Medical Record Examination, Observation, Monitoring Sheet */}
           <Tabs isFitted variant='unstyled' color={colorModeValue3} mb={5} index={tabIndex} onChange={handleTabsChange}>
             <TabList mb='1em' bg={colorModeValue9} borderRadius={10} overflow='auto'>
-              
+
               <Tab borderLeftRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}>
                 <Icon h='30px' fontSize='30px' as={BsInfoCircle} display={{ base: 'block', lg: 'none' }} />
                 <Text display={{ base: 'none', lg: 'block' }} ml={2}>
@@ -698,6 +699,10 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                     <Box mt={4}>
                       <Table className={styles.table} variant="unstyled">
                         <Tbody fontSize={18}>
+                          <Tr>
+                            <Td color={colorModeValue1}><Text>{t('medicalRecord.stateUponEnter')}:</Text></Td>
+                            <Td color={colorModeValue2}><Text>{medical_record.state_upon_enter}</Text></Td>
+                          </Tr>
                           <Tr >
                             <Td color={colorModeValue1}><Text>{t('medicalRecord.conditionDescription')}:</Text></Td>
                             <Td color={colorModeValue2}>
@@ -706,18 +711,16 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                               })}
                             </Td>
                           </Tr>
-                          <Tr>
-                            <Td color={colorModeValue1}><Text>{t('medicalRecord.standardTreatment')}:</Text></Td>
-                            <Td color={colorModeValue2}>
-                              {medical_record.standard_treatment.split('\n').map((item, key) => {
-                                return <Text key={key} mt={2}>{item}</Text>
-                              })}
-                            </Td>
-                          </Tr>
-                          <Tr>
-                            <Td color={colorModeValue1}><Text>{t('medicalRecord.stateUponEnter')}:</Text></Td>
-                            <Td color={colorModeValue2}><Text>{medical_record.state_upon_enter}</Text></Td>
-                          </Tr>
+                          {user.id == medical_record.user_id && (
+                            <Tr>
+                              <Td color={colorModeValue1}><Text>{t('medicalRecord.standardTreatment')}:</Text></Td>
+                              <Td color={colorModeValue2}>
+                                {medical_record.standard_treatment.split('\n').map((item, key) => {
+                                  return <Text key={key} mt={2}>{item}</Text>
+                                })}
+                              </Td>
+                            </Tr>
+                          )}
                           <Tr>
                             <Td color={colorModeValue1}><Text>{t('medicalRecord.patientEntryDate')}:</Text></Td>
                             <Td color={colorModeValue2}><Text>{medical_record.patient_entry_date}</Text></Td>
@@ -775,67 +778,68 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                   )}
                 </Box>
 
-                <Box
-                  mt={3}
-                  p="6"
-                  color={colorModeValue3}
-                  borderWidth="2px"
-                  borderColor='gray.300'
-                  borderRadius={10}
-                  display='flex'
-                  flexDirection='column'
-                  alignItems='center'
-                >
-                  {!loadingMandatoryDeclaration ?
-                    MandatoryDeclaration ? (
-                      <>
-                        <Box w='100%' display='flex' justifyContent='space-between' alignItems='center' mb={3}>
-                          <Text fontWeight="bold" textAlign='left' fontSize={20}>
-                            {t('medicalRecord.mandatoryDeclaration')}
+                {user.id == medical_record.user_id && (
+                  <Box
+                    mt={3}
+                    p="6"
+                    color={colorModeValue3}
+                    borderWidth="2px"
+                    borderColor='gray.300'
+                    borderRadius={10}
+                    display='flex'
+                    flexDirection='column'
+                    alignItems='center'
+                  >
+                    {!loadingMandatoryDeclaration ?
+                      MandatoryDeclaration ? (
+                        <>
+                          <Box w='100%' display='flex' justifyContent='space-between' alignItems='center' mb={3}>
+                            <Text fontWeight="bold" textAlign='left' fontSize={20}>
+                              {t('medicalRecord.mandatoryDeclaration')}
+                            </Text>
+                            {user.id == medical_record.user_id && (
+                              <Button colorScheme="blue" mt={3} onClick={() => {
+                                setMandatoryDeclarationEditMode(true)
+                                onOpenMandatoryDeclaration()
+                              }}>
+                                {t('global.edit')}
+                              </Button>
+                            )}
+                          </Box>
+                          <Table variant='simple' colorScheme='blackAlpha' >
+                            <Thead>
+                              <Tr bg={colorModeValue6}>
+                                <Th><Text>{t('medicalRecord.declarationDate')}</Text></Th>
+                                <Th><Text>{t('medicalRecord.diagnosis')}</Text></Th>
+                                <Th><Text>{t('medicalRecord.detailedDiagnosis')}</Text></Th>
+                              </Tr>
+                            </Thead>
+                            <Tbody>
+                              <Tr>
+                                <Td><Text>{formatDate(MandatoryDeclaration.created_at)}</Text></Td>
+                                <Td><Text>{MandatoryDeclaration.diagnosis}</Text></Td>
+                                <Td><Text>{MandatoryDeclaration.detail}</Text></Td>
+                              </Tr>
+                            </Tbody>
+                          </Table>
+
+                        </>
+                      ) : (
+                        <>
+                          <Text fontWeight="bold" textAlign='center'>
+                            {t('medicalRecord.noMandatoryDeclaration')}
                           </Text>
-                          {user.id == medical_record.user_id && (
-                            <Button colorScheme="blue" mt={3} onClick={() => {
-                              setMandatoryDeclarationEditMode(true)
-                              onOpenMandatoryDeclaration()
-                            }}>
-                              {t('global.edit')}
-                            </Button>
-                          )}
-                        </Box>
-                        <Table variant='simple' colorScheme='blackAlpha' >
-                          <Thead>
-                            <Tr bg={colorModeValue6}>
-                              <Th><Text>{t('medicalRecord.declarationDate')}</Text></Th>
-                              <Th><Text>{t('medicalRecord.diagnosis')}</Text></Th>
-                              <Th><Text>{t('medicalRecord.detailedDiagnosis')}</Text></Th>
-                            </Tr>
-                          </Thead>
-                          <Tbody>
-                            <Tr>
-                              <Td><Text>{formatDate(MandatoryDeclaration.created_at)}</Text></Td>
-                              <Td><Text>{MandatoryDeclaration.diagnosis}</Text></Td>
-                              <Td><Text>{MandatoryDeclaration.detail}</Text></Td>
-                            </Tr>
-                          </Tbody>
-                        </Table>
+                          <Button colorScheme="blue" mt={3} onClick={onOpenMandatoryDeclaration}>
+                            {t('medicalRecord.createNow')}
+                          </Button>
+                        </>
+                      )
 
-                      </>
-                    ) : (
-                      <>
-                        <Text fontWeight="bold" textAlign='center'>
-                          {t('medicalRecord.noMandatoryDeclaration')}
-                        </Text>
-                        <Button colorScheme="blue" mt={3} onClick={onOpenMandatoryDeclaration}>
-                          {t('medicalRecord.createNow')}
-                        </Button>
-                      </>
-                    )
-
-                    : (
-                      <Spinner />
-                    )}
-                </Box>
-
+                      : (
+                        <Spinner />
+                      )}
+                  </Box>
+                )}
 
               </TabPanel>
 
@@ -1148,7 +1152,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                                         {med.status === 'Pending' && (
                                           <Badge colorScheme="yellow">
                                             {t('medicalRecord.pending')}
-                                            </Badge>
+                                          </Badge>
                                         )}
                                         {med.status === 'Approved' && (
                                           <Badge colorScheme="green">
@@ -1229,7 +1233,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         {/* examination modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenExamination} onClose={onCloseExamination}>
           <ModalOverlay />
-          <ModalContent  style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "changa" : 'Light' }}>
+          <ModalContent style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }}>
             <ModalHeader>
               {t('medicalRecord.addExamination').toUpperCase()}
             </ModalHeader>
@@ -1243,7 +1247,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         {/* observation modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenObservation} onClose={onCloseObservation}>
           <ModalOverlay />
-          <ModalContent  style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW='1000px'>
+          <ModalContent style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW='1000px'>
             <ModalHeader>
               {t('medicalRecord.addObservation').toUpperCase()}
             </ModalHeader>
@@ -1257,7 +1261,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         {/* observation images modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenObservationImages} onClose={onCloseObservationImages}>
           <ModalOverlay />
-          <ModalContent  style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW='1000px'>
+          <ModalContent style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW='1000px'>
             <ModalHeader>
               {t('medicalRecord.observationInformation')}
             </ModalHeader>
@@ -1271,7 +1275,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         {/* monitoring sheet modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenMonitoring} onClose={onCloseMonitoring}>
           <ModalOverlay />
-          <ModalContent  style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "changa" : 'Light' }}>
+          <ModalContent style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }}>
             <ModalHeader>
               {t('medicalRecord.monitoringSheet')}
             </ModalHeader>
@@ -1285,13 +1289,13 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         {/* monitoring sheet row edit model */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenMonitoringSheetRow} onClose={onCloseMonitoringSheetRow}>
           <ModalOverlay />
-          <ModalContent  style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW='600px'>
+          <ModalContent style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW='600px'>
             <ModalHeader>
               {t('medicalRecord.monitoringSheetInfo.monitoringSheetRow')}
             </ModalHeader>
             <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
             <ModalBody pb={5} pt={0}>
-              <MonitoringSheetRow  user={user} medical_record={medical_record} data={MonitoringSheetRowData} closeModal={onCloseMonitoringSheetRow} closeAndRefresh={handleMonitoringSheetAdd} loadingData={loadingMonitoringSheetRow} />
+              <MonitoringSheetRow user={user} medical_record={medical_record} data={MonitoringSheetRowData} closeModal={onCloseMonitoringSheetRow} closeAndRefresh={handleMonitoringSheetAdd} loadingData={loadingMonitoringSheetRow} />
             </ModalBody>
           </ModalContent>
         </Modal>
@@ -1299,7 +1303,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         {/* prescription modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenPrescriptionForm} onClose={handlePrescriptionFormClose}>
           <ModalOverlay />
-          <ModalContent  style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW='1000px'>
+          <ModalContent style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }} maxW='1000px'>
             <ModalHeader>
               {t('medicalRecord.prescription')}
             </ModalHeader>
@@ -1313,7 +1317,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
         {/* mandatory declaration modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenMandatoryDeclaration} onClose={onCloseMandatoryDeclaration}>
           <ModalOverlay />
-          <ModalContent style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "changa" : 'Light' }}>
+          <ModalContent style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }}>
             <ModalHeader>
               {t('medicalRecord.mandatoryDeclaration')}
             </ModalHeader>

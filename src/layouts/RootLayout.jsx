@@ -27,7 +27,7 @@ const RootLayout = () => {
     const { user, setUser, deleteUser } = useUser();
     const [loadingPage, setLoadingPage] = useState(true);
 
-    const { t,i18n } = useTranslation();
+    const { t, i18n } = useTranslation();
     // const [allData, setAllData] = useState([]);
 
     const navigate = useNavigate();
@@ -50,16 +50,6 @@ const RootLayout = () => {
     }
     const pathPermissions = () => {
         if (location.pathname.includes('medical-records')) {
-            if (!user || user?.role != 'doctor') {
-                goHomePage();
-                toast({
-                    title: "You don't have permission to access this page",
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                })
-            }
-        } else if (location.pathname.includes('patients')) {
             if (!user || user?.role != 'doctor' && user?.role != 'nurse') {
                 goHomePage();
                 toast({
@@ -69,6 +59,29 @@ const RootLayout = () => {
                     isClosable: true,
                 })
             }
+        } else if (location.pathname.includes('patients')) {
+            if (location.pathname == '/patients') {
+                if (!user || user?.role != 'doctor') {
+                    goHomePage();
+                    toast({
+                        title: "You don't have permission to access this page",
+                        status: "error",
+                        duration: 5000,
+                        isClosable: true,
+                    })
+                }
+            } else {
+                if (!user || user?.role != 'doctor' && user?.role != 'nurse') {
+                    goHomePage();
+                    toast({
+                        title: "You don't have permission to access this page",
+                        status: "error",
+                        duration: 5000,
+                        isClosable: true,
+                    })
+                }
+            }
+
         } else if (location.pathname.includes('staff')) {
             if (!user || user?.role != 'administrator') {
                 goHomePage();
