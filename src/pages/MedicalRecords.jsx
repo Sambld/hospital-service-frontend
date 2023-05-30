@@ -73,8 +73,8 @@ const MedicalRecords = () => {
             status: status && status !== 'all' ? status === 'active' ? `isActive=${status}` : `isInactive=${status}` : null,
             page: page && `page=${page}`,
             pagination: 'withPagination=true',
-            id: id && id == 'mineOnly' ? `mineOnly=true` : null, // 'mine' or 'all
-            Userid: user.role === 'doctor' ? `doctorId=${user.id}` : user.role === 'nurse' ? `nurseId=${user.id}` : null
+            // id: id && id == 'mineOnly' ? `mineOnly=true` : null, // 'mine' or 'all
+            Userid: id ? user.role === 'doctor' ? `doctorId=${user.id}` : user.role === 'nurse' ? `nurseId=${user.id}` : null : null
         };
 
         const PARAMS = Object.values(SEARCH_PARAMS).filter(Boolean).join('&');
@@ -276,7 +276,9 @@ const MedicalRecords = () => {
                                 </GridItem>
                             ))}
                         </Grid>
-                        {data?.data?.length === 0 && <Text textAlign='center' fontWeight='bold' fontSize='xl'>No Data</Text>}
+                        {data?.data?.length === 0 && <Text textAlign='center' fontWeight='bold' fontSize='xl' color={colorModeValue3} p='10px'>
+                            {t('global.noData')}
+                            </Text>}
                         {/* {loading && <Center p='10px'>
                             <Spinner thickness='5px'
                                 speed='0.65s'

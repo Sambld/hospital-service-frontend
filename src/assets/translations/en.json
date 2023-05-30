@@ -27,7 +27,8 @@
         "details": "Details",
         "submit": "Submit",
         "open": "Open",
-        "reloading": "Reloading"
+        "reloading": "Reloading",
+        "fill": "Fill"
     },
     "navbar": {
         "webSiteName": "Infectious Diseases",

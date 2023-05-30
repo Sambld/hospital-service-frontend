@@ -204,8 +204,8 @@ const Prescriptions = () => {
             // setPrescriptions(null);
             // getPendingPrescriptions();
             toast({
-                title: t('prescription:prescriptionInfo.completed'),
-                description: t('prescription:prescriptionInfo.hasCompleted'),
+                title: t('prescription.prescriptionInfo.completed'),
+                description: t('prescription.prescriptionInfo.hasCompleted'),
                 status: "success",
                 duration: 5000,
                 isClosable: true,
@@ -364,11 +364,11 @@ const Prescriptions = () => {
 
                                     return (
                                         <GridItem key={index}>
-                                            <Box bg={colorModeValue} borderRadius='md' boxShadow='md' overflow='hidden'>
+                                            <Box h='100%' bg={colorModeValue} borderRadius='md' boxShadow='md' overflow='hidden' display='flex' flexDirection='column' justifyContent='space-between'>
                                                 <Flex alignItems='center' bg='blue.500' p={3} color='white' borderTopRadius='md' gap={1}>
                                                     <Icon as={FaPrescriptionBottleAlt} fontSize='20px' mr='5px' />
                                                     <Text>
-                                                        {t('prescription.prescription')}
+                                                        {t('prescription.prescriptions')}
                                                     </Text>
                                                     <Tag colorScheme='gray' ml='auto'>{prescriptionCount}</Tag>
                                                 </Flex>
@@ -383,7 +383,11 @@ const Prescriptions = () => {
                                                         {t('prescription.patient')}: {patientFullName}
                                                     </Text>
                                                     <Text color={colorModeValueGray}>
-                                                        {t('prescription.description')}: {conditionDescription}
+                                                        {t('prescription.description')}: {
+                                                            conditionDescription.length > 50 ?
+                                                                conditionDescription.substring(0, 50) + '...' :
+                                                                conditionDescription
+                                                        }
                                                     </Text>
                                                 </Flex>
                                                 <Flex justifyContent='space-between' bg='gray.100' borderBottomRadius='md' pt='1px' gap='1px'>

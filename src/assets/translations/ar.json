@@ -27,7 +27,8 @@
         "details": "تفاصيل",
         "submit": "إرسال",
         "open": "فتح",
-        "reloading": "إعادة التحميل"
+        "reloading": "إعادة التحميل",
+        "fill": "ملء"
     },
     "navbar": {
         "webSiteName": "الأمراض المعدية",

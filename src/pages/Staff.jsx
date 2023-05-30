@@ -51,6 +51,10 @@ import {
     IconButton,
     Skeleton,
     useColorModeValue,
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbSeparator,
 } from "@chakra-ui/react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
@@ -119,7 +123,7 @@ const Staff = () => {
     const colorModeValue7 = useColorModeValue('gray.500', 'gray.300')
     const colorModeValue8 = useColorModeValue('white', 'gray.700')
     const colorModeValue9 = useColorModeValue('red.600', 'red.400')
-    const colorModeValue10 = useColorModeValue('gray.200','gray.700')
+    const colorModeValue10 = useColorModeValue('gray.200', 'gray.700')
 
 
 
@@ -264,8 +268,15 @@ const Staff = () => {
 
     return (
         <Box>
+
             <HStack>
-                <Text fontSize='3xl' color='#2e3149' ml='20px'>Staff</Text>
+                <Box mb={5} mt={1}>
+                    <Breadcrumb fontSize={{ base: "md", lg: '3xl' }}>
+                        <BreadcrumbItem>
+                            <Text color={useColorModeValue('gray.500', 'gray.200')} fontSize={{ base: "md", lg: '3xl' }} ml='20px'>Staff</Text>
+                        </BreadcrumbItem>
+                    </Breadcrumb>
+                </Box>
                 <Spacer />
                 <Button
                     colorScheme='blue'
@@ -276,6 +287,7 @@ const Staff = () => {
                     {t('staff.addStaff')}
                 </Button>
             </HStack>
+
             <Box bg={colorModeValue} w='100%' m='10px' p='10px' border='2px' borderColor='gray.200' borderRadius='2xl'>
                 <Text fontSize='sm' color='gray.500' p='10px' align='right'>Showing {data && data.data.length} of {data && data.total} staff</Text>
                 <Box p='10px' mb='10px' w='100%' display='flex' justifyContent='space-between' gap={2}>
@@ -306,7 +318,7 @@ const Staff = () => {
                                             bg={UserRoleItem(item)[2]}
                                             icon={UserRoleItem(item)[0]}
                                         />
-                                        <Text color={colorModeValue6}fontWeight='normal' fontSize={{ base: 'sm', lg: 'lg' }}>{item.first_name + " " + item.last_name}</Text>
+                                        <Text color={colorModeValue6} fontWeight='normal' fontSize={{ base: 'sm', lg: 'lg' }}>{item.first_name + " " + item.last_name}</Text>
                                         <Text fontSize='sm' color={colorModeValue7}>{t('staff.role')}: {item.role} </Text>
                                         <Text fontSize='sm' color={colorModeValue7}>{t('staff.createdAt')}: {new Date(item.created_at).toLocaleDateString()} </Text>
 
@@ -394,7 +406,7 @@ const Staff = () => {
             </Box>
             <Modal closeOnOverlayClick={false} isOpen={isStaffOpen} onClose={handleStaffFormClose}>
                 <ModalOverlay />
-                <ModalContent style={{ direction: i18n.dir(), "fontFamily":  i18n.dir() == 'rtl' ? "jf-flat" : 'Light' }}>
+                <ModalContent style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "jf-flat" : 'Light' }}>
                     <ModalHeader>
                         {t('staff.addStaff').toUpperCase()}
                     </ModalHeader>

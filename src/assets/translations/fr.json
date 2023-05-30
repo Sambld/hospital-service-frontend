@@ -27,7 +27,8 @@
         "details": "Détails",
         "submit": "Soumettre",
         "open": "Ouvrir",
-        "reloading": "Rechargement"
+        "reloading": "Rechargement",
+        "fill": "Remplir"
     },
     "navbar": {
         "webSiteName": "Maladies Infectieuses",

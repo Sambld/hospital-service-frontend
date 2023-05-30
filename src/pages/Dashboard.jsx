@@ -86,7 +86,7 @@ const Dashboard = () => {
             if (user.role === 'doctor') {
                 setData((prev) => ({
                     ...prev,
-                    column: [t('dashboard.medicalRecord'), t('dashboard.filledby'), t('dashboard.action')],
+                    column: [t('dashboard.medicalRecord'), t('dashboard.filledBy'), t('dashboard.action')],
                     data: []
                 }))
                 getLatestUpdate()
@@ -224,7 +224,7 @@ const Dashboard = () => {
                 setData((prevFormData) => ({
                     ...prevFormData,
                     headerTitle: t('dashboard.activeMedicalRecords'),
-                    column: [t('dashboard.medicalRecord'), t('dashboard.filledby'), t('dashboard.action')],
+                    column: [t('dashboard.medicalRecord'), t('dashboard.filledBy'), t('dashboard.action')],
                     data: data,
                 }))
             })
@@ -457,7 +457,7 @@ const Dashboard = () => {
                             <Box
                                 p={5}
                                 shadow="md"
-                                borderWidth="1px"
+                                borderWidth={useColorModeValue("1px", "0px")}
                                 bg='black'
                                 color='white'
                                 borderRadius='xl'
@@ -475,7 +475,7 @@ const Dashboard = () => {
                             <Box
                                 p={5}
                                 shadow="md"
-                                borderWidth="1px"
+                                borderWidth={useColorModeValue("1px", "0px")}
                                 bg='red.500'
                                 color='white'
                                 borderRadius='xl'
@@ -493,7 +493,7 @@ const Dashboard = () => {
                             <Box
                                 p={5}
                                 shadow="md"
-                                borderWidth="1px"
+                                borderWidth={useColorModeValue("1px", "0px")}
                                 bg='blue.500'
                                 color='white'
                                 borderRadius='xl'
@@ -511,7 +511,7 @@ const Dashboard = () => {
                             <Box
                                 p={5}
                                 shadow="md"
-                                borderWidth="1px"
+                                borderWidth={useColorModeValue("1px", "0px")}
                                 bg='green.500'
                                 color='white'
                                 borderRadius='xl'
@@ -544,7 +544,7 @@ const Dashboard = () => {
                         <Box
                             p={5}
                             boxShadow='md'
-                            borderWidth="1px"
+                            borderWidth={useColorModeValue("1px", "0px")}
                             bgGradient={`linear(to-l, ${useColorModeValue("#56ff69", "#8c1010")}, ${useColorModeValue("#04951a", "#550707")})`}
                             color='white'
                             borderRadius='xl'
@@ -564,7 +564,7 @@ const Dashboard = () => {
                                 <Box
                                     p={5}
                                     boxShadow='md'
-                                    borderWidth="1px"
+                                    borderWidth={useColorModeValue("1px", "0px")}
                                     bgGradient={`linear(to-l, ${useColorModeValue("#1775d2", "#0a3c6f")}, ${useColorModeValue("#374083", "#080d33")})`}
                                     color='white'
                                     borderRadius='xl'

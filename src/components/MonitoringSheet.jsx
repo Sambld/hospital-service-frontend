@@ -16,7 +16,8 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
     const { t, i18n } = useTranslation();
     const colorModeValue = useColorModeValue('white', 'gray.800')
     const colorModeValue2 = useColorModeValue('black', 'white')
-    const colorModeValue3 = useColorModeValue('gray.600', 'gray.100')
+    const colorModeValue3 = useColorModeValue('gray.600', 'gray.100');
+    const colorModeValue4 = useColorModeValue('gray.500', 'blue.700')
 
     useEffect(() => {
         getToday();
@@ -178,6 +179,13 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                         >
                                             {item.filling_date}
                                             {item.filling_date == formatDate(new Date()) && ' (today)'}
+
+                                            <Text fontSize='xs' color='green.600' fontWeight='bold'>
+                                                {user.role === 'nurse' && item.filled_by.id == user.id && `[${t('global.edit')}]`}
+                                                {user.role === 'nurse' && !item.filled_by.id && `[${t('global.fill')}]`}
+                                                {user.role === 'doctor' && user.id == medical_record.user_id && `[${t('global.edit')}]`}
+                                            </Text>
+
                                         </Th>
                                     ))}
                                 </Tr>
@@ -193,7 +201,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                         >
                                             {item.urine || <Badge colorScheme='blue'>
                                                 {t('global.empty')}
-                                                </Badge>}
+                                            </Badge>}
                                         </Td>
                                     ))}
                                 </Tr>
@@ -208,7 +216,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                         >
                                             {item.blood_pressure || <Badge colorScheme='blue'>
                                                 {t('global.empty')}
-                                                </Badge>}
+                                            </Badge>}
                                         </Td>
                                     ))}
                                 </Tr>
@@ -235,7 +243,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                         >
                                             {item.temperature || <Badge colorScheme='blue'>
                                                 {t('global.empty')}
-                                                </Badge>}
+                                            </Badge>}
                                         </Td>
                                     ))}
                                 </Tr>
@@ -249,7 +257,23 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                         >
                                             {item.weight || <Badge colorScheme='blue'>
                                                 {t('global.empty')}
-                                                </Badge>}
+                                            </Badge>}
+                                        </Td>
+                                    ))}
+                                </Tr>
+                                <Tr>
+                                    <Td border='2px'>
+                                        <Text>
+                                            {t('dashboard.filledBy').toUpperCase()}
+                                        </Text>
+                                    </Td>
+                                    {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
+                                        <Td
+                                            key={index}
+                                        >
+                                            {item?.filled_by ? <Badge p={2} borderRadius='md' colorScheme="blue">{item?.filled_by?.first_name + " " + item?.filled_by?.last_name}</Badge> : <Badge colorScheme='blue'>
+                                                {t('global.empty')}
+                                            </Badge>}
                                         </Td>
                                     ))}
                                 </Tr>
@@ -313,7 +337,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                     </Center>
                 ) : (
                     <Box>
-                        <Text textAlign='center'> 
+                        <Text textAlign='center'>
                             {t('medicalRecord.noMonitoringSheet')}
                         </Text>
                         <Center mt={3}>

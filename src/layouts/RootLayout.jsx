@@ -28,6 +28,9 @@ const RootLayout = () => {
     const [loadingPage, setLoadingPage] = useState(true);
 
     const { t, i18n } = useTranslation();
+    const colorModeValue1 = useColorModeValue('#f8f8fb', '#333542')
+    const colorModeValue2 = useColorModeValue('white', 'gray.900')
+    const colorModeValue3 = useColorModeValue('gray.200', 'gray.900')
     // const [allData, setAllData] = useState([]);
 
     const navigate = useNavigate();
@@ -148,7 +151,7 @@ const RootLayout = () => {
 
     useEffect(() => {
         try {
-            if (location.pathname) {
+            if (location.pathname && user) {
                 pathPermissions();
             }
         } catch (err) {
@@ -183,7 +186,7 @@ const RootLayout = () => {
     }
 
     return (
-        <Box bg={useColorModeValue('#f8f8fb', '#333542')} style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }}>
+        <Box bg={colorModeValue1} style={{ direction: i18n.dir(), "fontFamily": i18n.dir() == 'rtl' ? "changa" : 'Light' }}>
             {loadingPage &&
                 <Box w='100%' h='100vh' display='flex' justifyContent='center' alignItems='center' position='absolute' zIndex='1000'>
                     <Box position='absolute' top='0' left='0' w='100%' h='100%' bg='white' opacity='0.9'>
@@ -203,10 +206,10 @@ const RootLayout = () => {
                 gap='1'
                 color='blackAlpha.700'
             >
-                <GridItem bg={useColorModeValue('white', 'gray.900')} p='0' borderBottom='2px' borderColor={useColorModeValue('gray.200', 'gray.900')} area={'nav'}>
+                <GridItem bg={colorModeValue2} p='0' borderBottom='2px' borderColor={colorModeValue3} area={'nav'}>
                     <NavBar logout={logout} user={user} />
                 </GridItem>
-                {user && <GridItem h='calc(100vh - 71px)' mt='-3px' bg={useColorModeValue('white', 'gray.900')} area={'side'} >
+                {user && <GridItem h='calc(100vh - 71px)' mt='-3px' bg={colorModeValue2} area={'side'} >
                     <SideBar user={user} />
                 </GridItem>}
                 <GridItem pl='2' maxH='calc(100vh - 75px)' p={5} overflow='auto' area={'main'} style={{ overflowY: 'auto', 'scrollbarGutter': 'stable' }}>

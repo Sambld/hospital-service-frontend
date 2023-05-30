@@ -1167,12 +1167,10 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                                       </Td>
                                       <Td>
                                         {med.review && (
-                                          <Badge colorScheme="green">
-                                            {t('medicalRecord.reviewed')}
-                                          </Badge>
+                                          <Text>{med.review}</Text>
                                         )}
                                         {!med.review && (
-                                          <Badge colorScheme="red">
+                                          <Badge colorScheme="yellow">
                                             {t('medicalRecord.notReviewed')}
                                           </Badge>
                                         )}
