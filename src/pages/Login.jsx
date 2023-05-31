@@ -64,9 +64,10 @@ const Login = ({ setUser }) => {
     }).then(res => {
       setUser(res, rememberMe);
     }).catch(err => {
+      console.log('hello')
       toast({
         title: "Error Logging In",
-        description: err.response.data.message,
+        description: err?.response?.data?.message || "",
         status: "error",
         duration: 9000,
         isClosable: true,
