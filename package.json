@@ -3,7 +3,7 @@
     "private": true,
     "version": "0.0.0",
     "type": "module",
-    "homepage": "https://Sambld.github.io/hospital-service-frontend",
+    "homepage": "https://sambld.github.io/hospital-service-frontend",
     "scripts": {
         "predeploy": "npm run build",
         "deploy": "gh-pages -d build",
