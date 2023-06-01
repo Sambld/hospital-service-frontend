@@ -14,7 +14,7 @@ const SummaryItem = ({ label, children }) => (
     </HStack>
 );
 
-const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
+const OBservationImages = ({ Observation, closeAndRefresh, patientId, user, medical_record }) => {
     // image slider
     const [current, setCurrent] = useState(0);
     const length = Observation.images.length;
@@ -57,9 +57,9 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
 
     const deleteObservation = () => {
         setDeleteLoading(true);
-        axios.delete('/patients/' + patientId + '/medical-records/' + Observation.medical_record_id + "/observations/" + Observation.id ).then((res) => {
+        axios.delete('/patients/' + patientId + '/medical-records/' + Observation.medical_record_id + "/observations/" + Observation.id).then((res) => {
             setDeleteLoading(false);
-            
+
             if (res.data == undefined) {
                 return;
             }
@@ -93,28 +93,6 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
                 <SummaryItem label="Observation title">{Observation.name}</SummaryItem>
                 <SummaryItem label="Created date">{new Date(Observation.created_at).toISOString().slice(0, 10)}</SummaryItem>
             </Box>
-            <Grid templateColumns="repeat(6, 1fr)" gap={0} mb={3}>
-                {Observation && Observation.images.map((image, index) => (
-                    <GridItem
-                        key={index}
-                        p={0}
-                        onClick={() => setCurrent(index)}
-                    >
-                        <Box
-                            border='2px'
-                            borderRadius={5}
-                            bgImage={'http://134.122.75.238:8000/storage/images/' + image.path}
-                            bgSize="cover"
-                            bgPos="center"
-                            bgRepeat="no-repeat"
-                            h="100px"
-                            cursor='pointer'
-                            borderColor={current === index ? 'blue.500' : 'gray.200'}
-                        >
-                        </Box>
-                    </GridItem>
-                ))}
-            </Grid>
             <Box mb={2}>
                 <Flex justifyContent='flex-end' gap={2}>
                     {/* Download image */}
@@ -150,21 +128,48 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
                         <Text ml={2}>Print All</Text>
                     </Button> */}
                     {/* Delete Observation */}
-                    <Button
-                        bg='red.500'
-                        color='white'
-                        borderRadius={5}
-                        onClick={onOpen}
-                    >
-                        <RiDeleteBinLine fontSize={20} />
-                        <Text ml={2}>
-                            {t('global.delete')}
-                        </Text>
-                    </Button>
+                    {user.id == medical_record.user_id &&
+                        <Button
+                            bg='red.500'
+                            color='white'
+                            borderRadius={5}
+                            onClick={onOpen}
+                        >
+                            <RiDeleteBinLine fontSize={20} />
+                            <Text ml={2}>
+                                {t('global.delete')}
+                            </Text>
+                        </Button>
+                    }
 
                 </Flex>
             </Box>
-            <Grid templateColumns="repeat(2, 1fr)" gap={6} mb={3}>
+            <Box display='flex' justifyContent='flex-start' overflowX='auto'>
+                {Observation && Observation.images.map((image, index) => (
+                    <Box
+                        key={index}
+                        p={0}
+                        onClick={() => setCurrent(index)}
+                        cursor='pointer'
+                        minW='20%'
+                    >
+                        <Box
+                            border='2px'
+                            borderRadius={0}
+                            bgImage={'http://134.122.75.238:8000/storage/images/' + image.path}
+                            bgSize="cover"
+                            bgPos="center"
+                            bgRepeat="no-repeat"
+                            h="100px"
+                            cursor='pointer'
+                            borderColor={current === index ? 'blue.500' : 'gray.200'}
+                        >
+                        </Box>
+                    </Box>
+                ))}
+            </Box>
+            
+            <Grid templateColumns="repeat(2, 1fr)" gap={6} mb={3} display='none'>
                 <Button
                     bg='gray.500'
                     color='white'
@@ -188,13 +193,54 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
                     <BsCaretRightFill fontSize={40} />
                 </Button>
             </Grid>
-            <Box>
+            <Box position='relative' mb={3}>
                 <Image
                     src={'http://134.122.75.238:8000/storage/images/' + Observation.images[current].path}
                     alt='image'
                     w='100%'
+                    minH='300px'
                     h='100%'
                 />
+                <Button
+                    bg='gray.900'
+                    color='white'
+                    borderRadius={0}
+                    cursor='pointer'
+                    onClick={prevSlide}
+                    colorScheme='blackAlpha'
+                    alignItems='center'
+                    justifyContent='center'
+                    position='absolute'
+                    top='0'
+                    left={0}
+                    height='100%'
+                    opacity='0.1'
+                    _hover={{
+                        opacity: '0.5',
+                    }}
+                >
+                    <BsCaretLeftFill fontSize={20} />
+                </Button>
+                <Button
+                    bg='gray.900'
+                    color='white'
+                    cursor='pointer'
+                    borderRadius={0}
+                    onClick={nextSlide}
+                    colorScheme='blackAlpha'
+                    alignItems='center'
+                    justifyContent='center'
+                    position='absolute'
+                    top='0'
+                    right={0}
+                    height='100%'
+                    opacity='0.1'
+                    _hover={{
+                        opacity: '0.5',
+                    }}
+                >
+                    <BsCaretRightFill fontSize={20} />
+                </Button>
             </Box>
             <AlertDialog
                 isOpen={isOpen}

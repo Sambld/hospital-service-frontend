@@ -1010,7 +1010,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             </Text>
                           </Box>
 
-                          <Flex p='5px' gap='5px' maxW='780px' bg={colorModeValue10} flexWrap='wrap' borderBottomRadius={10} overflow='hidden'>
+                          <Flex p='20px' gap='20px' maxW='870px'  bg={colorModeValue10} flexWrap='wrap' borderBottomRadius={10} overflow='hidden'>
                             {obs.images && obs.images.map((img, index) => (
                               <Box
                                 key={index}
@@ -1265,7 +1265,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
             </ModalHeader>
             <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
             <ModalBody pb={5} pt={0}>
-              <OBservationImages Observation={Observation} closeAndRefresh={handleObservationAdd} patientId={medical_record.patient_id} />
+              <OBservationImages Observation={Observation} closeAndRefresh={handleObservationAdd} patientId={medical_record.patient_id} user={user} medical_record={medical_record} />
             </ModalBody>
           </ModalContent>
         </Modal>
