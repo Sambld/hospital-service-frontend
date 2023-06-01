@@ -54,7 +54,7 @@ const PatientsTable = ({ initValue, patients, count, search }) => {
                                     pointerEvents='none'
                                     children={<SearchIcon color='gray.300' />}
                                 />
-                                <Input defaultValue={initValue} variant='flushed' type='text' placeholder='Search by Name' onChange={({ target }) => { search(target.value) }} />
+                                <Input defaultValue={initValue} variant='flushed' type='text' placeholder={t('patient.placeholder')} onChange={({ target }) => { search(target.value) }} />
                             </InputGroup>
                         </Th>
                         <Th display={{ base: 'none', lg: 'table-cell' }}>

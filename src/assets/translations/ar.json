@@ -28,7 +28,11 @@
         "submit": "إرسال",
         "open": "فتح",
         "reloading": "إعادة التحميل",
-        "fill": "ملء"
+        "fill": "ملء",
+        "day": "يوم",
+        "week": "أسبوع",
+        "month": "شهر",
+        "year": "سنة"
     },
     "navbar": {
         "webSiteName": "الأمراض المعدية",
@@ -82,13 +86,14 @@
         "nurseNumber": "عدد الممرضات",
         "pharmacistNumber": "عدد الصيادلة",
         "patientNumber": "عدد المرضى",
-        "todayMedicalRecords": "سجلات طبية لهذا اليوم",
-        "todayAvailable": "متاح اليوم",
+        "todayMedicalRecords": "سجلات طبية نشطة اليوم",
+        "todayAvailable": "ورقة مراقبة متاحة اليوم",
         "latestUpdate": "أحدث تحديث",
         "latestFilling": "آخر ملء",
         "medicineRequests": "طلبات الأدوية",
         "requests": "الطلبات",
-        "medicineCount": "عدد الأدوية"
+        "medicineCount": "عدد الأدوية",
+        "updatedAt": "تم التحديث في"
     },
 
     "patient": {
@@ -124,7 +129,8 @@
         "lastName": "اسم العائلة",
         "patientID": "هوية المريض",
         "navigate": "تصفح",
-        "navigationToPatient": "الانتقال إلى المريض"
+        "navigationToPatient": "الانتقال إلى المريض",
+        "placeholder": "الاسم، رقم الهاتف"
     },
 
     "medicalRecord": {
@@ -146,7 +152,7 @@
         "entry_Day": "يوم الدخول",
         "discharge_Day": "يوم الخروج",
         "state": "الحالة",
-        "inHospital": "في المستشفى",
+        "inHospital": "نشط",
         "discharged": "مغلق",
         "owned": "الخاص بي",
         "stillInHospital": "ما زال في المستشفى",
@@ -221,7 +227,7 @@
         },
         "areYouSure": "هل أنت متأكد؟",
         "noPrescriptionFound": "لم يتم العثور على الوصفة",
-        "addMoreRows": "إضافة صفوف إضافية",
+        "addMoreRows": "إضافة أيام",
         "fillForToday": "ملء لليوم",
         "today": "اليوم",
         "urine": "البول (مل)",
@@ -235,7 +241,10 @@
         "viewFullSize": "عرض بالحجم الكامل",
         "deleteObservation": "حذف الملاحظة",
         "basicInformation": "المعلومات الأساسية",
-        "medicalEspeciality": "التخصص الطبي"
+        "medicalEspeciality": "التخصص الطبي",
+        "injection": "حقنة",
+        "tablet": "قرص",
+        "syrup": "شراب"
     },
     "medicine": {
         "name": "اسم",
@@ -308,6 +317,25 @@
             "updated": "تم تحديث الموظف",
             "deleted": "تم حذف الموظف"
         }
+    },
+    "chatAi": {
+        "title": "مساعد البحث الذكي",
+        "placeholder": "اكتب رسالتك",
+        "noResponse": "لا يوجد رد"
+    },
+    "statistics": {
+        "statistics": "الإحصائيات",
+        "totalCount": "العدد الإجمالي",
+        "pt": "المرضى",
+        "gender": "الجنس",
+        "mr": "سجل طبي",
+        "inpatient": "مريض داخل المستشفى",
+        "outpatient": "مريض خارج المستشفى",
+        "diagnosis": "التشخيص",
+        "ms": "ورقة المراقبة",
+        "filled": "مملوءة",
+        "md": "الدواء",
+        "quantity": "الكمية"
     },
 
     "about": {

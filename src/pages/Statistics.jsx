@@ -47,6 +47,9 @@ import { useEffect } from "react";
 import { useOutletContext, NavLink } from "react-router-dom";
 import AsyncSelect from 'react-select/async';
 
+// Translation
+import { useTranslation } from "react-i18next";
+
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Title, Tooltip, Legend);
 
 const StatisticsItems = (user) => {
@@ -87,6 +90,28 @@ const Statistics = () => {
     const [CurrentSubStatisticsType, setCurrentSubStatisticsType] = useState(statisticsType[0][1][0]);
 
     const toast = useToast();
+
+    const { t, i18n } = useTranslation();
+    
+    const colorModeValue1 = useColorModeValue('gray.500', 'gray.200');
+    const colorModeValue2 = useColorModeValue('gray.500', 'gray.50');
+    const colorModeValue3 = useColorModeValue('white', 'gray.900');
+    const colorModeValue4 = useColorModeValue('white', 'gray.800');
+    const colorModeValue5 = useColorModeValue("#757575", 'white');
+    const colorModeValue6 = useColorModeValue('gray.200', 'gray.700');
+    const colorModeValue7 = useColorModeValue("white", "gray.50");
+    const colorModeValue8 = useColorModeValue("white", "gray.900");
+    const colorModeValue9 = useColorModeValue("blue", "gray");
+    const colorModeValue10 = useColorModeValue("blue.500", "blue.900");
+    const colorModeValue11 = useColorModeValue("gray.500", "gray.900");
+    const colorModeValue12 = useColorModeValue("blue.900", "gray.200");
+    const colorModeValue13 = useColorModeValue("white", "gray.500");
+    const colorModeValue14 = useColorModeValue("blue.900", "gray.50");
+    const colorModeValue15 = useColorModeValue("gray.500", "gray.50")
+
+
+
+
 
 
 
@@ -333,7 +358,9 @@ const Statistics = () => {
             <Box mb={5} mt={1}>
                 <Breadcrumb fontSize={{ base: "md", lg: '3xl' }}>
                     <BreadcrumbItem>
-                        <Text color={useColorModeValue('gray.500', 'gray.200')} fontSize={{ base: "md", lg: '3xl' }} ml='20px'>Statistics</Text>
+                        <Text color={colorModeValue1} fontSize={{ base: "md", lg: '3xl' }} ml='20px'>
+                            {t('statistics.statistics')}
+                        </Text>
                     </BreadcrumbItem>
                 </Breadcrumb>
             </Box>
@@ -341,7 +368,7 @@ const Statistics = () => {
             <Grid templateColumns={{ base: '1fr', xl: "repeat(3, 1fr)" }} gap={5}>
                 <GridItem w='100%' colSpan={2} >
                     <Flex overflow='hidden' pl={5} justifyContent='space-between'>
-                        <Flex bg="white" borderTopRadius="10px" p={3} mb={0} boxShadow="md" gap={2}>
+                        <Flex color={colorModeValue2} bg={colorModeValue3} borderTopRadius="10px" p={3} mb={0} boxShadow="md" gap={2}>
                             <Select
                                 w='200px'
                                 variant='filled'
@@ -354,11 +381,11 @@ const Statistics = () => {
                                 }
                             >
                                 {statisticsType.map((item, index) => (
-                                    <option key={index} value={item[0][1]}>{item[0][0]}</option>
+                                    <option key={index} value={item[0][1]}>{t("statistics." + item[0][1].toLowerCase())}</option>
                                 ))}
                             </Select>
                             <Select
-                                w='200px'
+                                w='250px'
                                 variant='filled'
                                 value={CurrentSubStatisticsType}
                                 onChange={(e) => setCurrentSubStatisticsType(e.target.value)}
@@ -366,7 +393,7 @@ const Statistics = () => {
                                 {statisticsType.map((item, index) => {
                                     if (item[0][1] === CurrentStatisticsType) {
                                         return item[1].map((subItem, subIndex) => (
-                                            <option key={subIndex} value={subItem}>{subItem}</option>
+                                            <option key={subIndex} value={subItem}>{t("statistics." + subItem.toLowerCase())}</option>
                                         ))
                                     }
                                 })}
@@ -375,7 +402,7 @@ const Statistics = () => {
                         <Box>
                             <Button
                                 mr={2}
-                                bg="white"
+                                bg={colorModeValue4}
                                 borderRadius="10px"
                                 p={3}
                                 mb={0}
@@ -383,11 +410,11 @@ const Statistics = () => {
                                 onClick={refresh}
                                 isLoading={loading}
                             >
-                                <Icon as={BiRefresh} />
+                                <Icon as={BiRefresh} color={colorModeValue1} />
                             </Button>
                             <Button
                                 mr={2}
-                                bg="white"
+                                bg={colorModeValue4}
                                 borderRadius="10px"
                                 p={3}
                                 mb={0}
@@ -395,11 +422,11 @@ const Statistics = () => {
                                 isDisabled={!IsChart}
                                 onClick={() => setIsChart(false)}
                             >
-                                <Icon as={BsTable} />
+                                <Icon as={BsTable} color={colorModeValue1} />
                             </Button>
                             <Button
                                 mr={2}
-                                bg="white"
+                                bg={colorModeValue4}
                                 borderRadius="10px"
                                 p={3}
                                 mb={0}
@@ -407,7 +434,7 @@ const Statistics = () => {
                                 isDisabled={IsChart}
                                 onClick={() => setIsChart(true)}
                             >
-                                <Icon as={FiBarChart2} />
+                                <Icon as={FiBarChart2} color={colorModeValue1} />
                             </Button>
 
 
@@ -426,7 +453,7 @@ const Statistics = () => {
                             />
                         </Box>
                     )}
-                    <Box maxH='450px' w='100%' bg="white" borderBottomRadius="10px" borderTopRadius={CurrentStatisticsType === 'md' ? 0 : '10px'} p={5} boxShadow="md" zIndex={5} overflow='auto'>
+                    <Box maxH='450px' w='100%' bg={colorModeValue3} borderBottomRadius="10px" borderTopLeftRadius={CurrentStatisticsType === 'md' ? 0 : '10px'} p={5} boxShadow="md" zIndex={5} overflow='auto'>
                         {data ? IsChart ? (
                             <Bar
                                 data={{
@@ -445,27 +472,39 @@ const Statistics = () => {
                                             beginAtZero: true,
                                             suggestedMax: 10,
                                             stepSize: 1,
-                                            unit: 1
+                                            unit: 1,
+                                            ticks: {
+                                                color: colorModeValue5
+                                            }
                                         },
+                                        x: {
+                                            ticks: {
+                                                color: colorModeValue5
+                                            }
+                                        }
                                     },
 
                                     plugins: {
                                         legend: {
                                             position: 'top',
+                                            labels: {
+                                                color: colorModeValue5
+                                            },
                                         },
                                         title: {
                                             display: false,
                                         },
+
                                     },
                                 }}
                             />
                         ) : (
-                            <Box borderRadius="10px" p={0} mb={0} boxShadow="md" zIndex={4} overflow='auto'>
+                            <Box borderRadius="10px" p={0} mb={0} boxShadow="md" zIndex={4} overflow='auto' color={colorModeValue1} border='1px' borderColor={colorModeValue6}>
                                 <Table variant="simple" size="md">
                                     <Thead>
                                         <Tr>
                                             <Th color='white' bg='gray.500' >
-                                                Day
+                                                {t('global.day')}
                                             </Th>
                                             {data?.lineChart?.datasets.map((item, index) => (
                                                 <Th key={index} bg={item.backgroundColor} color='white' >
@@ -506,7 +545,7 @@ const Statistics = () => {
                         ) : (
                             <Box>
                                 <Text textAlign='center' fontSize={20} color='gray.500'>
-                                    No Data
+                                    {t('global.noData')}
                                 </Text>
                             </Box>
                         )}
@@ -559,30 +598,42 @@ const Statistics = () => {
                 </GridItem>
                 <GridItem colSpan={1}>
                     <Flex w="100%" p={0} flexDirection="column">
-                        <Box p={2} color="white" bg="white" boxShadow="md" borderRadius="10px" overflow="hidden" mb={5}>
+                        <Box p={2} color={colorModeValue7} bg={colorModeValue8} boxShadow="md" borderRadius="10px" overflow="hidden" mb={5}>
                             <Flex justifyContent='center' borderRadius="10px" overflow="hidden">
                                 {/* <Button isDisabled={TimeType == 'day'} w='100%' bg='gray.500' variant="solid" size="md" borderRadius={0}>Day</Button> */}
                                 {TimeType.map((item, index) => (
-                                    <Button key={index} onClick={() => setCurrentTimeType(item)} colorScheme="blue" w='100%' bg={item == CurrentTimeType ? 'gray.400' : 'gray.500'} variant="solid" size="md" borderRadius={0}>{item}</Button>
+                                    <Button
+                                        key={index}
+                                        onClick={() => setCurrentTimeType(item)}
+                                        colorScheme={colorModeValue9}
+                                        w='100%'
+                                        color={colorModeValue7}
+                                        bg={item == CurrentTimeType ? colorModeValue10 : colorModeValue11}
+                                        variant="solid"
+                                        size="md"
+                                        borderRadius={0}
+                                    >
+                                        {t('global.' + item)}
+                                    </Button>
                                 ))}
                             </Flex>
                             {showFilter &&
                                 <Flex mt={2} p={2} gap={2}>
-                                    <Box w='100%' display='flex' flexDirection='column' gap={2} color='blue.700'>
+                                    <Box w='100%' display='flex' flexDirection='column' gap={2} color={colorModeValue12}>
                                         <Box w='100%' display='flex' flexDirection='column' alignItems='center' gap={2}>
                                             <Box w='100%' display='flex' justifyContent='space-between' alignItems='center' gap={2}>
-                                                <Text w='70px'>From</Text>
+                                                <Text w='70px'>{t('medicalRecord.from')}:</Text>
                                                 <Input
                                                     type='date'
-                                                    bg='white'
+                                                    bg={colorModeValue13}
                                                 />
                                             </Box>
                                             <Divider orientation='vertical' />
                                             <Box w='100%' display='flex' justifyContent='space-between' alignItems='center' gap={2}>
-                                                <Text w='70px'>To:</Text>
+                                                <Text w='70px'>{t('medicalRecord.to')}:</Text>
                                                 <Input
                                                     type='date'
-                                                    bg='white'
+                                                    bg={colorModeValue13}
                                                 />
                                             </Box>
                                         </Box>
@@ -615,11 +666,11 @@ const Statistics = () => {
                         </Box>
 
                         {data && data?.pieChart && data?.pieChart?.labels.length > 1 ? (
-                            <Flex bg="white" borderRadius="10px" p={5} boxShadow="md" justifyContent='center' alignItems='center' flexDirection='column'>
-                                <Text fontSize={20} fontWeight="bold" color="gray.500">
-                                    Total Count
+                            <Flex bg={colorModeValue8} color={colorModeValue14} borderRadius="10px" p={5} boxShadow="md" justifyContent='center' alignItems='center' flexDirection='column'>
+                                <Text fontSize={20} fontWeight="bold" color={colorModeValue15}>
+                                    {t('statistics.totalCount')}
                                 </Text>
-                                {loading ? <Spinner color='gray.500' m='18px' /> : <Text color="gray.500" fontSize={40} fontWeight="bold">{data?.lineChart?.totalCount}</Text>}
+                                {loading ? <Spinner color={colorModeValue15} m='18px' /> : <Text color={colorModeValue15} fontSize={40} fontWeight="bold">{data?.lineChart?.totalCount}</Text>}
 
                                 <Divider mb={2} />
                                 <Doughnut
@@ -667,7 +718,7 @@ const Statistics = () => {
                                 textAlign='center'
                             >
                                 <Text fontSize={20} fontWeight="bold">
-                                    Total Count
+                                    {t('statistics.totalCount')}
                                 </Text>
                                 {loading ? <Spinner m='15px' /> : <Text fontSize={40} fontWeight="bold">{data?.lineChart?.totalCount}</Text>}
                                 {/* <Heading size="md" textShadow='2px 2px 8px #000' textAlign='center'>

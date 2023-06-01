@@ -28,15 +28,19 @@
         "submit": "Submit",
         "open": "Open",
         "reloading": "Reloading",
-        "fill": "Fill"
+        "fill": "Fill",
+        "day": "Day",
+        "week": "Week",
+        "month": "Month",
+        "year": "Year"
     },
     "navbar": {
         "webSiteName": "Infectious Diseases",
         "profile": "Profile",
         "settings": "Settings",
         "signOut": "Sign Out",
-        "Language": "Language",
-        "Theme": "Theme",
+        "language": "Language",
+        "theme": "Theme",
         "light": "Light",
         "dark": "Dark",
         "languageList": {
@@ -82,14 +86,15 @@
         "doctorNumber": "Doctor Number",
         "nurseNumber": "Nurse Number",
         "pharmacistNumber": "Pharmacist Number",
-        "patientNumber": "Patient Number",
-        "todayMedicalRecords": "Today Medical Records",
-        "todayAvailable": "Today Available",
+        "patientNumber": "Patient Count",
+        "todayMedicalRecords": "Active Medical Records",
+        "todayAvailable": "Available Monitoring Sheet",
         "latestUpdate": "Latest Update",
-        "latestFilling": "Latest Filling",
+        "latestFilling": "Previously Filled",
         "medicineRequests": "Medicine Requests",
         "requests": "Requests",
-        "medicineCount": "Medicine Count"
+        "medicineCount": "Medicine Count",
+        "updatedAt": "Updated At"
     },
 
     "patient": {
@@ -125,7 +130,8 @@
         "lastName": "Last Name",
         "patientID": "Patient ID",
         "navigate": "Navigate",
-        "navigationToPatient": "Navigation to Patient"
+        "navigationToPatient": "Navigation to Patient",
+        "placeholder": "Name,Phone Number"
     },
     "medicalRecord": {
         "title": "Medical Records",
@@ -146,8 +152,8 @@
         "entry_Day": "Entry Day",
         "discharge_Day": "Discharge Day",
         "state": "State",
-        "inHospital": "In Hospital",
-        "discharged": "Discharged",
+        "inHospital": "Active",
+        "discharged": "Closed",
         "owned": "Owned",
         "stillInHospital": "Still In Hospital",
         "information": "Information",
@@ -221,7 +227,7 @@
         },
         "areYouSure": "Are you sure?",
         "noPrescriptionFound": "No Prescription Found",
-        "addMoreRows": "Add More Rows",
+        "addMoreRows": "Add Days",
         "fillForToday": "Fill For Today",
         "today": "Today",
         "urine": "urine (ml)",
@@ -235,7 +241,10 @@
         "viewFullSize": "View Full Size",
         "deleteObservation": "Delete Observation",
         "basicInformation": "Basic Information",
-        "medicalEspeciality": "Medical Especiality"
+        "medicalEspeciality": "Medical Especiality",
+        "injection": "Injection",
+        "tablet": "Tablet",
+        "syrup": "Syrup"
     },
 
     "medicine": {
@@ -309,6 +318,25 @@
             "updated": "Staff Updated",
             "deleted": "Staff Deleted"
         }
+    },
+    "chatAi": {
+        "title": "Ai Search Assistant",
+        "placeholder": "Type your message",
+        "noResponse": "No Response"
+    },
+    "statistics": {
+        "statistics": "Statistics",
+        "totalCount": "Total Count",
+        "pt": "Patient",
+        "gender": "Gender",
+        "mr": "Medical Record",
+        "inpatient": "Patient Entring",
+        "outpatient": "Patient Leaving",
+        "diagnosis": "State Upon Enter",
+        "ms": "Monitoring Sheet",
+        "filled": "Filled",
+        "md": "Medicine",
+        "quantity": "Quantity"
     },
 
     "about": {

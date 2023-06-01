@@ -91,6 +91,7 @@ const NavBar = ({ logout, user }) => {
                         color={useColorModeValue('blue.50', 'gray.900')}
                         borderRadius='8px'
                     >
+                        {process.env.SERVER_URL}
                         {i18n.language.toUpperCase()}
                     </Badge>
                 </Text>

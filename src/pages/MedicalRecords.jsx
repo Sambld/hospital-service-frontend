@@ -130,7 +130,7 @@ const MedicalRecords = () => {
                 <Text fontSize='sm' color='gray.500' p='10px' align='right'>Showing {data && data.data.length} of {data && data.total} Medical Records</Text>
 
                 <Box p='10px' mb='10px' w='100%' display='flex' justifyContent='space-between' gap={2}>
-                    <InputGroup color={colorModeValue3}  borderColor={colorModeValue4}>
+                    <InputGroup color={colorModeValue3} borderColor={colorModeValue4}>
                         <InputLeftElement
                             pointerEvents='none'
                             children={<SearchIcon color='gray.300' />}
@@ -235,26 +235,38 @@ const MedicalRecords = () => {
                         <Grid templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' }} gap={6}>
                             {data?.data?.map((item, index) => (
                                 <GridItem key={index}>
-                                    <Box bg={colorModeValue6} borderRadius={'md'} border='2px' borderColor={colorModeValue8} overflow='hidden'>
+                                    <Box
+                                        bg={colorModeValue6}
+                                        borderRadius={'md'}
+                                        border='2px'
+                                        borderColor={colorModeValue8}
+                                        overflow='hidden'
+                                        position='relative'
+                                    >
                                         {/* <Box bg={item.patient_leaving_date ? 'green.500' : 'red.500'} p={2}>
                                             <Text fontWeight='bold' fontSize='md' textAlign='center' color='white'>
                                                 {item.patient_leaving_date ? 'Discharged' : 'In hospital'}
                                             </Text>
                                         </Box> */}
-                                        <Box bg={item.patient_leaving_date ? colorModeValue9 : colorModeValue10}p={2}>
+                                        <Box bg={item.patient_leaving_date ? colorModeValue9 : colorModeValue10} p={2}>
                                             <Text fontWeight='bold' fontSize='md' textAlign='center' color={colorModeValue11}>
                                                 {t('medicalRecord.medicalRecord')} #{item.id}
                                             </Text>
                                         </Box>
 
-                                        <Box p={3}>
+                                        <Box p={3} h='140px' overflow='hidden'>
                                             <Text color={colorModeValue11} fontSize='sm'>{t('medicalRecord.patient')}: {item.patient.first_name} {item.patient.last_name}</Text>
                                             <Text color={colorModeValue11} fontSize='sm'>{t('medicalRecord.entry_Day')}: {item.patient_entry_date}</Text>
                                             <Text color={colorModeValue11} fontSize='sm'>{t('medicalRecord.discharge_Day')}: {item.patient_leaving_date || 'still in hospital'}</Text>
-                                            <Text color={colorModeValue11} fontSize='sm'>{t('medicalRecord.state')}: {item.state_upon_enter}</Text>
+                                            {item.state_upon_enter && <Text color={colorModeValue11} fontSize='sm'>{t('medicalRecord.state')}: {item.state_upon_enter}</Text>}
                                         </Box>
-                                        <Box bg={colorModeValue12}
-                                         p={0}>
+                                        <Box
+                                            bg={colorModeValue12}
+                                            p={0}
+                                            position='absolute'
+                                            bottom="0px"
+                                            w='100%'
+                                        >
                                             <Button
                                                 color={colorModeValue13}
                                                 leftIcon={<AiFillFile color='blue.700' />}
@@ -278,7 +290,7 @@ const MedicalRecords = () => {
                         </Grid>
                         {data?.data?.length === 0 && <Text textAlign='center' fontWeight='bold' fontSize='xl' color={colorModeValue3} p='10px'>
                             {t('global.noData')}
-                            </Text>}
+                        </Text>}
                         {/* {loading && <Center p='10px'>
                             <Spinner thickness='5px'
                                 speed='0.65s'

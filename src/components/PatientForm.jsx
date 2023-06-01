@@ -208,7 +208,7 @@ const PatientForm = ({ closeModal, closeAndRefresh, EditMode, PatientInformation
 
                     <FormControl mb={3} id="nationality" isRequired>
                         <FormLabel>
-                            {t('patient.details.natinoality')}
+                            {t('patient.details.nationality')}
                         </FormLabel>
                         <Input
                             type="text"

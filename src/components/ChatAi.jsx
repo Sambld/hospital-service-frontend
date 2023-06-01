@@ -1,4 +1,19 @@
-import { Box, Button, Center, FormControl, Input, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  FormControl,
+  Input,
+  Spinner,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  useColorModeValue,
+} from "@chakra-ui/react";
 
 import { useState } from "react";
 import { AiOutlineSend } from "react-icons/ai";
@@ -7,11 +22,16 @@ import { MdOutlineMarkUnreadChatAlt } from "react-icons/md";
 import { Form } from "react-router-dom";
 import useLoader from "../hooks/useLoader";
 
+// Translation
+import { useTranslation } from "react-i18next";
+
 const ChatAi = (user) => {
 
   const [chatText, setChatText] = useState('')
   const [chatData, setChatData] = useState(null)
   const [chatLoading, setChatLoading] = useState(false)
+
+  const { t, i18n } = useTranslation();
 
   const getAiChat = () => {
     setChatLoading(true)
@@ -35,7 +55,7 @@ const ChatAi = (user) => {
         p={5}
         shadow="md"
         borderWidth="1px"
-        bg='gray.100'
+        bg={useColorModeValue('white', 'gray.800')}
         borderRadius='xl'
         position='relative'
         w='100%'
@@ -47,8 +67,10 @@ const ChatAi = (user) => {
           gap={3}
           zIndex={1}
         >
-          <MdOutlineMarkUnreadChatAlt size={30} color="#374083" />
-          <Text fontSize={25} size="md">Ai Search Assistant</Text>
+          <MdOutlineMarkUnreadChatAlt size={30} color={useColorModeValue('#374083', 'gray.200')} />
+          <Text color={useColorModeValue('#374083', 'gray.200')} fontSize={25} size="md">
+            {t('chatAi.title')}
+          </Text>
         </Box>
 
         <Form onSubmit={(e) => {
@@ -64,8 +86,8 @@ const ChatAi = (user) => {
             mt={5}
           >
             <Input
-              bg='white'
-              placeholder="Type your message"
+              bg={useColorModeValue('white', 'gray.800')}
+              placeholder={t('chatAi.placeholder')}
               value={chatText}
               onChange={(e) => setChatText(e.target.value)}
             />
@@ -75,7 +97,7 @@ const ChatAi = (user) => {
               onClick={getAiChat}
               isLoading={chatLoading}
             >
-              <AiOutlineSend size={30} color="#374083" />
+              <AiOutlineSend size={30} color={useColorModeValue('#374083', 'gray.200')} />
             </Button>
           </FormControl>
         </Form>
@@ -91,7 +113,9 @@ const ChatAi = (user) => {
         {!chatLoading && chatData && chatData.length === 0 && (
           <Box p='10px' display='flex' flexDirection='column' alignItems='center' justifyContent='center' gap={2}>
             <HiOutlineEmojiSad size='50px' />
-            <Text fontSize='lg' fontWeight='normal'>No Reponse</Text>
+            <Text fontSize='lg' fontWeight='normal'>
+              {t("chatAi.noResponse")}
+            </Text>
           </Box>
         )}
         {!chatLoading && chatData && chatData.length > 0 && (
@@ -102,7 +126,7 @@ const ChatAi = (user) => {
             borderRadius='md'
             maxH='70vh'
           >
-            <Table variant='simple' boxShadow='md' bg='white'>
+            <Table variant='simple' boxShadow='md' bg='white' color='gray.700' borderRadius='md'>
               <Thead bg='blue.700'>
                 <Tr>
                   {Object.keys(chatData[0]).map((key, index) => (

@@ -86,7 +86,7 @@ const Dashboard = () => {
             if (user.role === 'doctor') {
                 setData((prev) => ({
                     ...prev,
-                    column: [t('dashboard.medicalRecord'), t('dashboard.filledBy'), t('dashboard.action')],
+                    column: [t('dashboard.medicalRecord'), t('dashboard.filledBy'), t('dashboard.updatedAt'), t('dashboard.action')],
                     data: []
                 }))
                 getLatestUpdate()
@@ -131,6 +131,11 @@ const Dashboard = () => {
             }
         }
     }
+
+    const changeFormat = (date) => {
+        let date_ = new Date(date)
+        return date_.getUTCDate() + '-' + (date_.getUTCMonth() + 1) + '-' + date_.getUTCFullYear() + '/' + date_.getUTCHours() + ':' + date_.getUTCMinutes()
+      }
 
     const getDashboardData = () => {
         setData((prev) => ({
@@ -211,8 +216,9 @@ const Dashboard = () => {
                     const ColorScheme = 'blue';
                     const Icon = <AiFillFolderOpen />;
                     return [
-                        `Medical Record #${item.record_id}`,
+                        `${t('medicalRecord.monitoringSheet')} #${item.id}` ,
                         `${item.filled_by.first_name} ${item.filled_by.last_name}`,
+                        `${changeFormat(item.updated_at)}`,
                         [
                             link,
                             text,
@@ -224,7 +230,7 @@ const Dashboard = () => {
                 setData((prevFormData) => ({
                     ...prevFormData,
                     headerTitle: t('dashboard.activeMedicalRecords'),
-                    column: [t('dashboard.medicalRecord'), t('dashboard.filledBy'), t('dashboard.action')],
+                    column: [t('medicalRecord.monitoringSheet'), t('dashboard.filledBy'), t('dashboard.updatedAt'), t('dashboard.action')],
                     data: data,
                 }))
             })
@@ -597,7 +603,7 @@ const Dashboard = () => {
                                 >
                                     <Box w='80px'></Box>
                                     <Text>
-                                        {t('dashboard.todayMedicalRecords')}
+                                        {t('medicalRecord.title')}
                                     </Text>
                                     <IconButton
                                         colorScheme='blackAlpha'
@@ -617,7 +623,7 @@ const Dashboard = () => {
                                                     <>
                                                         <FaNotesMedical size={23} />
                                                         <Text pt={1} fontSize={15}>
-                                                            {t('medicalRecord.medicalRecord')}
+                                                            {t('dashboard.activeMedicalRecords')}
                                                         </Text>
                                                     </>
                                                 )}
@@ -729,7 +735,7 @@ const Dashboard = () => {
                                                 <VStack spacing={0}>
                                                     <RiChatCheckLine size={23} />
                                                     <Text pt={1} fontSize={15}>
-                                                        {t('dashboard.requests')}
+                                                        {t('dashboard.requests')} 
                                                     </Text>
                                                 </VStack>
                                             </Tab>
@@ -737,7 +743,7 @@ const Dashboard = () => {
                                                 <VStack spacing={0}>
                                                     <AiOutlineMedicineBox size={23} />
                                                     <Text pt={1} fontSize={15}>
-                                                        {t('dashboard.medicineCount')}
+                                                        {t('dashboard.medicineCount')} 
                                                     </Text>
                                                 </VStack>
                                             </Tab>

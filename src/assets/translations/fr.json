@@ -28,7 +28,11 @@
         "submit": "Soumettre",
         "open": "Ouvrir",
         "reloading": "Rechargement",
-        "fill": "Remplir"
+        "fill": "Remplir",
+        "day": "Jour",
+        "week": "Semaine",
+        "month": "Mois",
+        "year": "Année"
     },
     "navbar": {
         "webSiteName": "Maladies Infectieuses",
@@ -82,13 +86,14 @@
         "nurseNumber": "Nombre d'infirmières",
         "pharmacistNumber": "Nombre de pharmaciens",
         "patientNumber": "Nombre de patients",
-        "todayMedicalRecords": "Dossiers médicaux d'aujourd'hui",
-        "todayAvailable": "Disponible aujourd'hui",
+        "todayMedicalRecords": "Dossiers médicaux actifs aujourd'hui",
+        "todayAvailable": "Feuilles de suivi disponibles aujourd'hui",
         "latestUpdate": "Dernière mise à jour",
         "latestFilling": "Dernier remplissage",
         "medicineRequests": "Demandes de médicaments",
         "requests": "Demandes",
-        "medicineCount": "Nombre de médicaments"
+        "medicineCount": "Nombre de médicaments",
+        "updatedAt": "Mis à jour le"
     },
     "patient": {
         "title": "Patients",
@@ -123,7 +128,8 @@
         "lastName": "Nom de famille",
         "patientID": "Identifiant du patient",
         "navigate": "Naviguer",
-        "navigationToPatient": "Navigation vers le patient"
+        "navigationToPatient": "Navigation vers le patient",
+        "placeholder": "Nom, Numéro de téléphone"
     },
 
     "medicalRecord": {
@@ -145,8 +151,8 @@
         "entry_Day": "Jour d'entrée",
         "discharge_Day": "Jour de sortie",
         "state": "État",
-        "inHospital": "À l'hôpital",
-        "discharged": "Sorti",
+        "inHospital": "Actif",
+        "discharged": "Fermé",
         "owned": "En possession",
         "stillInHospital": "Encore à l'hôpital",
         "information": "Information",
@@ -220,7 +226,7 @@
         },
         "areYouSure": "Êtes-vous sûr(e) ?",
         "noPrescriptionFound": "Aucune ordonnance trouvée",
-        "addMoreRows": "Ajouter plus de lignes",
+        "addMoreRows": "Ajouter des jours",
         "fillForToday": "Remplir pour aujourd'hui",
         "today": "Aujourd'hui",
         "urine": "urine (ml)",
@@ -234,7 +240,10 @@
         "viewFullSize": "Voir en taille réelle",
         "deleteObservation": "Supprimer l'observation",
         "basicInformation": "Informations de base",
-        "medicalEspeciality": "Spécialité médicale"
+        "medicalEspeciality": "Spécialité médicale",
+        "injection": "Injection",
+        "tablet": "Comprimé",
+        "syrup": "Sirop"
     },
     "medicine": {
         "name": "Nom",
@@ -309,8 +318,31 @@
             "deleted": "Personnel supprimé"
         }
     },
-    "about.title": "À propos de nous",
-    "about.content": "Ce site Web a été créé avec ReactJS",
+    "chatAi": {
+        "title": "Assistant de recherche IA",
+        "placeholder": "Tapez votre message",
+        "noResponse": "Aucune réponse"
+    },
+    "statistics": {
+        "statistics": "Statistiques",
+        "totalCount": "Nombre total",
+        "pt": "Patient",
+        "gender": "Genre",
+        "mr": "Dossier médical",
+        "inpatient": "Patient hospitalisé",
+        "outpatient": "Patient externe",
+        "diagnosis": "Diagnostic",
+        "ms": "Feuille de suivi",
+        "filled": "Rempli",
+        "md": "Médicament",
+        "quantity": "Quantité"
+    },
+
+    "about": {
+        "title": "À propos de nous",
+        "content": "Ce site Web a été créé avec ReactJS"
+    },
+
     "logout": {
         "areYouSureWantToSignOut": "Êtes-vous sûr(e) de vouloir vous déconnecter ?"
     }

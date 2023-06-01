@@ -34,7 +34,7 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
 
     const printImage = (source) => {
         var printWindow = window.open("");
-        printWindow.document.write("<div style='height:100vh'><img width='100%' src='http://localhost:8000/storage/images/" + source + "'></div>");
+        printWindow.document.write("<div style='height:100vh'><img width='100%' src='http://134.122.75.238:8000/storage/images/" + source + "'></div>");
         printWindow.document.close();
         printWindow.print();
     }
@@ -43,7 +43,7 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
         var printWindow = window.open("");
         let images = '';
         Observation.images.forEach((image) => {
-            images += "<div style='height:100vh'><img width='100%' src='http://localhost:8000/storage/images/" + image.path + "'></div><br/>";
+            images += "<div style='height:100vh'><img width='100%' src='http://134.122.75.238:8000/storage/images/" + image.path + "'></div><br/>";
         });
         printWindow.document.write(images);
         printWindow.document.close();
@@ -51,7 +51,7 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
     }
 
     const downloadImage = (source) => {
-        var printWindow = window.open("http://localhost:8000/storage/images/" + source);
+        var printWindow = window.open("http://134.122.75.238:8000/storage/images/" + source);
 
     }
 
@@ -103,7 +103,7 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
                         <Box
                             border='2px'
                             borderRadius={5}
-                            bgImage={'http://localhost:8000/storage/images/' + image.path}
+                            bgImage={'http://134.122.75.238:8000/storage/images/' + image.path}
                             bgSize="cover"
                             bgPos="center"
                             bgRepeat="no-repeat"
@@ -190,7 +190,7 @@ const OBservationImages = ({ Observation, closeAndRefresh , patientId }) => {
             </Grid>
             <Box>
                 <Image
-                    src={'http://localhost:8000/storage/images/' + Observation.images[current].path}
+                    src={'http://134.122.75.238:8000/storage/images/' + Observation.images[current].path}
                     alt='image'
                     w='100%'
                     h='100%'

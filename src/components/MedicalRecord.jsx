@@ -165,7 +165,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     setMonitoringSheetEditInfo(null)
     setPrescriptions([])
 
-    if (user.id == medical_record.user_id) {
+    if (user.role == 'doctor') {
       handleMandatoryDeclaration()
     }
 
@@ -557,7 +557,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     try {
       setLoadingPrescriptionDownload(true);
       setPrescriptionDownloaded(prescription.id)
-      const response = await axios.get(`http://127.0.0.1:8000/api/patients/${medical_record.patient_id}/medical-records/${medical_record.id}/prescriptions/${prescription.id}/pdf`, {
+      const response = await axios.get(`http://134.122.75.238:8000/api/patients/${medical_record.patient_id}/medical-records/${medical_record.id}/prescriptions/${prescription.id}/pdf`, {
         responseType: 'blob', // Set the response type to 'blob' to receive binary data
       });
       // Create a temporary link element
@@ -637,7 +637,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
               <Tab
                 _selected={{ color: 'white', bg: 'blue.500' }}
                 onClick={ReloadTabContent}
-                isDisabled={user.id == medical_record.user_id ? false : true}
+                isDisabled={user.role == 'doctor' ? false : true}
               >
                 <Icon h='30px' fontSize='30px' as={FiClipboard} display={{ base: 'block', lg: 'none' }} />
                 <Text display={{ base: 'none', lg: 'block' }} ml={2}>
@@ -647,7 +647,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
               <Tab
                 _selected={{ color: 'white', bg: 'blue.500' }}
                 onClick={ReloadTabContent}
-                isDisabled={user.id == medical_record.user_id ? false : true}
+                isDisabled={user.role == 'doctor' ? false : true}
               >
                 <Icon h='30px' fontSize='30px' as={BsFillImageFill} display={{ base: 'block', lg: 'none' }} />
                 <Text display={{ base: 'none', lg: 'block' }} ml={2}>
@@ -666,7 +666,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
               <Tab
                 borderRightRadius={10} _selected={{ color: 'white', bg: 'blue.500' }}
                 onClick={ReloadTabContent}
-                isDisabled={user.id == medical_record.user_id ? false : true}
+                isDisabled={user.role == 'doctor' ? false : true}
               >
                 <Icon h='30px' fontSize='30px' as={AiOutlineFileText} display={{ base: 'block', lg: 'none' }} />
                 <Text display={{ base: 'none', lg: 'block' }} ml={2}>
@@ -711,7 +711,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                               })}
                             </Td>
                           </Tr>
-                          {user.id == medical_record.user_id && (
+                          {user.role == 'doctor' && (
                             <Tr>
                               <Td color={colorModeValue1}><Text>{t('medicalRecord.standardTreatment')}:</Text></Td>
                               <Td color={colorModeValue2}>
@@ -778,7 +778,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                   )}
                 </Box>
 
-                {user.id == medical_record.user_id && (
+                {user.role == 'doctor' && (
                   <Box
                     mt={3}
                     p="6"
@@ -811,7 +811,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                               <Tr bg={colorModeValue6}>
                                 <Th><Text>{t('medicalRecord.declarationDate')}</Text></Th>
                                 <Th><Text>{t('medicalRecord.diagnosis')}</Text></Th>
-                                <Th><Text>{t('medicalRecord.detailedDiagnosis')}</Text></Th>
+                                <Th><Text>{t('medicine.detail')}</Text></Th>
                               </Tr>
                             </Thead>
                             <Tbody>
@@ -1002,7 +1002,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             <Text
                               textAlign='center'
                               fontWeight='bold'
-                              fontSize='xl'
+                              fontSize='md'
                               color='gray.200'
                               textShadow='2px 2px 8px black'
                             >
@@ -1015,7 +1015,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                               <Box
                                 key={index}
                                 p={2}
-                                bgImage={'http://localhost:8000/storage/images/' + img.path}
+                                bgImage={'http://134.122.75.238:8000/storage/images/' + img.path}
                                 bgSize='cover'
                                 bgPosition='center'
                                 boxSize='150px'
@@ -1068,7 +1068,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
               </TabPanel>
 
               {/* Prescription */}
-              {user.id == medical_record.user_id && (
+              {user.role == 'doctor' && (
                 <TabPanel p={0}>
                   <Box>
                     <Flex justify='flex-end' mb='15px'>
