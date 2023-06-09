@@ -53,7 +53,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
     const [options, setOptions] = useState([]);
     const [selectedMedicine, setSelectedMedicine] = useState(null);
     const [Dose, setDose] = useState('');
-    const [type, setType] = useState('SC');
+    const [type, setType] = useState('Injection');
 
     const [uploadProgress, setUploadProgress] = useState(0);
     const [loading, setLoading] = useState(false);

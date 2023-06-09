@@ -55,12 +55,8 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
     ]);
     const [formData, setFormData] = useState({
         medicines: [],
-        urine: 0,
-        blood_pressure: 0,
-        temperature: 0,
-        weight: 0,
     });
-    
+
     const { t, i18n } = useTranslation();
 
     const [addedTreatments, setAddedTreatments] = useState([]);
@@ -105,30 +101,42 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
             // GET DATS OF NEXT TIMEFIELD DAYS
             const { medicines, ...rest } = formData;
             // make rest string
+            let allZero = true;
             Object.keys(rest).forEach((key) => {
-                rest[key] = rest[key].toString();
+                if (rest[key] != 0) {
+                    allZero = false;
+                    rest[key] = rest[key].toString();
+                }
             });
 
-
-
-            usePut('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + data.id, rest).then((res) => {
+            if (!allZero) {
+                usePut('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + data.id, rest).then((res) => {
+                    setLoading(false);
+                    closeAndRefresh(
+                        {
+                            title: t('medicalRecord.monitoringSheetInfo.updated'),
+                            status: 'success',
+                        }
+                    )
+                }).catch((err) => {
+                    setLoading(false);
+                    closeAndRefresh(
+                        {
+                            title: 'Error',
+                            description: err.message,
+                            status: 'error',
+                        }
+                    )
+                })
+            } else {
                 setLoading(false);
-                closeAndRefresh(
+                toast(
                     {
-                        title: t('medicalRecord.monitoringSheetInfo.updated') ,
-                        status: 'success',
-                    }
-                )
-            }).catch((err) => {
-                setLoading(false);
-                closeAndRefresh(
-                    {
-                        title: 'Error',
-                        description: err.message,
+                        title: "make at least one change",
                         status: 'error',
                     }
                 )
-            })
+            }
         } catch (err) {
             console.log(err)
         }
@@ -147,7 +155,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
             setLoading(false);
             closeAndRefresh(
                 {
-                    title: t('medicalRecord.monitoringSheetInfo.updated') ,
+                    title: t('medicalRecord.monitoringSheetInfo.updated'),
                     status: 'success',
                 }
             )
@@ -340,7 +348,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                                     </Tr>
                                 </Thead>
                                 <Tbody>
-                                    { formData.medicines.length == 0 && (
+                                    {formData.medicines.length == 0 && (
                                         <Tr>
                                             <Td colSpan={4} textAlign='center'>
                                                 {t('medicalRecord.noData')}

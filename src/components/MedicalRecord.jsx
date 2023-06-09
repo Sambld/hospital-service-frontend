@@ -732,7 +732,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                           {medical_record.patient_leaving_date && (
                             <>
                               <Tr>
-                                <Td color='green.400' colSpan={2}><Text>{t('medicalRecord.leavingInformation')}:</Text></Td>
+                                <Td color='red.400' colSpan={2}><Text>{t('medicalRecord.leavingInformation')}:</Text></Td>
                               </Tr>
                               <Tr>
                                 <Td color={colorModeValue1}><Text>{t('medicalRecord.stateUponExit')}:</Text></Td>

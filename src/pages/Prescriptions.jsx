@@ -123,6 +123,11 @@ const Prescriptions = () => {
         }
     }, [searchParams])
 
+    const changeFormat = (date) => {
+        let date_ = new Date(date)
+        return date_.getUTCDate() + '-' + (date_.getUTCMonth() + 1) + '-' + date_.getUTCFullYear() + '/' + date_.getUTCHours() + ':' + date_.getUTCMinutes()
+    }
+
     const getPendingPrescriptions = () => {
         setPrescriptions([])
         setPendingPagination(null)
@@ -472,12 +477,9 @@ const Prescriptions = () => {
                                 <Text>{PrescriptionDetail.patient.first_name + " " + PrescriptionDetail.patient.last_name} #{PrescriptionDetail.patient_id}</Text>
                             </Flex>
                             <Divider mt={3} mb={3} />
-                            <Text mb={2} fontSize='20px' fontWeight='bold'>
-                                {t('prescription.selectedPrescription')}
-                            </Text>
                             <Select onChange={(e) => handleSelectPrescription(e.target.value)}>
                                 {PrescriptionDetail.prescriptions.length > 0 && PrescriptionDetail.prescriptions.map((item, index) => (
-                                    <option key={index} value={index}>{item.name} #{item.id}</option>
+                                    <option key={index} value={index}>#{item.id} {item.name} ({changeFormat(item.created_at)})</option>
 
                                 ))}
                             </Select>

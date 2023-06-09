@@ -181,8 +181,8 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                             {item.filling_date == formatDate(new Date()) && ' (today)'}
 
                                             <Text fontSize='xs' color='green.600' fontWeight='bold'>
-                                                {user.role === 'nurse' && item.filled_by.id == user.id && `[${t('global.edit')}]`}
-                                                {user.role === 'nurse' && !item.filled_by.id && `[${t('global.fill')}]`}
+                                                {user.role === 'nurse' && item?.filled_by?.id == user.id && `[${t('global.edit')}]`}
+                                                {user.role === 'nurse' && !item?.filled_by?.id && `[${t('global.fill')}]`}
                                                 {user.role === 'doctor' && user.id == medical_record.user_id && `[${t('global.edit')}]`}
                                             </Text>
 
@@ -309,7 +309,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                             <Td
                                                 key={index}
                                             >
-                                                {item2.filled_by_id ?
+                                                {item2?.filled_by_id ?
                                                     item2.treatments && item2.treatments.some((treatment) => treatment.name === (typeof item === 'object' ? (item.name) : item)) ? <Badge colorScheme='green'>check</Badge> : <Badge colorScheme='red'>-</Badge>
                                                     :
                                                     <Badge colorScheme='blue'>-</Badge>

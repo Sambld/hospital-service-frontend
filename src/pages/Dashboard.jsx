@@ -135,7 +135,7 @@ const Dashboard = () => {
     const changeFormat = (date) => {
         let date_ = new Date(date)
         return date_.getUTCDate() + '-' + (date_.getUTCMonth() + 1) + '-' + date_.getUTCFullYear() + '/' + date_.getUTCHours() + ':' + date_.getUTCMinutes()
-      }
+    }
 
     const getDashboardData = () => {
         setData((prev) => ({
@@ -216,7 +216,7 @@ const Dashboard = () => {
                     const ColorScheme = 'blue';
                     const Icon = <AiFillFolderOpen />;
                     return [
-                        `${t('medicalRecord.monitoringSheet')} #${item.id}` ,
+                        `${t('medicalRecord.monitoringSheet')} #${item.id}`,
                         `${item.filled_by.first_name} ${item.filled_by.last_name}`,
                         `${changeFormat(item.updated_at)}`,
                         [
@@ -735,7 +735,7 @@ const Dashboard = () => {
                                                 <VStack spacing={0}>
                                                     <RiChatCheckLine size={23} />
                                                     <Text pt={1} fontSize={15}>
-                                                        {t('dashboard.requests')} 
+                                                        {t('dashboard.requests')}
                                                     </Text>
                                                 </VStack>
                                             </Tab>
@@ -743,7 +743,7 @@ const Dashboard = () => {
                                                 <VStack spacing={0}>
                                                     <AiOutlineMedicineBox size={23} />
                                                     <Text pt={1} fontSize={15}>
-                                                        {t('dashboard.medicineCount')} 
+                                                        {t('dashboard.medicineCount')}
                                                     </Text>
                                                 </VStack>
                                             </Tab>

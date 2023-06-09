@@ -216,9 +216,11 @@ const RootLayout = () => {
                     <Outlet context={user} />
                 </GridItem>
             </Grid>
-            <Box position='fixed' bottom='5' right='5' zIndex='2' onClick={onOpen} cursor='pointer' color='white' bg='blue.500' p='3' borderRadius='full'>
-                <SiChatbot size='25' />
-            </Box>
+            {user.role == 'doctor' &&
+                <Box position='fixed' bottom='5' right='5' zIndex='2' onClick={onOpen} cursor='pointer' color='white' bg='blue.500' p='3' borderRadius='full'>
+                    <SiChatbot size='25' />
+                </Box>
+            }
             <Drawer onClose={onClose} isOpen={isOpen} placement='bottom' size='full'>
                 <DrawerOverlay />
                 <DrawerContent height="80% !important" bg='transparent'>

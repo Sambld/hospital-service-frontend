@@ -59,6 +59,8 @@ const StatisticsItems = (user) => {
             items.push([['Patient', 'pt'], ['gender']]);
             items.push([['Medical Record', 'mr'], ['Inpatient', 'Outpatient', 'Diagnosis']]);
         } else if (user.role === 'nurse') {
+            items.push([['Patient', 'pt'], ['gender']]);
+            items.push([['Medical Record', 'mr'], ['Inpatient', 'Outpatient', 'Diagnosis']]);
             items.push([['Monitoring Sheet', 'ms'], ['Filled']]);
         } else if (user.role === 'pharmacist') {
             items.push([['Medicines', 'md'], ['Quantity']]);
@@ -640,7 +642,7 @@ const Statistics = () => {
                                     </Box>
                                 </Flex>
                             }
-                            <Flex
+                            {/* <Flex
                                 justifyContent='center'
                                 alignItems='center'
                                 border='2px'
@@ -662,7 +664,7 @@ const Statistics = () => {
                                     {showFilter ? 'Hide ' : "More Details"}
                                 </Text>
                                 <Icon as={showFilter ? AiOutlineArrowUp : AiOutlineArrowDown} w={4} h={4} color="gray.200" />
-                            </Flex>
+                            </Flex> */}
                         </Box>
 
                         {data && data?.pieChart && data?.pieChart?.labels.length > 1 ? (
