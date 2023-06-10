@@ -700,6 +700,10 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                       <Table className={styles.table} variant="unstyled">
                         <Tbody fontSize={18}>
                           <Tr>
+                            <Td color={colorModeValue1}><Text>{t('medicalRecord.createdBy')}:</Text></Td>
+                            <Td color={colorModeValue2}><Text>{medical_record.assigned_doctor.first_name + " " + medical_record.assigned_doctor.last_name}</Text></Td>
+                          </Tr>
+                          <Tr>
                             <Td color={colorModeValue1}><Text>{t('medicalRecord.stateUponEnter')}:</Text></Td>
                             <Td color={colorModeValue2}><Text>{medical_record.state_upon_enter}</Text></Td>
                           </Tr>
@@ -856,6 +860,11 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                         </Th>
                         <Th>
                           <Text>
+                            {t('prescription.doctor')}
+                          </Text>
+                        </Th>
+                        <Th>
+                          <Text>
                             {t('medicalRecord.treatmentType')}
                           </Text>
                         </Th>
@@ -865,7 +874,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                           </Text>
                         </Th>
                         <Th display='flex' justifyContent='flex-end'>
-                          {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
+                          {user.role === 'doctor' && !medical_record.patient_leaving_date && (
                             <IconButton
                               borderRadius='100%'
                               size='sm'
@@ -881,11 +890,14 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                     <Tbody>
                       {Examination && Examination.map((Exam, index) => (
                         <Tr key={index}>
+                          <Td>{Exam?.doctor?.first_name + " " + Exam?.doctor?.last_name}</Td>
                           <Td>{changeFormat(Exam.created_at)}</Td>
                           <Td>{Exam.type}</Td>
-                          <Td>{Exam.result}</Td>
+                          <Td>
+                            {Exam.result}
+                          </Td>
                           <Td display='flex' justifyContent='flex-end'>
-                            {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
+                            {user.role === 'doctor' && user.id === Exam?.doctor?.id && !medical_record.patient_leaving_date ? (
                               <>
                                 <IconButton
                                   borderRadius='100%'
@@ -906,6 +918,10 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                                   onMouseLeave={() => setDeleteConfirmation(false)}
                                   icon={deleteConfirmation ? <AiOutlineCheck /> : <BsFillTrashFill />} />
                               </>
+                            ):(
+                              <Box>
+                                [not owned]
+                              </Box>
                             )}
                           </Td>
 
@@ -932,7 +948,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
 
               {/*  Observation Tab */}
               <TabPanel p={0}>
-                {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
+                {user.role === 'doctor' && !medical_record.patient_leaving_date && (
                   <Flex justify='flex-end' mb='15px'>
                     <Button colorScheme='green' onClick={onOpenObservation} mr={3}>
                       <Text>
@@ -1010,7 +1026,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             </Text>
                           </Box>
 
-                          <Flex p='20px' gap='20px' maxW='870px'  bg={colorModeValue10} flexWrap='wrap' borderBottomRadius={10} overflow='hidden'>
+                          <Flex p='20px' gap='20px' maxW='870px' bg={colorModeValue10} flexWrap='wrap' borderBottomRadius={10} overflow='hidden'>
                             {obs.images && obs.images.map((img, index) => (
                               <Box
                                 key={index}
@@ -1070,15 +1086,17 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
               {/* Prescription */}
               {user.role == 'doctor' && (
                 <TabPanel p={0}>
-                  <Box>
-                    <Flex justify='flex-end' mb='15px'>
-                      <Button colorScheme='green' onClick={onOpenPrescriptionForm} mr={3}>
-                        <Text>
-                          {t('medicalRecord.addPrescription')}
-                        </Text>
-                      </Button>
-                    </Flex>
-                  </Box>
+                  {user.role == 'doctor' && !medical_record.patient_leaving_date && (
+                    <Box>
+                      <Flex justify='flex-end' mb='15px'>
+                        <Button colorScheme='green' onClick={onOpenPrescriptionForm} mr={3}>
+                          <Text>
+                            {t('medicalRecord.addPrescription')}
+                          </Text>
+                        </Button>
+                      </Flex>
+                    </Box>
+                  )}
                   <Box p={0} bg={colorModeValue7} boxShadow='lg' border='1px' borderColor='gray.300' borderRadius='lg' overflow='hidden'>
 
                     {loadingPrescription ? (
@@ -1096,13 +1114,15 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                           <AccordionItem key={index} >
                             <AccordionButton _hover={{ bg: colorModeValue8 }}>
                               <Box flex="1" textAlign="left">
-                                <Text fontWeight='bold' fontSize='xl'>{pres.name} #{pres.id}</Text>
+                                <Text fontWeight='bold' fontSize='xl'>
+                                  {`${pres.doctor.first_name} ${pres.doctor.last_name} ${t('prescription.prescription')} #${pres.id}`}
+                                </Text>
                               </Box>
                               <AccordionIcon />
                             </AccordionButton>
                             <AccordionPanel pb={4}>
                               <Box display='flex' justifyContent='flex-end' mb={2} gap='10px'>
-                                {user.role === 'doctor' && medical_record.user_id === user.id && !medical_record.patient_leaving_date && (
+                                {user.role === 'doctor' && user.id === pres.doctor.id && !medical_record.patient_leaving_date && (
                                   <Button colorScheme='green' onClick={() => handlePrescriptionEdit(pres)}>
                                     <EditIcon fontSize='20px' />
                                     <Text ml={2}>

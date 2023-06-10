@@ -39,7 +39,7 @@ import {
 import { useState } from "react";
 import { Bar, Pie, Line, Doughnut } from 'react-chartjs-2';
 import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
-import { BiRefresh } from "react-icons/bi";
+import { BiRefresh, BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import { BsTable } from "react-icons/bs";
 import { FiBarChart2 } from "react-icons/fi";
 import useLoader from "../hooks/useLoader";
@@ -78,6 +78,7 @@ const Statistics = () => {
     const [statisticsType, setStatisticsType] = useState(StatisticsItems(user));
     const [selectedMedicine, setSelectedMedicine] = useState(null);
     const [options, setOptions] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(new Date());
 
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -94,7 +95,7 @@ const Statistics = () => {
     const toast = useToast();
 
     const { t, i18n } = useTranslation();
-    
+
     const colorModeValue1 = useColorModeValue('gray.500', 'gray.200');
     const colorModeValue2 = useColorModeValue('gray.500', 'gray.50');
     const colorModeValue3 = useColorModeValue('white', 'gray.900');
@@ -111,13 +112,6 @@ const Statistics = () => {
     const colorModeValue14 = useColorModeValue("blue.900", "gray.50");
     const colorModeValue15 = useColorModeValue("gray.500", "gray.50")
 
-
-
-
-
-
-
-
     useEffect(() => {
         setData(null);
         refresh();
@@ -133,33 +127,49 @@ const Statistics = () => {
         handleStatisticsType();
     }
 
-    const handleStatisticsType = () => {
+    const changeFormat = (date) => {
+        let date_ = new Date(date)
+        return date_.getUTCFullYear() + '-' + (date_.getUTCMonth() + 1) + '-' + date_.getUTCDate();
+    }
+
+    const formatDate = (date, separator) => {
+        let date_ = new Date(date);
+        const year = date_.getUTCFullYear();
+        const month = (date_.getUTCMonth() + 1).toString().padStart(2, '0'); // pad month with leading zero if less than 10
+        const day = date_.getUTCDate().toString().padStart(2, '0'); // pad day with leading zero if less than 10
+        // const hours = date_.getUTCHours().toString().padStart(2, '0'); // pad hours with leading zero if less than 10
+        // const minutes = date_.getUTCMinutes().toString().padStart(2, '0'); // pad minutes with leading zero if less than 10
+        // const seconds = date_.getUTCSeconds().toString().padStart(2, '0'); // pad seconds with leading zero if less than 10
+        return `${year}${separator || '-'}${month}${separator || '-'}${day}`;
+    };
+
+    const handleStatisticsType = (choosenDate = null) => {
         switch (CurrentStatisticsType) {
             case 'pt':
-                handlePatient();
+                handlePatient(choosenDate || selectedDate);
                 break;
             case 'mr':
-                handleMedicalRecord();
+                handleMedicalRecord(choosenDate || selectedDate);
                 break;
             case 'ms':
-                handleMonitoringSheet();
+                handleMonitoringSheet(choosenDate || selectedDate);
                 break;
             case 'md':
-                handleMedicines();
+                handleMedicines(choosenDate || selectedDate);
                 break;
             default:
-                handlePatient();
+                handlePatient(choosenDate || selectedDate);
                 break;
         }
     }
 
-    const handlePatient = () => {
-        useLoader(`/patients/statistics?of=gender&type=${CurrentTimeType}`)
+    const handlePatient = (choosenDate) => {
+        useLoader(`/patients/statistics?of=gender&type=${CurrentTimeType}&selectedDate=${changeFormat(choosenDate)}`)
             .then((res) => {
-                calculatePiePercentage(handleMessingDateOfData(res));
+                calculatePiePercentage(handleMessingDateOfData(res, choosenDate));
             })
             .catch((err) => {
-                showToast('Error', err.response.data.message, 'error');
+                showToast('Error', err?.response?.data?.message, 'error');
             })
             .finally(() => {
                 setLoading(false);
@@ -167,14 +177,14 @@ const Statistics = () => {
     }
 
 
-    const handleMedicalRecord = () => {
-        useLoader(`/medical-records/statistics?of=${CurrentSubStatisticsType}&type=${CurrentTimeType}`)
+    const handleMedicalRecord = (choosenDate) => {
+        useLoader(`/medical-records/statistics?of=${CurrentSubStatisticsType}&type=${CurrentTimeType}&selectedDate=${changeFormat(choosenDate)}`)
             .then((res) => {
-                calculatePiePercentage(handleMessingDateOfData(res));
+                calculatePiePercentage(handleMessingDateOfData(res, choosenDate));
                 setLoading(false);
             })
             .catch((err) => {
-                showToast('Error', err.response.data.message, 'error');
+                showToast('Error', err?.response?.data?.message, 'error');
                 setLoading(false);
             })
             .finally(() => {
@@ -182,14 +192,14 @@ const Statistics = () => {
             })
     }
 
-    const handleMonitoringSheet = () => {
-        useLoader(`/monitoring-sheets/statistics?of=${CurrentSubStatisticsType}&type=${CurrentTimeType}`)
+    const handleMonitoringSheet = (choosenDate) => {
+        useLoader(`/monitoring-sheets/statistics?of=${CurrentSubStatisticsType}&type=${CurrentTimeType}&selectedDate=${changeFormat(choosenDate)}`)
             .then((res) => {
-                calculatePiePercentage(handleMessingDateOfData(res));
+                calculatePiePercentage(handleMessingDateOfData(res, choosenDate));
                 setLoading(false);
             })
             .catch((err) => {
-                showToast('Error', err.response.data.message, 'error');
+                showToast('Error', err?.response?.data?.message, 'error');
                 setLoading(false);
             })
             .finally(() => {
@@ -197,15 +207,15 @@ const Statistics = () => {
             })
     }
 
-    const handleMedicines = () => {
+    const handleMedicines = (choosenDate) => {
         if (selectedMedicine) {
-            useLoader(`/medicines/statistics?of=${CurrentSubStatisticsType}&type=${CurrentTimeType}${selectedMedicine?.value ? `&id=${selectedMedicine?.value}` : ''}`)
+            useLoader(`/medicines/statistics?of=${CurrentSubStatisticsType}&type=${CurrentTimeType}${selectedMedicine?.value ? `&id=${selectedMedicine?.value}` : ''}&selectedDate=${changeFormat(choosenDate)}`)
                 .then((res) => {
-                    calculatePiePercentage(handleMessingDateOfData(res));
+                    calculatePiePercentage(handleMessingDateOfData(res, choosenDate));
                     setLoading(false);
                 })
                 .catch((err) => {
-                    showToast('Error', err.response.data.message, 'error');
+                    showToast('Error', err?.response?.data?.message, 'error');
                     setLoading(false);
                 })
                 .finally(() => {
@@ -226,25 +236,41 @@ const Statistics = () => {
         })
     }
 
-    const handleMessingDateOfData = (chartData) => {
+    const changeSelectedDate = (move, date = null) => {
+        let newSelectedDate = new Date(selectedDate);
+        if (move == 'today') newSelectedDate = new Date();
+        else if (move == 'date') {
+            newSelectedDate = new Date(date);
+        } else {
+            switch (CurrentTimeType) {
+                case 'day':
+                    move === 'next' ? newSelectedDate.setDate(newSelectedDate.getDate() + 1) : newSelectedDate.setDate(newSelectedDate.getDate() - 1);
+                    break;
+                case 'week':
+                    move === 'next' ? newSelectedDate.setDate(newSelectedDate.getDate() + 7) : newSelectedDate.setDate(newSelectedDate.getDate() - 7);
+                    break;
+                case 'month':
+                    move === 'next' ? newSelectedDate.setMonth(newSelectedDate.getMonth() + 1) : newSelectedDate.setMonth(newSelectedDate.getMonth() - 1);
+                    break;
+                case 'year':
+                    move === 'next' ? newSelectedDate.setFullYear(newSelectedDate.getFullYear() + 1) : newSelectedDate.setFullYear(newSelectedDate.getFullYear() - 1);
+                    break;
+                default:
+                    setSelectedDate(new Date());
+                    break;
+            }
+        }
+        setSelectedDate(newSelectedDate);
+        setLoading(true);
+        handleStatisticsType(newSelectedDate);
+
+    }
+
+    const handleMessingDateOfData = (chartData, choosenDate) => {
         const labels = chartData.lineChart.labels;
         const datasets = chartData.lineChart.datasets;
 
-        // Create an object to keep track of the data points we have
-        const dataPoints = {};
-        for (let i = 0; i < datasets.length; i++) {
-            const dataset = datasets[i];
-            const label = dataset.label;
-            const data = dataset.data;
-            for (let j = 0; j < labels.length; j++) {
-                const date = labels[j];
-                const count = data[j];
-                if (!dataPoints[date]) {
-                    dataPoints[date] = {};
-                }
-                dataPoints[date][label] = count;
-            }
-        }
+
 
         let stepSize, unit;
         switch (CurrentTimeType) {
@@ -253,7 +279,7 @@ const Statistics = () => {
                 unit = 'Date';
                 break;
             case 'week':
-                stepSize = 7;
+                stepSize = 8;
                 unit = 'UTCDate';
                 break;
             case 'month':
@@ -261,29 +287,67 @@ const Statistics = () => {
                 unit = 'Month';
                 break;
             case 'year':
-                stepSize = 365;
+                stepSize = 12;
                 unit = 'FullYear';
                 break;
             default:
                 throw new Error(`Invalid type: ${type}`);
         }
 
-        // Find the first and last dates in the data
-        // decrease the first date by stepSize so that the first label is a multiple of stepSize
-        let tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const lastDate = tomorrow.toISOString().substring(0, 10);
+        let tomorrow = new Date(choosenDate);
 
-        const firstDate = tomorrow.setDate(tomorrow.getDate() - stepSize);
-
-        // Create an array of all dates between the first and last dates
         const allDates = [];
-        let currentDate = new Date(firstDate);
-        while (currentDate <= new Date(lastDate)) {
-            allDates.push(currentDate.toISOString().substring(0, 10));
-            currentDate.setDate(currentDate.getDate() + 1);
+        let currentDate = new Date(tomorrow);
+
+        for (let i = 0; i < stepSize; i++) {
+            if (unit == "FullYear") {
+                allDates.unshift(currentDate.toISOString().substring(0, 7));
+                currentDate.setMonth(currentDate.getMonth() - 1);
+            } else {
+                allDates.unshift(currentDate.toISOString().substring(0, 10));
+                currentDate.setDate(currentDate.getDate() - 1);
+            }
         }
 
+        // Create an object to keep track of the data points we have
+        const dataPointsTemp = {};
+        for (let i = 0; i < datasets.length; i++) {
+            const dataset = datasets[i];
+            const label = dataset.label;
+            const data = dataset.data;
+            for (let j = 0; j < labels.length; j++) {
+                const date = labels[j];
+                const count = data[j];
+                if (!dataPointsTemp[date]) {
+                    dataPointsTemp[date] = {};
+                }
+                dataPointsTemp[date][label] = count;
+            }
+        }
+
+        // merge the dataPoints with same AllDates
+        const dataPoints = {};
+        if (unit == "FullYear") {
+            for (const label in dataPointsTemp) {
+                const date = label.substring(0, 7);
+                if (!dataPoints[date]) {
+                    dataPoints[date] = dataPointsTemp[label];
+                } else if (dataPoints[date]) {
+                    for (const key in dataPointsTemp[label]) {
+                        if (dataPoints[date][key]) {
+                            dataPoints[date][key] += dataPointsTemp[label][key];
+                        } else {
+                            dataPoints[date][key] = dataPointsTemp[label][key];
+                        }
+                    }
+                }
+            }
+        } else {
+            // make dataPointsTemp to dataPoints
+            for (const label in dataPointsTemp) {
+                dataPoints[label] = dataPointsTemp[label];
+            }
+        }
         // Fill in missing data points with zeros
         for (let i = 0; i < allDates.length; i++) {
             const date = allDates[i];
@@ -321,17 +385,25 @@ const Statistics = () => {
     }
 
     const calculatePiePercentage = (data) => {
-        let total = 0;
-        data.pieChart.datasets[0].data.forEach((item) => {
-            total += item;
-        })
-        data.pieChart.datasets[0]['percentage'] = [];
+        try {
+            let total = 0;
+            data.pieChart.datasets[0].data.forEach((item) => {
+                total += item;
+            })
+            data.pieChart.datasets[0]['percentage'] = [];
 
-        data.pieChart.datasets[0].data.forEach((item, index) => {
-            data.pieChart.datasets[0].percentage.push((item == 0) ? 0 : Math.round((item / total) * 100));
-        })
+            data.pieChart.datasets[0].data.forEach((item, index) => {
+                data.pieChart.datasets[0].percentage.push((item == 0) ? 0 : Math.round((item / total) * 100));
+            })
 
-        setData(data);
+            
+        } catch (e) {
+            console.log(e)
+        } finally {
+            setData(data);
+        }
+
+        
     }
 
     const loadOptions = (inputValue, callback) => {
@@ -455,7 +527,70 @@ const Statistics = () => {
                             />
                         </Box>
                     )}
-                    <Box maxH='450px' w='100%' bg={colorModeValue3} borderBottomRadius="10px" borderTopLeftRadius={CurrentStatisticsType === 'md' ? 0 : '10px'} p={5} boxShadow="md" zIndex={5} overflow='auto'>
+                    <Box display='flex' justifyContent='flex-start' alignItems='center' gap={2} p={2} bg={colorModeValue3} borderTopRadius={CurrentStatisticsType === 'md' ? 0 : '10px'}>
+                        <Box
+                            display='flex'
+                            justifyContent='space-between'
+                            alignItems='center'
+                            p={2}
+                            border='1px solid'
+                            borderColor={colorModeValue6}
+                            borderRadius='10px'
+                            color={colorModeValue1}
+                            boxShadow='md'
+                            cursor='pointer'
+                            _hover={{ bg: colorModeValue4 }}
+                            onClick={() => changeSelectedDate('today')}
+                        >
+                            Today
+                        </Box>
+                        <Button
+                            onClick={() => changeSelectedDate('prev')}
+                            borderRadius="10px"
+                            p={3}
+                            mb={0}
+                            boxShadow="md"
+                            bg={colorModeValue4}
+                            border='1px solid'
+                            borderColor={colorModeValue13}
+                        >
+                            <Icon
+                                as={BiChevronLeft}
+                                color={colorModeValue1}
+                                fontSize='20px' />
+                        </Button>
+                        <Button
+                            onClick={() => changeSelectedDate('next')}
+                            borderRadius="10px"
+                            p={3}
+                            mb={0}
+                            boxShadow="md"
+                            bg={colorModeValue4}
+                            border='1px solid'
+                            borderColor={colorModeValue13}
+                        >
+                            <Icon
+                                as={BiChevronRight}
+                                color={colorModeValue1}
+                                fontSize='20px' />
+                        </Button>
+                        <Spacer />
+
+                        <Input
+                            type='date'
+                            p={2}
+                            border='1px solid'
+                            borderColor={colorModeValue13}
+                            borderRadius='10px'
+                            color={colorModeValue1}
+                            cursor='pointer'
+                            _hover={{ bg: colorModeValue4 }}
+                            onChange={(e) => changeSelectedDate('date', e.target.value)}
+                            value={formatDate(selectedDate)}
+                            w='160px'
+                        />
+                    </Box>
+                    <Box maxH='450px' w='100%' bg={colorModeValue3} borderBottomRadius="10px" p={5} boxShadow="md" zIndex={5} overflow='auto'>
                         {data ? IsChart ? (
                             <Bar
                                 data={{
@@ -488,10 +623,10 @@ const Statistics = () => {
 
                                     plugins: {
                                         legend: {
-                                            position: 'top',
-                                            labels: {
-                                                color: colorModeValue5
-                                            },
+                                            display: false
+                                        },
+                                        tooltips: {
+                                            enabled: false
                                         },
                                         title: {
                                             display: false,
@@ -689,7 +824,10 @@ const Statistics = () => {
                                         maintainAspectRatio: false,
                                         plugins: {
                                             legend: {
-                                                position: 'top',
+                                                display: false
+                                            },
+                                            tooltips: {
+                                                enabled: false
                                             }
                                         },
                                     }}

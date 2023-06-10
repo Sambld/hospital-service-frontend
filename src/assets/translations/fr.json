@@ -243,7 +243,9 @@
         "medicalEspeciality": "Spécialité médicale",
         "injection": "Injection",
         "tablet": "Comprimé",
-        "syrup": "Sirop"
+        "syrup": "Sirop",
+        "createdBy": "Créé par",
+        "report": "Rapport"
     },
     "medicine": {
         "name": "Nom",

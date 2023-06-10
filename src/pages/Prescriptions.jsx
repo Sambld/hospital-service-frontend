@@ -466,29 +466,32 @@ const Prescriptions = () => {
                         <ModalHeader>{t('medicalRecord.medicalRecord')} #{PrescriptionDetail.id} {t('prescription.prescriptions')} </ModalHeader>
                         <ModalCloseButton style={{ right: i18n.dir() == 'rtl' ? 'unset' : '0.75rem', left: i18n.dir() == 'rtl' ? '0.75rem' : 'unset' }} />
                         <ModalBody>
-                            {/* doctor name */}
-                            <Flex justifyContent='flex-start' alignItems='center' gap={3} mb={2}>
-                                <FaUserMd fontSize='20px' />
-                                <Text>{PrescriptionDetail.assigned_doctor.first_name + " " + PrescriptionDetail.assigned_doctor.last_name}</Text>
-                            </Flex>
-                            {/* time */}
-                            <Flex justifyContent='flex-start' alignItems='center' gap={3}>
-                                <MdSick fontSize='20px' />
-                                <Text>{PrescriptionDetail.patient.first_name + " " + PrescriptionDetail.patient.last_name} #{PrescriptionDetail.patient_id}</Text>
-                            </Flex>
-                            <Divider mt={3} mb={3} />
+
                             <Select onChange={(e) => handleSelectPrescription(e.target.value)}>
                                 {PrescriptionDetail.prescriptions.length > 0 && PrescriptionDetail.prescriptions.map((item, index) => (
                                     <option key={index} value={index}>#{item.id} {item.name} ({changeFormat(item.created_at)})</option>
 
                                 ))}
                             </Select>
+
+
                             <Divider mt={3} mb={3} />
                             {PrescriptionDetail.prescriptions[SelectedPrescription] && (
                                 <Box maxH='50vh' overflow='auto' >
                                     <Text mb={2} fontSize='20px' fontWeight='bold'>
                                         {t('prescription.prescriptionDetail')}
                                     </Text>
+                                    <Box mb={2} bg={colorModeValueGrayBg} borderRadius='md'>
+                                        <Flex justifyContent='flex-start' alignItems='center' gap={3} mb={2} p={2} pl={5} pb={0}>
+                                            <Text>{t('prescription.patient')}: </Text>
+                                            <Text>{PrescriptionDetail.patient.first_name + " " + PrescriptionDetail.patient.last_name} #{PrescriptionDetail.patient_id}</Text>
+                                        </Flex>
+                                        {/* doctor name */}
+                                        <Flex justifyContent='flex-start' alignItems='center' gap={3} mb={2} p={2} pl={5} pt={0}>
+                                            <Text>{t('prescription.doctor')}: </Text>
+                                            <Text>{PrescriptionDetail.prescriptions[SelectedPrescription].doctor.first_name + " " + PrescriptionDetail.prescriptions[SelectedPrescription].doctor.last_name}</Text>
+                                        </Flex>
+                                    </Box>
                                     <Table variant='simple' colorScheme='blackAlpha' border={colorModeValue1} borderColor={tableBorderColor}>
                                         <Thead>
                                             <Tr>

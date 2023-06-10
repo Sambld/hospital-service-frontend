@@ -168,7 +168,7 @@ const Patient = () => {
         setLoading(true)
         setMed({ 'ok': false })
 
-        useLoader("/patients/" + id + "/medical-records/" + med).then(res => {
+        useLoader("/patients/" + id + "/medical-records/" + med + "?withDoctor=true").then(res => {
             setLoadingRecord(false)
             setLoading(false)
             if (res?.data == undefined) {

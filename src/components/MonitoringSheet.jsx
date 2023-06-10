@@ -261,6 +261,24 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                         </Td>
                                     ))}
                                 </Tr>
+
+                                <Tr>
+                                    <Td border='2px'>
+                                        <Text>
+                                            {t('prescription.doctor').toUpperCase()}
+                                        </Text>
+                                    </Td>
+                                    {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
+                                        <Td
+                                            key={index}
+                                        >
+                                            {item?.doctor ? <Badge p={2} borderRadius='md' colorScheme="red">{item?.doctor?.first_name + " " + item?.doctor?.last_name}</Badge> : <Badge colorScheme='blue'>
+                                                {t('global.empty')}
+                                            </Badge>}
+                                        </Td>
+                                    ))}
+                                </Tr>
+
                                 <Tr>
                                     <Td border='2px'>
                                         <Text>
@@ -275,6 +293,23 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                                 {t('global.empty')}
                                             </Badge>}
                                         </Td>
+                                    ))}
+                                </Tr>
+
+                                <Tr>
+                                    <Td border='2px'>
+                                        <Text>
+                                            {t('medicalRecord.report').toUpperCase()}
+                                        </Text>
+                                    </Td>
+                                    {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
+                                        <Td
+                                        key={index}
+                                    >
+                                        {item.report || <Badge colorScheme='blue'>
+                                            {t('global.empty')}
+                                        </Badge>}
+                                    </Td>
                                     ))}
                                 </Tr>
 
@@ -343,7 +378,6 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                         <Center mt={3}>
                             {user.role === 'doctor' &&
                                 !medical_record?.state_upon_exit &&
-                                medical_record?.user_id === user.id &&
                                 (
                                     <Button colorScheme='blue' onClick={openMonitoringForm}>
                                         {t('medicalRecord.createNow')}

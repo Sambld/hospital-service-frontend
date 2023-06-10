@@ -66,7 +66,7 @@ const OBservationImages = ({ Observation, closeAndRefresh, patientId, user, medi
             if (res.data.message == 'observation deleted successfully.') {
                 closeAndRefresh(
                     {
-                        title: f('medicalRecord.observationInfo.deleted'),
+                        title: t('medicalRecord.observationInfo.deleted'),
                         status: 'success',
                     }
                 )
@@ -92,6 +92,7 @@ const OBservationImages = ({ Observation, closeAndRefresh, patientId, user, medi
             <Box m={2} p={5} border='2px' borderColor='gray.300' borderRadius={10} color="blue.900">
                 <SummaryItem label="Observation title">{Observation.name}</SummaryItem>
                 <SummaryItem label="Created date">{new Date(Observation.created_at).toISOString().slice(0, 10)}</SummaryItem>
+                <SummaryItem label={t('prescription.doctor')}>{Observation.doctor.first_name + " " + Observation.doctor.last_name }</SummaryItem>
             </Box>
             <Box mb={2}>
                 <Flex justifyContent='flex-end' gap={2}>
@@ -128,7 +129,7 @@ const OBservationImages = ({ Observation, closeAndRefresh, patientId, user, medi
                         <Text ml={2}>Print All</Text>
                     </Button> */}
                     {/* Delete Observation */}
-                    {user.id == medical_record.user_id &&
+                    {user.id == Observation.doctor.id &&
                         <Button
                             bg='red.500'
                             color='white'

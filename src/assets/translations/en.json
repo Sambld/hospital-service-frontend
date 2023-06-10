@@ -82,10 +82,10 @@
         "activeMedicalRecords": "Active Medical Records",
         "todayAvailableMonitoringSheet": "Today Available Monitoring Sheets",
         "latestFilledMonitoringSheet": "Lastest Filled Monitoring Sheets",
-        "administratorNumber": "Administrator Number",
-        "doctorNumber": "Doctor Number",
-        "nurseNumber": "Nurse Number",
-        "pharmacistNumber": "Pharmacist Number",
+        "administratorNumber": "Administrators Count",
+        "doctorNumber": "Doctors Count",
+        "nurseNumber": "Nurses Count",
+        "pharmacistNumber": "Pharmacists Count",
         "patientNumber": "Patients Count",
         "todayMedicalRecords": "Active Medical Records",
         "todayAvailable": "Available Monitoring Sheets",
@@ -244,7 +244,9 @@
         "medicalEspeciality": "Medical Especiality",
         "injection": "Injection",
         "tablet": "Tablet",
-        "syrup": "Syrup"
+        "syrup": "Syrup",
+        "createdBy": "Created By",
+        "report": "Report"
     },
 
     "medicine": {

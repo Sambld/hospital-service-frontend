@@ -244,7 +244,9 @@
         "medicalEspeciality": "التخصص الطبي",
         "injection": "حقنة",
         "tablet": "قرص",
-        "syrup": "شراب"
+        "syrup": "شراب",
+        "createdBy": "تم الإنشاء بواسطة",
+        "report": "تقرير"
     },
     "medicine": {
         "name": "اسم",

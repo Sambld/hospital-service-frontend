@@ -454,7 +454,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
 
             )}
 
-            {user && user?.role == 'doctor' && (
+            {user && (
                 <>
                     <Divider my={3} />
                     <Box mt={3} border='1px solid' borderColor='gray.300' borderRadius='md' p={3}>
@@ -577,7 +577,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                         type="submit"
                         isLoading={loading}
                         loadingText="Adding"
-                        isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id)}
+                        isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id )|| formData.medicines.length === 0 || Dose != ""}
                     >
                         {/* add icon */}
                         <AiOutlinePlus />

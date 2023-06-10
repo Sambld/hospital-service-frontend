@@ -246,7 +246,7 @@ const Dashboard = () => {
     }
     const getActiveMedicalRecords = () => {
         setInfoLoading(true)
-        useLoader('/medical-records?doctorId=' + user.id + '&isActive=true')
+        useLoader('/medical-records?isActive=true')
             .then(res => {
                 setInfoLoading(false)
                 const data = res.map((item) => {

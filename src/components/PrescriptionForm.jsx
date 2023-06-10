@@ -52,7 +52,6 @@ import { useTranslation } from 'react-i18next';
 
 const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMode, prescription }) => {
     const [formData, setFormData] = useState({
-        name: prescription ? prescription.name : '',
         medicines: prescription ? prescription.medicine_requests.map((medicine) => {
             return {
                 value: medicine.medicine.id,
@@ -67,7 +66,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
 
     const [options, setOptions] = useState([]);
     const [selectedMedicine, setSelectedMedicine] = useState(null);
-    const [Quantity, setQuantity] = useState(1);
+    const [Quantity, setQuantity] = useState(0);
 
     const [selectedDeleteMedicine, setSelectedDeleteMedicine] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
@@ -136,37 +135,23 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
     const handleEdit = (event) => {
         setLoading(true);
         try {
-            usePut('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/prescriptions/' + prescription.id, {
-                name: formData.name,
-            }).then(async (res) => {
-                MedicinesEdit(prescription.id).then(() => {
-                    setLoading(false);
-                    closeAndRefresh(
-                        {
-                            title: t('prescription.prescriptionInfo.updated'),
-                            status: 'success',
-                        }
-                    )
-                }).catch((err) => {
-                    console.log('hihihihi')
-                    setLoading(false);
-                    closeAndRefresh({
-                        title: 'Error',
-                        description: 'Error updating prescription.',
-                        status: 'error',
-                        duration: 5000,
-                        isClosable: true,
-                    })
-                })
-            }).catch((err) => {
+            MedicinesEdit(prescription.id).then(() => {
                 setLoading(false);
                 closeAndRefresh(
                     {
-                        title: 'Error',
-                        description: err.response.data.message,
-                        status: 'error',
+                        title: t('prescription.prescriptionInfo.updated'),
+                        status: 'success',
                     }
                 )
+            }).catch((err) => {
+                setLoading(false);
+                closeAndRefresh({
+                    title: 'Error',
+                    description: 'Error updating prescription.',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                })
             })
         } catch (err) {
             console.log(err)
@@ -365,7 +350,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
 
     return (
         <Form onSubmit={handleSubmit}>
-            <FormControl id='name' isRequired>
+            {/* <FormControl id='name' isRequired>
                 <FormLabel>
                     {t('global.title')}
                 </FormLabel>
@@ -381,8 +366,8 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                         }));
                     }}
                 />
-            </FormControl>
-            <Divider mt='10px' mb='10px' />
+            </FormControl> 
+            <Divider mt='10px' mb='10px' />*/}
             {/* choose medicines */}
             <Box>
 
@@ -406,9 +391,9 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                         <Tbody>
                             {formData.medicines.length === 0 && <Tr><Td colSpan={4} textAlign='center'>{t('medicine.noMedicinesAddedYet')}</Td></Tr>}
                             {formData.medicines.map((medicine) => (
-                                <Tr key={medicine.value} bg={EditMode ? prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) ? useColorModeValue('gray.50', 'gray.600') : useColorModeValue('green.50','green.900') :  useColorModeValue('gray.50', 'gray.600')}>
+                                <Tr key={medicine.value} bg={EditMode ? prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) ? useColorModeValue('gray.50', 'gray.600') : useColorModeValue('green.50', 'green.900') : useColorModeValue('gray.50', 'gray.600')}>
                                     <Td fontSize={13}>
-                                        {EditMode ? !prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) && <Text color={useColorModeValue('green.700','green.300')} >{t('medicine.new')} !</Text> : ""}
+                                        {EditMode ? !prescription?.medicine_requests.find((med) => med.medicine.id === medicine.value) && <Text color={useColorModeValue('green.700', 'green.300')} >{t('medicine.new')} !</Text> : ""}
                                         {medicine.label}
                                     </Td>
                                     <Td fontSize={13}>{medicine.quantity}</Td>
@@ -418,7 +403,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                                             <IconButton
                                                 aria-label="Edit"
                                                 icon={<EditIcon />}
-                                                color={useColorModeValue('green.500','green.300')}
+                                                color={useColorModeValue('green.500', 'green.300')}
                                                 colorScheme='green'
                                                 borderRadius={5}
                                                 isDisabled={!medicine.editable}
@@ -435,7 +420,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                                         <IconButton
                                             aria-label="Remove"
                                             icon={<CloseIcon />}
-                                            color={useColorModeValue('red.500','red.300')}
+                                            color={useColorModeValue('red.500', 'red.300')}
                                             colorScheme='red'
                                             isDisabled={!medicine.editable}
                                             borderRadius={5}
@@ -538,7 +523,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
                     {t('global.close')}
                 </Button>
-                <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" >
+                <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" isDisabled={formData.medicines.length === 0 || Quantity == 0}>
                     {/* add icon */}
                     {EditMode ? <EditIcon /> : <AiOutlinePlus />}
                     <Text mx="5px" >{EditMode ? t('global.edit') : t('global.add')}</Text>
