@@ -553,33 +553,31 @@ const Dashboard = () => {
                     gap={6}>
                     <GridItem area={'state'}>
                         {/* Calendar */}
-                        {/* {user?.role === 'pharmacist' && (
-                            <Box mb={3}>
-                                <Calendar startDate={new Date()} setSelectedDate={setDashboardDefaultDate} />
+                        {user?.role === 'pharmacist' && (
+                            <Box
+                                p={2}
+                                mb={3}
+                                h='100px'
+                                fontSize={25}
+                                bg={useColorModeValue("gray.100", "gray.700")}
+                                color={useColorModeValue("gray.700", "gray.100")}
+                                borderRadius='xl'
+                                border='2px solid'
+                                borderColor={useColorModeValue("gray.300", "gray.300")}
+                                cursor='pointer'
+                                onClick={() => onOpen()}
+                                readOnly
+                                display='flex'
+                                justifyContent='center'
+                                alignItems='center'
+                                gap={3}
+                            >
+                                {formatDate(selectedDate)}
+                                <Icon as={BiCalendar} fontSize='35px' />
                             </Box>
-                        )} */}
+                        )}
 
-                        <Box
-                            p={2}
-                            mb={3}
-                            h='100px'
-                            fontSize={25}
-                            bg={useColorModeValue("gray.100", "gray.700")}
-                            color={useColorModeValue("gray.700", "gray.100")}
-                            borderRadius='xl'
-                            border='2px solid'
-                            borderColor={useColorModeValue("gray.300", "gray.300")}
-                            cursor='pointer'
-                            onClick={() => onOpen()}
-                            readOnly
-                            display='flex'
-                            justifyContent='center'
-                            alignItems='center'
-                            gap={3}
-                        >
-                            {formatDate(selectedDate)}
-                            <Icon as={BiCalendar} fontSize='35px' />
-                        </Box>
+
 
                         {/* Data info */}
                         <Box

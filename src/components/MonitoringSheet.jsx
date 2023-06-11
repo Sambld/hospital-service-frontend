@@ -28,7 +28,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
         let date_ = new Date(date);
         const year = date_.getUTCFullYear();
         const month = (date_.getUTCMonth() + 1).toString().padStart(2, '0'); // pad month with leading zero if less than 10
-        const day = date_.getUTCDate().toString().padStart(2, '0'); // pad day with leading zero if less than 10
+        const day = date_.getDate().toString().padStart(2, '0'); // pad day with leading zero if less than 10
 
         return `${year}-${month}-${day}`;
     };
@@ -36,7 +36,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
     const getToday = () => {
         if (data && data.length > 0) {
             const today = formatDate(new Date());
-            const todayIndex = data.findIndex(item => formatDate(item.filling_date) == today);
+            const todayIndex = data.findIndex(item => formatDate(item.filling_date) == formatDate(today));
             const diffDays = todayIndex == -1 ? 0 : todayIndex;
             setCurrentDay(diffDays);
         }
@@ -171,8 +171,8 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                     {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
                                         <Th
                                             key={index}
-                                            bg={item.filling_date == formatDate(new Date()) ? 'gray.500' : 'white'}
-                                            color={item.filling_date == formatDate(new Date()) ? 'white' : 'black'}
+                                            bg={formatDate(item.filling_date) == formatDate(new Date()) ? 'gray.500' : 'white'}
+                                            color={formatDate(item.filling_date) == formatDate(new Date()) ? 'white' : 'black'}
                                             borderY='2px'
                                             borderColor={colorModeValue3}
                                             textAlign='center'
@@ -185,7 +185,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
 
                                         >
                                             {item.filling_date}
-                                            {item.filling_date == formatDate(new Date()) && ' (today)'}
+                                            {formatDate(item.filling_date) == formatDate(new Date()) && ' (today)'}
 
                                             <Text fontSize='xs' color='green.600' fontWeight='bold'>
                                                 {user.role === 'nurse' && item?.filled_by?.id == user.id && `[${t('global.edit')}]`}
