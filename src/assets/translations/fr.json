@@ -32,7 +32,8 @@
         "day": "Jour",
         "week": "Semaine",
         "month": "Mois",
-        "year": "Année"
+        "year": "Année",
+        "1row": "une ligne"
     },
     "navbar": {
         "webSiteName": "Maladies Infectieuses",

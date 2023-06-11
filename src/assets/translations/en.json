@@ -32,7 +32,8 @@
         "day": "Day",
         "week": "Week",
         "month": "Month",
-        "year": "Year"
+        "year": "Year",
+        "1row": "1 Row"
     },
     "navbar": {
         "webSiteName": "Infectious Diseases",

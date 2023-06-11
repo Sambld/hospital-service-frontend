@@ -129,14 +129,14 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                             </Button>
                             <Select bg={colorModeValue} color={colorModeValue2} w='200px' value={selected} onChange={(e) => setSelected(parseInt(e.target.value))}>
                                 <option value='1'>
-                                    {t('global.1day')}
+                                    {t('global.1row')}
                                 </option>
-                                <option value='7'>
+                                {/* <option value='7'>
                                     {t('global.7days')}
                                 </option>
                                 <option value='30'>
                                     {t('global.30days')}
-                                </option>
+                                </option> */}
                                 <option value='0'>
                                     {t('global.all')}
                                 </option>

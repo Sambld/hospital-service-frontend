@@ -119,7 +119,7 @@ const Calendar = ({ startDate, setSelectedDate }) => {
 
     return (
         <Box bgColor={useColorModeValue("white", "gray.700")}
-         borderRadius="md" boxShadow="md">
+            borderRadius="md" boxShadow="md">
             <Flex alignItems="center" justifyContent="space-between" px={3} py={2}>
                 <Text
                     fontWeight="semibold"
@@ -133,7 +133,22 @@ const Calendar = ({ startDate, setSelectedDate }) => {
                     {type === "year" && `${currentDate.getFullYear()}`}
                     {type === "years" && `${yearsYear[0].getFullYear()} - ${yearsYear[yearsYear.length - 1].getFullYear()}`}
                 </Text>
-                <Box>
+                <Box display="flex" alignItems="center">
+                    <Box
+                        p={2}
+                        border='1px solid'
+                        borderRadius='10px'
+                        boxShadow='md'
+                        cursor='pointer'
+                        textAlign='center'
+                        onClick={() => {
+                            setCurrentDate(new Date());
+                            setFocusedDate(new Date());
+                            setSelectedDate(new Date());
+                        }}
+                    >
+                        Today
+                    </Box>
                     <IconButton
                         icon={<BsChevronUp fontSize={25} color='blue.700' />}
                         aria-label="Previous month"

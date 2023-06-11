@@ -27,6 +27,11 @@ import {
     Flex,
     Skeleton,
     useColorModeValue,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    useDisclosure,
+    Icon,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Form, NavLink, useOutletContext } from "react-router-dom";
@@ -39,7 +44,7 @@ import Calendar from '../components/Calendar';
 import { HiOutlineDocumentText, HiOutlineEmojiSad } from "react-icons/hi";
 import { BsFileEarmarkMedical } from "react-icons/bs";
 import { AiFillFolderOpen, AiOutlineMedicineBox } from "react-icons/ai";
-import { BiRefresh } from 'react-icons/bi';
+import { BiCalendar, BiRefresh } from 'react-icons/bi';
 import { FaNotesMedical, FaClock } from 'react-icons/fa';
 import { RiCalendarCheckLine, RiFileList2Line, RiChatCheckLine } from 'react-icons/ri';
 
@@ -64,6 +69,9 @@ const Dashboard = () => {
     const [StaffInfo, setStaffInfo] = useState([])
 
     const [infoLoading, setInfoLoading] = useState(true)
+
+    const { isOpen, onOpen, onClose } = useDisclosure()
+
     const tableHeaderBgColor = useColorModeValue('#fafafa', 'gray.800');
     const tableHeaderTextColor = 'white';
     const tableRowBgColor = useColorModeValue('gray.50', 'gray.900');
@@ -134,7 +142,11 @@ const Dashboard = () => {
 
     const changeFormat = (date) => {
         let date_ = new Date(date)
-        return date_.getUTCDate() + '-' + (date_.getUTCMonth() + 1) + '-' + date_.getUTCFullYear() + '/' + date_.getUTCHours() + ':' + date_.getUTCMinutes()
+        return date_.getDate() + '-' + (date_.getUTCMonth() + 1) + '-' + date_.getUTCFullYear() + '/' + date_.getUTCHours() + ':' + date_.getUTCMinutes()
+    }
+    const formatDate = (date) => {
+        let date_ = new Date(date)
+        return date_.getDate() + '-' + (date_.getUTCMonth() + 1) + '-' + date_.getUTCFullYear()
     }
 
     const getDashboardData = () => {
@@ -541,11 +553,34 @@ const Dashboard = () => {
                     gap={6}>
                     <GridItem area={'state'}>
                         {/* Calendar */}
-                        {user?.role === 'pharmacist' && (
+                        {/* {user?.role === 'pharmacist' && (
                             <Box mb={3}>
                                 <Calendar startDate={new Date()} setSelectedDate={setDashboardDefaultDate} />
                             </Box>
-                        )}
+                        )} */}
+
+                        <Box
+                            p={2}
+                            mb={3}
+                            h='100px'
+                            fontSize={25}
+                            bg={useColorModeValue("gray.100", "gray.700")}
+                            color={useColorModeValue("gray.700", "gray.100")}
+                            borderRadius='xl'
+                            border='2px solid'
+                            borderColor={useColorModeValue("gray.300", "gray.300")}
+                            cursor='pointer'
+                            onClick={() => onOpen()}
+                            readOnly
+                            display='flex'
+                            justifyContent='center'
+                            alignItems='center'
+                            gap={3}
+                        >
+                            {formatDate(selectedDate)}
+                            <Icon as={BiCalendar} fontSize='35px' />
+                        </Box>
+
                         {/* Data info */}
                         <Box
                             p={5}
@@ -815,6 +850,25 @@ const Dashboard = () => {
                     </GridItem>
                 </Grid>
             )}
+
+            <Modal isOpen={isOpen} onClose={onClose} size='xl'>
+                <ModalOverlay />
+                <ModalContent>
+                    <Calendar
+                        startDate={
+                            () => {
+                                let date = new Date(selectedDate);
+                                return date
+                            }}
+                        setSelectedDate={
+                            (date) => {
+                                let choosenDate = new Date(date);
+                                setDashboardDefaultDate(choosenDate);
+                                onClose()
+                            }
+                        } />
+                </ModalContent>
+            </Modal>
         </Box>
     );
 }

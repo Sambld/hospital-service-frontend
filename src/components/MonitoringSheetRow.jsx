@@ -68,6 +68,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
 
     const [addedTreatments, setAddedTreatments] = useState([]);
     const [deletedTreatments, setDeletedTreatments] = useState([]);
+    const [report, setReport] = useState('')
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [deleteLoading, setDeleteLoading] = useState(false);
@@ -93,7 +94,9 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                 blood_pressure: (data?.blood_pressure || ''),
                 temperature: (data?.temperature || ''),
                 weight: (data?.weight || ''),
+                progress_report: (data?.progress_report || ''),
             }));
+            setReport(data?.progress_report || '')
         }
     }, [data]);
 
@@ -171,17 +174,21 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
         const progressUnit = 100 / deletedTreatments.length;
         try {
             setLoading(true);
+            if (report != formData.progress_report){
+                await MonitoringSheetReportEdit()
+            }
+
             if (addedTreatments.length > 0) {
                 await MonitoringSheetMedAdd(progressUnit * addedTreatments.length)
-                .catch((err) => {
-                    throw new Error(err?.response?.data?.message || err.message);
-                })
+                    .catch((err) => {
+                        throw new Error(err?.response?.data?.message || err.message);
+                    })
             }
             if (deletedTreatments.length > 0) {
                 await handleDeleteAllTreatments(progressUnit * deletedTreatments.length)
-                .catch((err) => {
-                    throw new Error(err?.response?.data?.message || err.message);
-                })
+                    .catch((err) => {
+                        throw new Error(err?.response?.data?.message || err.message);
+                    })
             }
             setLoading(false);
             closeAndRefresh(
@@ -242,6 +249,18 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
             return true
         } catch (err) {
             return Promise.reject(err);
+        }
+    }
+    
+    const MonitoringSheetReportEdit = async () => {
+        try{
+            const promise = usePut('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + data.id, {
+                progress_report: report
+            })
+            Promise.all(promises)
+            return true
+        }catch (err){
+            console.log(err)
         }
     }
 
@@ -394,8 +413,37 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
             }
             <Divider my={3} />
             <Box>
+
+                <Heading size='md' mb={3}>
+                    {t('medicalRecord.report')}
+                </Heading>
+                <Textarea
+                        name='report'
+                        value={formData.progress_report}
+                        onChange={(e) => setFormData((prevFormData) => ({
+                            ...prevFormData,
+                            progress_report: e.target.value,
+                        }))}
+                        placeholder={t('medicalRecord.report')}
+                        size='sm'
+                        bg={useColorModeValue('gray.50', 'gray.700')}
+                        borderRadius={5}
+                        boxShadow='md'
+                    />
+                {/* <Box
+                    p={2}
+                    border='1px'
+                    borderColor='gray.300'
+                    borderRadius='md'
+                >
+                    <Text>
+                        {formData.progress_report}
+                    </Text>
+                </Box> */}
+
                 {data && data.treatments && data.treatments.length > 0 && (
                     <Box>
+                        <Divider my={3} />
                         <Heading size='md' mb={3}>
                             {t('medicalRecord.treatments')}
                         </Heading>
@@ -657,7 +705,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                         isLoading={loading}
                         loadingText="Editing"
                         onClick={(e) => handleSubmit(e)}
-                        isDisabled={loadingData || formData.medicines.length === 0 || Dose != ""}
+                        isDisabled={loadingData || Dose != ""}
                     >
                         {/* add icon */}
                         <BiPencil />
@@ -673,7 +721,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                         type="submit"
                         isLoading={loading}
                         loadingText="Editing"
-                        isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id) || formData.medicines.length === 0 || Dose != ""}
+                        isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id) || Dose != ""}
                     >
                         {/* add icon */}
                         <BiPencil />
@@ -687,7 +735,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                         type="submit"
                         isLoading={loading}
                         loadingText="Adding"
-                        isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id) || formData.medicines.length === 0 || Dose != ""}
+                        isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id) || Dose != ""}
                     >
                         {/* add icon */}
                         <AiOutlinePlus />

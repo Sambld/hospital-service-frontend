@@ -352,7 +352,6 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                         boxShadow='md'
                     />
                 </FormControl>
-
             </Box>
             {selectedMedicine && (
                 <Box
@@ -391,7 +390,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
                     {t('global.cancel')}
                 </Button>
-                <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" isDisabled={formData.medicines.length === 0 || Dose != ""} >
+                <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" isDisabled={Dose != ""} >
                     {/* add icon */}
                     <AiOutlinePlus />
                     <Text mx="5px" >

@@ -522,7 +522,7 @@ const Statistics = () => {
                         </Box>
                     </Flex>
                     {CurrentStatisticsType === 'md' && (
-                        <Box display='flex' flexDir='column' gap={3} p={2} bg='white'>
+                        <Box display='flex' flexDir='column' gap={3} p={2} bg={colorModeValue3} borderTopRadius='10px'>
                             <AsyncSelect
                                 placeholder="Select Medicines"
                                 name='medicineSearch'
@@ -592,7 +592,6 @@ const Statistics = () => {
                             _hover={{ bg: colorModeValue4 }}
                             onClick={() => onOpen()}
                             readOnly
-                            value={formatDate(selectedDate)}
                             display='flex'
                             justifyContent='space-between'
                             w='160px'
