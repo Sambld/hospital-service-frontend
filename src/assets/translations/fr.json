@@ -212,7 +212,8 @@
             "monitoringSheetRow": "Ligne de la feuille de surveillance",
             "updated": "Ligne de la feuille de surveillance mise à jour",
             "added": "Ligne de la feuille de surveillance ajoutée",
-            "deleted": "Ligne de la feuille de surveillance supprimée"
+            "deleted": "Ligne de la feuille de surveillance supprimée",
+            "deleteFirstFromTreatments": "Veuillez d'abord supprimer la medicine des traitements."
         },
         "observationInfo": {
             "created": "Observation créée avec succès.",

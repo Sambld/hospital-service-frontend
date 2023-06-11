@@ -30,14 +30,21 @@ import {
     Select,
     Progress,
     useToast,
-    useColorModeValue
+    useColorModeValue,
+    Modal,
+    useDisclosure,
+    AlertDialog,
+    AlertDialogOverlay,
+    AlertDialogContent,
+    AlertDialogBody,
+    AlertDialogFooter
 } from '@chakra-ui/react';
 import { Form } from 'react-router-dom';
 import usePost from '../hooks/usePost';
 import AsyncSelect from 'react-select/async';
 
 import { AiOutlineDelete, AiOutlinePlus, AiOutlineUndo } from 'react-icons/ai';
-import { CloseIcon } from '@chakra-ui/icons';
+import { CloseIcon, EditIcon } from '@chakra-ui/icons';
 import useLoader from '../hooks/useLoader';
 import { BiPencil } from 'react-icons/bi';
 import { useEffect } from 'react';
@@ -48,10 +55,10 @@ import { useTranslation } from 'react-i18next';
 
 const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRefresh, loadingData }) => {
     const [examinations, setExaminations] = useState([
-        { name: 'urine', label: 'Urine', suffix: 'ml' },
-        { name: 'blood_pressure', label: 'Blood Pressure', suffix: 'mmHg' },
-        { name: 'temperature', label: 'Temperature', suffix: '°C' },
-        { name: 'weight', label: 'Weight', suffix: 'kg' },
+        { name: 'urine', label: 'Urine', suffix: 'ml', type: 'number' },
+        { name: 'blood_pressure', label: 'Blood Pressure', suffix: 'mmHg', type: 'text', placeholder: '.../...' },
+        { name: 'temperature', label: 'Temperature', suffix: '°C', type: 'text', placeholder: '' },
+        { name: 'weight', label: 'Weight', suffix: 'kg', type: 'number' },
     ]);
     const [formData, setFormData] = useState({
         medicines: [],
@@ -61,6 +68,10 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
 
     const [addedTreatments, setAddedTreatments] = useState([]);
     const [deletedTreatments, setDeletedTreatments] = useState([]);
+
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
 
     const [options, setOptions] = useState([]);
     const [selectedMedicine, setSelectedMedicine] = useState(null);
@@ -78,10 +89,10 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
             setFormData((prev) => ({
                 ...prev,
                 medicines: data.treatments,
-                urine: (data?.urine || 0),
-                blood_pressure: (data?.blood_pressure || 0),
-                temperature: (data?.temperature || 0),
-                weight: (data?.weight || 0),
+                urine: (data?.urine || ''),
+                blood_pressure: (data?.blood_pressure || ''),
+                temperature: (data?.temperature || ''),
+                weight: (data?.weight || ''),
             }));
         }
     }, [data]);
@@ -100,6 +111,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
         try {
             // GET DATS OF NEXT TIMEFIELD DAYS
             const { medicines, ...rest } = formData;
+
             // make rest string
             let allZero = true;
             Object.keys(rest).forEach((key) => {
@@ -109,7 +121,11 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                 }
             });
 
+            // check if there is an error
             if (!allZero) {
+                if (rest['blood_pressure'] != "" && rest['blood_pressure'].split('/').length != 2) {
+                    throw new Error('blood pressure must be in format of x/y');
+                }
                 usePut('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + data.id, rest).then((res) => {
                     setLoading(false);
                     closeAndRefresh(
@@ -120,11 +136,13 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     )
                 }).catch((err) => {
                     setLoading(false);
-                    closeAndRefresh(
+                    toast(
                         {
                             title: 'Error',
-                            description: err.message,
+                            description: err?.response?.data?.message || err.message,
                             status: 'error',
+                            duration: 9000,
+                            isClosable: true,
                         }
                     )
                 })
@@ -134,11 +152,18 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     {
                         title: "make at least one change",
                         status: 'error',
+                        duration: 9000,
+                        isClosable: true,
                     }
                 )
             }
         } catch (err) {
-            console.log(err)
+            toast({
+                title: err.message,
+                status: 'error',
+            })
+            setLoading(false);
+            setUploadProgress(0);
         }
     };
 
@@ -147,10 +172,16 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
         try {
             setLoading(true);
             if (addedTreatments.length > 0) {
-                await MonitoringSheetMedAdd(progressUnit * addedTreatments.length);
+                await MonitoringSheetMedAdd(progressUnit * addedTreatments.length)
+                .catch((err) => {
+                    throw new Error(err?.response?.data?.message || err.message);
+                })
             }
             if (deletedTreatments.length > 0) {
-                await handleDeleteAllTreatments(progressUnit * deletedTreatments.length);
+                await handleDeleteAllTreatments(progressUnit * deletedTreatments.length)
+                .catch((err) => {
+                    throw new Error(err?.response?.data?.message || err.message);
+                })
             }
             setLoading(false);
             closeAndRefresh(
@@ -160,15 +191,38 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                 }
             )
         } catch (err) {
-            closeAndRefresh(
-                {
-                    title: 'Error',
-                    description: err.message,
-                    status: 'error',
-                }
-            )
+            toast({
+                title: err.message,
+                status: 'error',
+                duration: 9000,
+                isClosable: true,
+            })
+            setLoading(false);
+            setUploadProgress(0);
         }
 
+    }
+
+    const handleDelete = async () => {
+        setDeleteLoading(true);
+        try {
+            await useDelete('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + data.id);
+            setDeleteLoading(false);
+            closeAndRefresh(
+                {
+                    title: t('medicalRecord.monitoringSheetInfo.deleted'),
+                    status: 'success',
+                }
+            )
+        } catch (err) {
+            toast({
+                title: err.message,
+                status: 'error',
+                duration: 9000,
+                isClosable: true,
+            })
+            setDeleteLoading(false);
+        }
     }
 
     const handleDeleteAllTreatments = async (pu) => {
@@ -179,17 +233,15 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     .then((res) => {
                         setUploadProgress((prev) => prev + pu);
 
+                    }).catch((err) => {
+                        throw new Error(err?.response?.data?.message || err.message);
                     })
                 promises.push(promise);
             })
             await Promise.all(promises);
             return true
         } catch (err) {
-            toast({
-                title: 'Error',
-                description: err.message,
-                status: 'error',
-            });
+            return Promise.reject(err);
         }
     }
 
@@ -218,14 +270,35 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
         if (!selectedMedicine || !Dose || type === '') return;
         event.preventDefault();
 
+        // check if medicine is already added
         const medicine = {
             ...selectedMedicine,
             dose: Dose,
             type: type,
         };
-        setAddedTreatments((prevFormData) =>
-            [...prevFormData, medicine]
-        );
+        if (formData.medicines.find((med) => med.medicine_id === selectedMedicine.value)) {
+            toast(
+                {
+                    title: t('medicalRecord.monitoringSheetInfo.deleteFirstFromTreatments'),
+                    status: 'info',
+                    duration: 9000,
+                    isClosable: true,
+                }
+            )
+            return false;
+        }
+        if (addedTreatments.find((med) => med.value === selectedMedicine.value)) {
+            setAddedTreatments((prevFormData) =>
+                prevFormData.map((med) =>
+                    med.value === selectedMedicine.value ? medicine : med
+                )
+            );
+
+        } else {
+            setAddedTreatments((prevFormData) =>
+                [...prevFormData, medicine]
+            );
+        }
         setSelectedMedicine(null);
         setDose('');
         setType('SC');
@@ -290,24 +363,35 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                         </Text>
                     </FormLabel>
                     {/* <InputGroup> */}
-                    <NumberInput
-                        value={formData[examination.name]}
-                        onChange={(value) => setFormData((prevFormData) => ({
-                            ...prevFormData,
-                            [examination.name]: parseInt(value) || 0,
-                        }))}
-                        isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id)}
-                    >
-                        <NumberInputField borderRightRadius={0} />
-                        <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                        </NumberInputStepper>
-                    </NumberInput>
-                    {/* <InputRightAddon children='Days' /> */}
-                    {/* </InputGroup> */}
+                    {examination.type == 'text' ? (
+                        <Input
+                            w='auto'
+                            textAlign='center'
+                            placeholder={examination.placeholder}
+                            value={formData[examination.name]}
+                            onChange={(e) => setFormData((prevFormData) => ({
+                                ...prevFormData,
+                                [examination.name]: e.target.value || '',
+                            }))}
+                            isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id)}
+                        />
+
+                    ) : (
+                        <Input
+                            w='auto'
+                            type='number'
+                            textAlign='center'
+                            value={formData[examination.name]}
+                            onChange={(e) => setFormData((prevFormData) => ({
+                                ...prevFormData,
+                                [examination.name]: e.target.value || '',
+                            }))}
+                            isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id)}
+                        />
+                    )}
                 </FormControl>
-            ))}
+            ))
+            }
             <Divider my={3} />
             <Box>
                 {data && data.treatments && data.treatments.length > 0 && (
@@ -361,7 +445,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                                             <Td>{medicine.dose}</Td>
                                             <Td>{medicine.type}</Td>
                                             <Td>
-                                                {user && user?.role == 'doctor' && (
+                                                {user && user?.role == 'doctor' && user?.id == data?.user_id && (
                                                     <Button
                                                         size='sm'
                                                         colorScheme='red'
@@ -387,160 +471,185 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                 )}
             </Box>
             {/* <Divider my={3} /> */}
-            {user && user?.role == 'doctor' && addedTreatments.length > 0 && (
-                <>
-                    <Divider my={3} />
-                    <Box mt={3}>
-                        <Heading size='md' mb={3}>
-                            {t('medicalRecord.addedTreatments')}
-                        </Heading>
-                        <Box maxH='300px' overflowY='auto' display='flex' flexDirection='column' border='1px solid' borderColor='gray.300' borderRadius='md' p={3} gap={5}>
-                            {addedTreatments.length > 0 && addedTreatments.map((treatment, index) => (
-                                <Box key={index} display='flex' justifyContent='space-between'>
-                                    <Text w='200px'>{treatment.label}</Text>
-                                    <Text>{treatment.dose}</Text>
-                                    <Text>{treatment.type}</Text>
-                                    <Button
-                                        size='sm'
-                                        colorScheme='green'
-                                        variant='outline'
-                                        onClick={() => {
-                                            setAddedTreatments((prev) => prev.filter((med) => med.id != treatment.id))
-                                        }}
-                                    >
-                                        <AiOutlineDelete />
-                                    </Button>
+            {
+                user && user?.role == 'doctor' && addedTreatments.length > 0 && (
+                    <>
+                        <Divider my={3} />
+                        <Box mt={3}>
+                            <Heading size='md' mb={3}>
+                                {t('medicalRecord.addedTreatments')}
+                            </Heading>
+                            <Box maxH='300px' overflowY='auto' display='flex' flexDirection='column' border='1px solid' borderColor='gray.300' borderRadius='md' p={3} gap={5}>
+                                {addedTreatments.length > 0 && addedTreatments.map((treatment, index) => (
+                                    <Box key={index} display='flex' justifyContent='space-between'>
+                                        <Text w='200px'>{treatment.label}</Text>
+                                        <Text>{treatment.dose}</Text>
+                                        <Text>{treatment.type}</Text>
+                                        <Button
+                                            size='sm'
+                                            colorScheme='green'
+                                            variant='outline'
+                                            onClick={() => {
+                                                setAddedTreatments((prev) => prev.filter((med) => med.value != treatment.value))
+                                            }}
+                                        >
+                                            <AiOutlineDelete />
+                                        </Button>
 
-                                </Box>
-                            ))}
+                                    </Box>
+                                ))}
+                            </Box>
                         </Box>
-                    </Box>
-                </>
-            )}
+                    </>
+                )
+            }
 
-            {user && user?.role == 'doctor' && deletedTreatments.length > 0 && (
-                <>
-                    <Divider my={3} />
-                    <Box mt={3}>
-                        <Heading size='md' mb={3}>
-                            {t('medicalRecord.deletedTreatments')}
-                        </Heading>
-                        <Box maxH='300px' overflowY='auto' display='flex' flexDirection='column' border='1px solid' borderColor='gray.300' borderRadius='md' p={3} gap={5}>
-                            {deletedTreatments.length > 0 && deletedTreatments.map((treatment, index) => (
-                                <Box key={index} display='flex' justifyContent='space-between'>
-                                    <Text w='200px'>{treatment.name}</Text>
-                                    <Text>{treatment.dose}</Text>
-                                    <Text>{treatment.type}</Text>
-                                    <Button
-                                        size='sm'
-                                        colorScheme='green'
-                                        variant='outline'
-                                        onClick={() => {
-                                            setDeletedTreatments((prev) => prev.filter((med) => med.id != treatment.id))
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                medicines: [...prev.medicines, treatment]
-                                            }))
-                                        }}
-                                    >
-                                        <AiOutlineUndo />
-                                    </Button>
+            {
+                user && user?.role == 'doctor' && deletedTreatments.length > 0 && (
+                    <>
+                        <Divider my={3} />
+                        <Box mt={3}>
+                            <Heading size='md' mb={3}>
+                                {t('medicalRecord.deletedTreatments')}
+                            </Heading>
+                            <Box maxH='300px' overflowY='auto' display='flex' flexDirection='column' border='1px solid' borderColor='gray.300' borderRadius='md' p={3} gap={5}>
+                                {deletedTreatments.length > 0 && deletedTreatments.map((treatment, index) => (
+                                    <Box key={index} display='flex' justifyContent='space-between'>
+                                        <Text w='200px'>{treatment.name}</Text>
+                                        <Text>{treatment.dose}</Text>
+                                        <Text>{treatment.type}</Text>
+                                        <Button
+                                            size='sm'
+                                            colorScheme='green'
+                                            variant='outline'
+                                            onClick={() => {
+                                                setDeletedTreatments((prev) => prev.filter((med) => med.value != treatment.value))
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    medicines: [...prev.medicines, treatment]
+                                                }))
+                                            }}
+                                        >
+                                            <AiOutlineUndo />
+                                        </Button>
 
-                                </Box>
-                            ))}
+                                    </Box>
+                                ))}
+                            </Box>
                         </Box>
-                    </Box>
-                </>
+                    </>
 
-            )}
+                )
+            }
 
-            {user && (
-                <>
-                    <Divider my={3} />
-                    <Box mt={3} border='1px solid' borderColor='gray.300' borderRadius='md' p={3}>
-                        <Box display='flex' flexDir='column' gap={3}>
-                            <AsyncSelect
-                                placeholder={t('medicalRecord.selectMedicines')}
-                                name='medicineSearch'
-                                styles={{
-                                    control: (provided, state) => ({
-                                        ...provided,
-                                        background: useColorModeValue('white', 'white'),
-                                        color: useColorModeValue('white', 'white'),
-                                    }),
-                                    option: (provided, state) => ({
-                                        ...provided,
-                                        color: useColorModeValue('black', 'white'),
-                                        background: useColorModeValue('white', '#2d3748'),
-                                    }),
-                                }}
-                                loadOptions={loadOptions}
-                                value={selectedMedicine}
-                                onChange={(value) => setSelectedMedicine(value)}
-                                defaultOptions
-                            />
-                            <Input
-                                type="text"
-                                name="Dose"
-                                value={Dose}
-                                onChange={(e) => setDose(e.target.value)}
-                                placeholder={t('medicalRecord.dose')}
-                            />
+            {
+                user && user?.role == 'doctor' && (
+                    <>
+                        <Divider my={3} />
+                        <Box mt={3} border='1px solid' borderColor='gray.300' borderRadius='md' p={3}>
+                            <Box display='flex' flexDir='column' gap={3}>
+                                <AsyncSelect
+                                    placeholder={t('medicalRecord.selectMedicines')}
+                                    name='medicineSearch'
+                                    styles={{
+                                        control: (provided, state) => ({
+                                            ...provided,
+                                            background: useColorModeValue('white', 'white'),
+                                            color: useColorModeValue('white', 'white'),
+                                        }),
+                                        option: (provided, state) => ({
+                                            ...provided,
+                                            color: useColorModeValue('black', 'white'),
+                                            background: useColorModeValue('white', '#2d3748'),
+                                        }),
+                                    }}
+                                    loadOptions={loadOptions}
+                                    value={selectedMedicine}
+                                    onChange={(value) => setSelectedMedicine(value)}
+                                    defaultOptions
+                                />
+                                <Input
+                                    type="text"
+                                    name="Dose"
+                                    value={Dose}
+                                    onChange={(e) => setDose(e.target.value)}
+                                    placeholder={t('medicalRecord.dose')}
+                                />
+                            </Box>
+                            <Box mt={3} display='flex' gap={3}>
+                                <Select
+                                    name='type'
+                                    value={type}
+                                    onChange={(e) => setType(e.target.value)}
+                                >
+                                    <option value="SC">
+                                        {t('medicalRecord.sc')}
+                                    </option>
+                                    <option value="IM">
+                                        {t('medicalRecord.im')}
+                                    </option>
+                                    <option value="IV">
+                                        {t('medicalRecord.iv')}
+                                    </option>
+                                    <option value="PO">
+                                        {t('medicalRecord.po')}
+                                    </option>
+                                </Select>
+                                <IconButton
+                                    aria-label="Add"
+                                    icon={formData.medicines.find((medicine) => medicine.medicine_id == selectedMedicine?.value) ? <EditIcon /> : <AiOutlinePlus />}
+                                    colorScheme="gray"
+                                    borderRadius={5}
+                                    variant="outline"
+                                    onClick={() => addMedicine()}
+                                />
+                            </Box>
                         </Box>
-                        <Box mt={3} display='flex' gap={3}>
-                            <Select
-                                name='type'
-                                value={type}
-                                onChange={(e) => setType(e.target.value)}
-                            >
-                                <option value="SC">
-                                    {t('medicalRecord.sc')}
-                                </option>
-                                <option value="IM">
-                                    {t('medicalRecord.im')}
-                                </option>
-                                <option value="IV">
-                                    {t('medicalRecord.iv')}
-                                </option>
-                                <option value="PO">
-                                    {t('medicalRecord.po')}
-                                </option>
-                            </Select>
-                            <IconButton
-                                aria-label="Add"
-                                icon={<AiOutlinePlus />}
-                                colorScheme="gray"
-                                borderRadius={5}
-                                variant="outline"
-                                onClick={() => addMedicine()}
-                            />
-                        </Box>
-                    </Box>
-                </>
-            )}
-            {loading && (
-                <Box
-                    position='relative'
-                >
-                    <Progress mt={3} hasStripe value={uploadProgress} h='25px' bg='blue.100 ' />
-                    <Text
-                        textAlign='center'
-                        color={uploadProgress > 49 ? 'gray.50' : 'blue.700'}
-                        textShadow='0 0 1px #000'
-                        position='absolute'
-                        top='0'
-                        left='0'
-                        right='0'
-                        bottom='0'
+                    </>
+                )
+            }
+            {
+                loading && (
+                    <Box
+                        position='relative'
                     >
-                        {Math.round(uploadProgress)}%
-                    </Text>
-                </Box>
-            )}
+                        <Progress mt={3} hasStripe value={uploadProgress} h='25px' bg='blue.100 ' />
+                        <Text
+                            textAlign='center'
+                            color={uploadProgress > 49 ? 'gray.50' : 'blue.700'}
+                            textShadow='0 0 1px #000'
+                            position='absolute'
+                            top='0'
+                            left='0'
+                            right='0'
+                            bottom='0'
+                        >
+                            {Math.round(uploadProgress)}%
+                        </Text>
+                    </Box>
+                )
+            }
             <Flex justifyContent='center' mt='10px' gap={3}>
-                <Button colorScheme='blue' mr={3} onClick={closeModal}>
+                <Button colorScheme='blue' onClick={closeModal}>
                     {t('global.cancel')}
                 </Button>
+                {user && user?.role == 'doctor' && user?.id == data?.user_id && (
+                    <Button
+                        variant='solid'
+                        colorScheme='red'
+                        loadingText="Deleting"
+                        onClick={(e) => onOpen()}
+                        isDisabled={loadingData}
+                    >
+                        {/* add icon */}
+                        <AiOutlineDelete />
+                        <Text >
+                            {t('global.delete')}
+                        </Text>
+                    </Button>
+                )}
+
+
                 {user && user?.role == 'doctor' && (
                     <Button
                         variant='solid'
@@ -548,6 +657,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                         isLoading={loading}
                         loadingText="Editing"
                         onClick={(e) => handleSubmit(e)}
+                        isDisabled={loadingData || formData.medicines.length === 0 || Dose != ""}
                     >
                         {/* add icon */}
                         <BiPencil />
@@ -563,7 +673,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                         type="submit"
                         isLoading={loading}
                         loadingText="Editing"
-                        isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id)}
+                        isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id) || formData.medicines.length === 0 || Dose != ""}
                     >
                         {/* add icon */}
                         <BiPencil />
@@ -577,7 +687,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                         type="submit"
                         isLoading={loading}
                         loadingText="Adding"
-                        isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id )|| formData.medicines.length === 0 || Dose != ""}
+                        isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id) || formData.medicines.length === 0 || Dose != ""}
                     >
                         {/* add icon */}
                         <AiOutlinePlus />
@@ -587,7 +697,31 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     </Button>
                 ) : null}
             </Flex>
-        </Form>)
+            <AlertDialog
+                isOpen={isOpen}
+                onClose={onClose}
+            >
+                <AlertDialogOverlay>
+                    <AlertDialogContent maxW='300px' p={5}>
+
+                        <AlertDialogBody textAlign='center'>
+                            <Text fontSize='lg' fontWeight='bold'>
+                                {t('medicalRecord.areYouSure')}
+                            </Text>
+                        </AlertDialogBody>
+
+                        <AlertDialogFooter justifyContent='center'>
+                            <Button onClick={onClose}>
+                                {t('global.cancel')}
+                            </Button>
+                            <Button colorScheme='red' onClick={handleDelete} ml={3} isLoading={deleteLoading}>
+                                {t('global.delete')}
+                            </Button>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialogOverlay>
+            </AlertDialog>
+        </Form >)
 }
 
 export default MonitoringSheetRow;

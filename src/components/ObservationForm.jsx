@@ -137,7 +137,8 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (formData.name == '' || formData.images.imageList == {}) {
+        console.log(ImageSorted.length == 0)
+        if (formData.name == '' || ImageSorted.length == 0) {
             toast({
                 title: "Error",
                 description: t('medicalRecord.fillAllFields'),
@@ -280,13 +281,23 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
             },
         }));
     };
-    const deleteEmpty = () => {
+    const deleteEmpty = (index) => {
         for (let i = 0; i <= ImageNumber - 1; i++) {
             if (formData.images.imageList['image' + i.toString()] == '') {
                 if (!emptyImage.includes(i)) {
                     setEmptyImage((prevEmptyImage) => [...prevEmptyImage, i]);
                     setImageSorted((prevImageSorted) => prevImageSorted.filter((item) => item != i));
                 }
+            }else if(i == index){
+                setEmptyImage((prevEmptyImage) => [...prevEmptyImage, i]);
+                setImageSorted((prevImageSorted) => prevImageSorted.filter((item) => item != i));
+                setFormData((prevFormData) => {
+                    const formDataClone = { ...prevFormData };
+                    delete formDataClone.images.imageList['image' + i.toString()];
+                    delete formDataClone.images.imagePreviewUrl['image' + i.toString()];
+                    delete formDataClone.images.imageTargetFile['image' + i.toString()];
+                    return formDataClone;
+                });
             }
         }
     }
@@ -337,7 +348,7 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
             </FormControl>
             <br />
             <Flex justify='flex-end' gap={2} mb={3}>
-                <Button
+                {/* <Button
                     colorScheme="red"
                     onClick={deleteEmpty}
                 >
@@ -345,7 +356,7 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                     <Text ml={1}>
                         {t("medicalRecord.deleteEmpty")}
                     </Text>
-                </Button>
+                </Button> */}
 
                 <Button
                     colorScheme={sort ? 'green' : 'blue'}
@@ -413,25 +424,7 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                                         bgSize='cover'
                                         bgPosition='center'
                                         onClick={() => {
-                                            setFormData((prevFormData) => ({
-                                                ...prevFormData,
-                                                images: {
-                                                    ...prevFormData.images,
-                                                    imageList: {
-                                                        ...prevFormData.images.imageList,
-                                                        ['image' + i.toString()]: '',
-                                                    },
-                                                    imagePreviewUrl: {
-                                                        ...prevFormData.images.imagePreviewUrl,
-                                                        ['image' + i.toString()]: '',
-                                                    },
-                                                    imageTargetFile: {
-                                                        ...prevFormData.images.imageTargetFile,
-                                                        ['image' + i.toString()]: '',
-                                                    },
-                                                },
-                                            }));
-                                            // setImageNumber((prevImageNumber) => prevImageNumber - 1);
+                                            deleteEmpty(i);
                                         }}
 
                                     >
@@ -516,7 +509,7 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
                     {t('global.cancel')}
                 </Button>
-                <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" onClick={handleSubmit}>
+                <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" onClick={handleSubmit} >
                     {/* add icon */}
                     <AiOutlinePlus />
                     <Text mx="5px" >

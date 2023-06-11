@@ -276,7 +276,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
             }));
         }
         setSelectedMedicine(null);
-        setQuantity(1);
+        setQuantity(0);
     };
 
     const handleMedicineRemove = (med) => {
@@ -523,7 +523,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
                     {t('global.close')}
                 </Button>
-                <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" isDisabled={formData.medicines.length === 0 || Quantity == 0}>
+                <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" isDisabled={formData.medicines.length === 0 || Quantity != 0}>
                     {/* add icon */}
                     {EditMode ? <EditIcon /> : <AiOutlinePlus />}
                     <Text mx="5px" >{EditMode ? t('global.edit') : t('global.add')}</Text>

@@ -276,13 +276,8 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       case 3:
         if (MonitoringSheetData.length == 0) {
           handleMonitoringSheet()
-
         } else {
 
-          // setMonitoringSheetData([])
-          // setMonitoringSheetRow(null)
-          // setTreatments([])
-          // setMonitoringSheetEditInfo(null)
         }
 
         break;
@@ -890,8 +885,8 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                     <Tbody>
                       {Examination && Examination.map((Exam, index) => (
                         <Tr key={index}>
-                          <Td>{Exam?.doctor?.first_name + " " + Exam?.doctor?.last_name}</Td>
                           <Td>{changeFormat(Exam.created_at)}</Td>
+                          <Td>{Exam?.doctor?.first_name + " " + Exam?.doctor?.last_name}</Td>
                           <Td>{Exam.type}</Td>
                           <Td>
                             {Exam.result}
@@ -1066,9 +1061,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
 
               {/* monitoring sheet tab */}
               <TabPanel p={0}>
-                <Box
-
-                >
+                <Box>
                   <MonitoringSheet
                     data={MonitoringSheetData}
                     treatments={Treatments}

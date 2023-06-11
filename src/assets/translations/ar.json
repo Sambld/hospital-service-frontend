@@ -213,7 +213,8 @@
             "monitoringSheetRow": "صف ورقة المتابعة",
             "updated": "تم تحديث صف ورقة المتابعة",
             "added": "تمت إضافة صف ورقة المتابعة",
-            "deleted": "تم حذف صف ورقة المتابعة"
+            "deleted": "تم حذف صف ورقة المتابعة",
+            "deleteFirstFromTreatments": "يرجى حذف الدواء من العلاجات أولاً."
         },
         "observationInfo": {
             "created": "تم إنشاء الملاحظة بنجاح.",

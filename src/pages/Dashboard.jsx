@@ -543,7 +543,7 @@ const Dashboard = () => {
                         {/* Calendar */}
                         {user?.role === 'pharmacist' && (
                             <Box mb={3}>
-                                <Calendar setSelectedDate={setDashboardDefaultDate} />
+                                <Calendar startDate={new Date()} setSelectedDate={setDashboardDefaultDate} />
                             </Box>
                         )}
                         {/* Data info */}

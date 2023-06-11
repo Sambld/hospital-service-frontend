@@ -49,12 +49,19 @@ const MedicineQuantityForm = ({ closeModal, closeAndRefresh }) => {
 
     const [options, setOptions] = useState([]);
     const [selectedMedicine, setSelectedMedicine] = useState(null);
-    const [Quantity, setQuantity] = useState(1);
+    const [Quantity, setQuantity] = useState(0);
 
     const [uploadProgress, setUploadProgress] = useState(0);
     const [loading, setLoading] = useState(false);
 
     const { t, i18n } = useTranslation();
+
+    const colorModeValue1 = useColorModeValue('white', 'white');
+    const colorModeValue2 = useColorModeValue('white', 'green');
+    const colorModeValue3 = useColorModeValue('black', 'white');
+    const colorModeValue4 = useColorModeValue('white', '#2d3748');
+    const colorModeValue5 = useColorModeValue('gray.700', 'gray.700');
+
 
     const formatDate = (date) => {
         let date_ = new Date(date);
@@ -126,7 +133,7 @@ const MedicineQuantityForm = ({ closeModal, closeAndRefresh }) => {
             medicines: [...prevFormData.medicines.filter((medicine) => medicine.value !== selectedMedicine.value), medicine]
         }));
         setSelectedMedicine(null);
-        setQuantity(1);
+        setQuantity(0);
     };
 
     const removeMedicine = (med) => {
@@ -201,13 +208,13 @@ const MedicineQuantityForm = ({ closeModal, closeAndRefresh }) => {
                             styles={{
                                 control: (provided, state) => ({
                                     ...provided,
-                                    background: useColorModeValue('white', 'white'),
-                                    color: useColorModeValue('white', 'green'),
+                                    background: colorModeValue1,
+                                    color: colorModeValue2,
                                 }),
                                 option: (provided, state) => ({
                                     ...provided,
-                                    color: useColorModeValue('black', 'white'),
-                                    background: useColorModeValue('white', '#2d3748'),
+                                    color: colorModeValue3,
+                                    background: colorModeValue4,
                                 }),
                             }}
                             loadOptions={loadOptions}
@@ -250,8 +257,8 @@ const MedicineQuantityForm = ({ closeModal, closeAndRefresh }) => {
                             bg='gray.50'
                             p={2}
                         >
-                            <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}>Old Quantity: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
-                            <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}>New Quantity: {selectedMedicine ? selectedMedicine.old_quantity + parseInt(Quantity) : 0}</Text>
+                            <Text color={colorModeValue5} fontSize={13}>Old Quantity: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
+                            <Text color={colorModeValue5} fontSize={13}>New Quantity: {selectedMedicine ? selectedMedicine.old_quantity + parseInt(Quantity) : 0}</Text>
                         </Box>
                     )}
 
@@ -280,7 +287,7 @@ const MedicineQuantityForm = ({ closeModal, closeAndRefresh }) => {
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
                     {t('global.cancel')}
                 </Button>
-                <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" >
+                <Button variant='solid' colorScheme='green' type="submit" isLoading={loading} loadingText="Adding" isDisabled={formData.medicines.length === 0 || Quantity != 0}>
                     {/* add icon */}
                     <AiOutlinePlus />
                     <Text mx="5px" >

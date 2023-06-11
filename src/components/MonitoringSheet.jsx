@@ -155,10 +155,17 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                         </Flex>
                     </Flex>
                     <TableContainer gap={5}>
-                        <Table mb={5} border='2px' borderColor='gray.600' borderRadius="md" className={styles.table}>
+                        <Table
+                            mb={5}
+                            border='2px'
+                            borderColor='gray.600'
+                            borderRadius="md"
+                            className={styles.table}
+                            __css={{ 'table-layout': 'fixed', width: selected == 0 ? 'auto' : '100%' }}
+                        >
                             <Thead>
                                 <Tr>
-                                    <Th border='2px' w='150px' borderColor={colorModeValue3} textAlign='center'>
+                                    <Th border='2px' borderColor={colorModeValue3} textAlign='center'>
                                         {t('medicalRecord.examinations')}
                                     </Th>
                                     {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
@@ -192,7 +199,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                             </Thead>
                             <Tbody >
                                 <Tr>
-                                    <Td border='2px'>
+                                    <Td border='2px' >
                                         {t('medicalRecord.urine')}
                                     </Td>
                                     {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
@@ -206,7 +213,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                     ))}
                                 </Tr>
                                 <Tr>
-                                    <Td border='2px'>
+                                    <Td border='2px' >
                                         {t('medicalRecord.bloodPressure')}
                                     </Td>
                                     {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
@@ -233,7 +240,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                     ))}
                                 </Tr> */}
                                 <Tr>
-                                    <Td border='2px'>
+                                    <Td border='2px' >
                                         {t('medicalRecord.temperature')}
                                     </Td>
                                     {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
@@ -248,7 +255,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                     ))}
                                 </Tr>
                                 <Tr>
-                                    <Td border='2px'>
+                                    <Td border='2px' >
                                         {t('medicalRecord.weight')}
                                     </Td>
                                     {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
@@ -304,12 +311,12 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                     </Td>
                                     {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item, index) => (
                                         <Td
-                                        key={index}
-                                    >
-                                        {item.report || <Badge colorScheme='blue'>
-                                            {t('global.empty')}
-                                        </Badge>}
-                                    </Td>
+                                            key={index}
+                                        >
+                                            {item.progress_report || <Badge colorScheme='blue'>
+                                                {t('global.empty')}
+                                            </Badge>}
+                                        </Td>
                                     ))}
                                 </Tr>
 
@@ -336,8 +343,9 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                     <Tr key={index}>
                                         <Td
                                             border='2px'
+                                            p={0}
                                         >
-                                            {typeof item === 'object' ? (item.name) : item}
+                                                {typeof item === 'object' ? (item.name) : item}
                                         </Td>
 
                                         {data.slice(selected == 0 ? 0 : currentDay, selected > 0 ? selected + currentDay : data.length).map((item2, index) => (
@@ -376,8 +384,8 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                             {t('medicalRecord.noMonitoringSheet')}
                         </Text>
                         <Center mt={3}>
-                            {user.role === 'doctor' &&
-                                !medical_record?.state_upon_exit &&
+                            {user.role == 'doctor' &&
+                                !medical_record?.patient_leaving_date &&
                                 (
                                     <Button colorScheme='blue' onClick={openMonitoringForm}>
                                         {t('medicalRecord.createNow')}

@@ -36,7 +36,7 @@ import usePost from '../hooks/usePost';
 import AsyncSelect from 'react-select/async';
 
 import { AiOutlinePlus } from 'react-icons/ai';
-import { CloseIcon } from '@chakra-ui/icons';
+import { CloseIcon, EditIcon } from '@chakra-ui/icons';
 import useLoader from '../hooks/useLoader';
 
 import { useTranslation } from 'react-i18next';
@@ -45,6 +45,8 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
     const [formData, setFormData] = useState({
         TimeField: 1,
         Start_date: EditInfo?.Start_date || new Date(),
+        Start_time: EditInfo?.Start_time || "08:00",
+        progress_report: EditInfo?.progress_report || '',
         medicines: [],
     });
 
@@ -103,7 +105,8 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
             const promises = [];
             AllDates.map((date) => {
                 const promise = usePost('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets', {
-                    filling_date: date
+                    filling_date: date + ' ' + formData.Start_time,
+                    progress_report: formData.progress_report,
                 }).then(async (res) => {
 
                     if (res.data) {
@@ -213,13 +216,23 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                         }))
                     }}
                 />
+                <Input
+                    type='time'
+                    value={formData.Start_time}
+                    onChange={(event) => {
+                        setFormData((prevFormData) => ({
+                            ...prevFormData,
+                            Start_time: event.target.value,
+                        }))
+                    }}
+                />
             </FormControl>
 
             <FormControl id='type' gap={3} display='flex' justifyContent='center'>
                 {/* <FormLabel m={0} alignItems='center' display='flex'>
                     <Text verticalAlign='middle' fontSize='xl'>Within:</Text>
                 </FormLabel> */}
-                <InputGroup  display='flex' justifyContent='center'>
+                <InputGroup display='flex' justifyContent='center'>
                     <NumberInput
                         value={formData.TimeField}
                         min={1}
@@ -310,7 +323,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                         </Select>
                         <IconButton
                             aria-label="Add"
-                            icon={<AiOutlinePlus />}
+                            icon={formData.medicines.find((medicine) => medicine.value === selectedMedicine?.value) ? <EditIcon /> : <AiOutlinePlus />}
                             colorScheme="gray"
                             borderRadius={5}
                             variant="outline"
@@ -320,6 +333,26 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
 
 
                 </FormControl>
+                <Divider mt='10px' mb='10px' />
+                <FormControl id='report' gap={3}>
+                    <FormLabel m={0} alignItems='center' display='flex'>
+                        <Text verticalAlign='middle' fontSize='xl'>{t('medicalRecord.report')}</Text>
+                    </FormLabel>
+                    <Textarea
+                        name='report'
+                        value={formData.progress_report}
+                        onChange={(e) => setFormData((prevFormData) => ({
+                            ...prevFormData,
+                            progress_report: e.target.value,
+                        }))}
+                        placeholder={t('medicalRecord.report')}
+                        size='sm'
+                        bg={useColorModeValue('gray.50', 'gray.700')}
+                        borderRadius={5}
+                        boxShadow='md'
+                    />
+                </FormControl>
+
             </Box>
             {selectedMedicine && (
                 <Box

@@ -23,6 +23,10 @@ import {
     Breadcrumb,
     BreadcrumbItem,
     useColorModeValue,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    useDisclosure,
 } from "@chakra-ui/react";
 import {
     Chart as ChartJS,
@@ -39,7 +43,7 @@ import {
 import { useState } from "react";
 import { Bar, Pie, Line, Doughnut } from 'react-chartjs-2';
 import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
-import { BiRefresh, BiChevronLeft, BiChevronRight } from "react-icons/bi";
+import { BiRefresh, BiChevronLeft, BiChevronRight, BiCalendar } from "react-icons/bi";
 import { BsTable } from "react-icons/bs";
 import { FiBarChart2 } from "react-icons/fi";
 import useLoader from "../hooks/useLoader";
@@ -49,6 +53,7 @@ import AsyncSelect from 'react-select/async';
 
 // Translation
 import { useTranslation } from "react-i18next";
+import Calendar from "../components/Calendar";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -91,6 +96,8 @@ const Statistics = () => {
     const [CurrentTimeType, setCurrentTimeType] = useState('week');
     const [CurrentStatisticsType, setCurrentStatisticsType] = useState(statisticsType[0][0][1]);
     const [CurrentSubStatisticsType, setCurrentSubStatisticsType] = useState(statisticsType[0][1][0]);
+
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const toast = useToast();
 
@@ -396,14 +403,14 @@ const Statistics = () => {
                 data.pieChart.datasets[0].percentage.push((item == 0) ? 0 : Math.round((item / total) * 100));
             })
 
-            
+
         } catch (e) {
             console.log(e)
         } finally {
             setData(data);
         }
 
-        
+
     }
 
     const loadOptions = (inputValue, callback) => {
@@ -529,9 +536,6 @@ const Statistics = () => {
                     )}
                     <Box display='flex' justifyContent='flex-start' alignItems='center' gap={2} p={2} bg={colorModeValue3} borderTopRadius={CurrentStatisticsType === 'md' ? 0 : '10px'}>
                         <Box
-                            display='flex'
-                            justifyContent='space-between'
-                            alignItems='center'
                             p={2}
                             border='1px solid'
                             borderColor={colorModeValue6}
@@ -539,6 +543,8 @@ const Statistics = () => {
                             color={colorModeValue1}
                             boxShadow='md'
                             cursor='pointer'
+                            w='100px'
+                            textAlign='center'
                             _hover={{ bg: colorModeValue4 }}
                             onClick={() => changeSelectedDate('today')}
                         >
@@ -552,7 +558,7 @@ const Statistics = () => {
                             boxShadow="md"
                             bg={colorModeValue4}
                             border='1px solid'
-                            borderColor={colorModeValue13}
+                            borderColor={colorModeValue6}
                         >
                             <Icon
                                 as={BiChevronLeft}
@@ -567,7 +573,7 @@ const Statistics = () => {
                             boxShadow="md"
                             bg={colorModeValue4}
                             border='1px solid'
-                            borderColor={colorModeValue13}
+                            borderColor={colorModeValue6}
                         >
                             <Icon
                                 as={BiChevronRight}
@@ -576,19 +582,24 @@ const Statistics = () => {
                         </Button>
                         <Spacer />
 
-                        <Input
-                            type='date'
+                        <Box
                             p={2}
                             border='1px solid'
-                            borderColor={colorModeValue13}
+                            borderColor={colorModeValue6}
                             borderRadius='10px'
                             color={colorModeValue1}
                             cursor='pointer'
                             _hover={{ bg: colorModeValue4 }}
-                            onChange={(e) => changeSelectedDate('date', e.target.value)}
+                            onClick={() => onOpen()}
+                            readOnly
                             value={formatDate(selectedDate)}
+                            display='flex'
+                            justifyContent='space-between'
                             w='160px'
-                        />
+                        >   
+                            {formatDate(selectedDate)}
+                            <Icon as={BiCalendar} color={colorModeValue1} fontSize='23px' />
+                        </Box>
                     </Box>
                     <Box maxH='450px' w='100%' bg={colorModeValue3} borderBottomRadius="10px" p={5} boxShadow="md" zIndex={5} overflow='auto'>
                         {data ? IsChart ? (
@@ -877,6 +888,28 @@ const Statistics = () => {
                 </GridItem>
 
             </Grid>
+            <Modal isOpen={isOpen} onClose={onClose} size='xl'>
+                <ModalOverlay />
+                <ModalContent>
+                    <Calendar
+                        startDate={
+                            ()=>{
+                                let date = new Date(selectedDate);
+                                date.setDate(date.getDate() - 1);
+                                return date
+                            }
+                        }
+                        setSelectedDate={
+                            (date) => {
+                                let choosenDate = new Date(date);
+                                choosenDate.setDate(choosenDate.getDate() + 1);
+                                changeSelectedDate('date', choosenDate)
+                                onClose()
+                            }
+                        } />
+                </ModalContent>
+            </Modal>
+
         </Box>
     );
 }
