@@ -75,6 +75,7 @@ import MandatoryDeclarationForm from "./mandatory-declaration/MandatoryDeclarati
 // Styles
 import styles from "../styles/MedicalRecord.module.css";
 import MonitoringSheetStyles from "../styles/MonitoringSheet.module.css";
+import PrescriptionStyles from "../styles/Prescription.module.css";
 
 // Services
 import axios from "./axios";
@@ -107,6 +108,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
 
   const [Prescriptions, setPrescriptions] = useState([]);
   const [PrescriptionDownloaded, setPrescriptionDownloaded] = useState(null);
+  const [PrescriptionDeleted, setPrescriptionDeleted] = useState(null);
   const [PrescriptionEditMode, setPrescriptionEditMode] = useState(false)
   const [PrescriptionEditInfo, setPrescriptionEditInfo] = useState(null)
 
@@ -132,6 +134,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
   const { isOpen: isOpenMonitoringSheetRow, onOpen: onOpenMonitoringSheetRow, onClose: onCloseMonitoringSheetRow } = useDisclosure()
   const { isOpen: isOpenPrescriptionForm, onOpen: onOpenPrescriptionForm, onClose: onClosePrescriptionForm } = useDisclosure()
   const { isOpen: isOpenMandatoryDeclaration, onOpen: onOpenMandatoryDeclaration, onClose: onCloseMandatoryDeclaration } = useDisclosure()
+  const { isOpen: isPrescriptionDeleteOpen, onOpen: onPrescriptionDeleteOpen, onClose: onPrescriptionDeleteClose } = useDisclosure()
 
   const colorModeValue1 = useColorModeValue('gray.700', 'gray.50')
   const colorModeValue2 = useColorModeValue('blue.900', 'gray.300')
@@ -545,9 +548,33 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     setPrescriptionEditInfo(prescription)
     onOpenPrescriptionForm()
   }
+  const handlePrescriptionDelete = () => {
+    setDeleteLoading(true)
+    useDelete('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/prescriptions/' + PrescriptionDeleted)
+      .then((data) => {
+        toast({
+          title: data.message,
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        })
+        handlePrescription()
+      })
+      .catch((err) => {
+        toast({
+          title: err.response.data.message,
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        })
+      })
+      .finally(() => {
+        setDeleteLoading(false)
+        onPrescriptionDeleteClose()
+      })
 
-
-
+  }
+  
   const handlePrintPrescription = async (prescription) => {
     try {
       setLoadingPrescriptionDownload(true);
@@ -767,12 +794,12 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                       borderColor='gray.300'
                       gap='1px'
                     >
-                      <Button leftIcon={<EditIcon />} w='50%' variant='outline' border={0} colorScheme="green" type="submit" borderRadius={0} onClick={() => handleMedicalRecordEdit(medical_record)}>
+                      <Button leftIcon={<EditIcon />} w='100%' variant='outline' border={0} colorScheme="green" type="submit" borderRadius={0} onClick={() => handleMedicalRecordEdit(medical_record)}>
                         {t('patient.details.edit')}
                       </Button>
-                      <Button leftIcon={<DeleteIcon />} w='50%' variant='outline' border={0} colorScheme="red" type="submit" borderRadius={0} isLoading={deleteLoading} onClick={() => onDeleteOpen()}>
+                      {/* <Button leftIcon={<DeleteIcon />} w='50%' variant='outline' border={0} colorScheme="red" type="submit" borderRadius={0} isLoading={deleteLoading} onClick={() => onDeleteOpen()}>
                         {t('patient.details.delete')}
-                      </Button>
+                      </Button> */}
                     </Box>
                   )}
                 </Box>
@@ -913,7 +940,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                                   onMouseLeave={() => setDeleteConfirmation(false)}
                                   icon={deleteConfirmation ? <AiOutlineCheck /> : <BsFillTrashFill />} />
                               </>
-                            ):(
+                            ) : (
                               <Box>
                                 [not owned]
                               </Box>
@@ -1116,12 +1143,24 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                             <AccordionPanel pb={4}>
                               <Box display='flex' justifyContent='flex-end' mb={2} gap='10px'>
                                 {user.role === 'doctor' && user.id === pres.doctor.id && !medical_record.patient_leaving_date && (
-                                  <Button colorScheme='green' onClick={() => handlePrescriptionEdit(pres)}>
-                                    <EditIcon fontSize='20px' />
-                                    <Text ml={2}>
-                                      {t('global.edit')}
-                                    </Text>
-                                  </Button>
+                                  <>
+                                    <Button colorScheme='green' onClick={() => handlePrescriptionEdit(pres)}>
+                                      <EditIcon fontSize='20px' />
+                                      <Text ml={2}>
+                                        {t('global.edit')}
+                                      </Text>
+                                    </Button>
+                                    <Button colorScheme='red' onClick={() => {
+                                      setPrescriptionDeleted(pres.id)
+                                      onPrescriptionDeleteOpen()
+                                    }}>
+                                      <DeleteIcon fontSize='20px' />
+                                      <Text ml={2}>
+                                        {t('global.delete')}
+                                      </Text>
+                                    </Button>
+                                  </>
+
                                 )}
                                 <Button w='150px' colorScheme='teal' onClick={() => handlePrintPrescription(pres)} isLoading={loadingPrescriptionDownload && PrescriptionDownloaded == pres.id}>
                                   <AiFillPrinter fontSize='20px' />
@@ -1131,7 +1170,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                                 </Button>
                               </Box>
 
-                              <Table variant="simple" colorScheme='blackAlpha' className={MonitoringSheetStyles.table} border='2px' borderColor='gray.300'>
+                              <Table variant="simple" colorScheme='blackAlpha' className={PrescriptionStyles.table} border='2px' borderColor='gray.300'>
                                 <Thead bg={colorModeValue6}>
                                   <Tr>
                                     <Th>
@@ -1240,6 +1279,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
+
       <Box>
         {/* examination modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenExamination} onClose={onCloseExamination}>
@@ -1324,6 +1364,30 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
             </ModalBody>
           </ModalContent>
         </Modal>
+        <AlertDialog
+          isOpen={isPrescriptionDeleteOpen}
+          onClose={onPrescriptionDeleteClose}
+        >
+          <AlertDialogOverlay>
+            <AlertDialogContent maxW='300px' p={5}>
+
+              <AlertDialogBody textAlign='center'>
+                <Text fontSize='lg' fontWeight='bold'>
+                  {t('medicalRecord.areYouSure')}
+                </Text>
+              </AlertDialogBody>
+
+              <AlertDialogFooter justifyContent='center'>
+                <Button onClick={onPrescriptionDeleteClose}>
+                  {t('global.cancel')}
+                </Button>
+                <Button colorScheme='red' onClick={handlePrescriptionDelete} ml={3} isLoading={deleteLoading}>
+                  {t('global.delete')}
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
 
         {/* mandatory declaration modal */}
         <Modal blockScrollOnMount={true} closeOnOverlayClick={false} isOpen={isOpenMandatoryDeclaration} onClose={onCloseMandatoryDeclaration}>

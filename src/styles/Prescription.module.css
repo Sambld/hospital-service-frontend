@@ -1,0 +1,17 @@
+/* center element of td */
+
+.table td,
+.table th {
+    text-align: center !important;
+    white-space: normal !important;
+}
+
+
+/* .table td:nth-child(1),
+.table th:nth-child(1) {
+    width: 50% !important;
+    min-width: 400px !important;
+    text-overflow: clip !important;
+    overflow: auto;
+    white-space: normal !important;
+} */
