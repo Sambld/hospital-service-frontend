@@ -163,13 +163,15 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                         throw new Error(err?.response?.data?.message || err.message);
                     })
             }
+            if (data?.filled_by_id) {
+                await handleEditVitalMeasurement()
+                    .catch((err) => {
+                        throw new Error(err?.response?.data?.message || err.message);
+                    })
+                    .finally(() => {
+                    })
+            }
 
-            await handleEditVitalMeasurement()
-                .catch((err) => {
-                    throw new Error(err?.response?.data?.message || err.message);
-                })
-                .finally(() => {
-                })
 
             setLoading(false);
             closeAndRefresh(
@@ -223,7 +225,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     delete rest[key];
                 }
             }
-            if(Object.keys(rest).length == 0) return true;
+            if (Object.keys(rest).length == 0) return true;
 
             // make rest string
             let allZero = true;
@@ -426,7 +428,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                                 ...prevFormData,
                                 [examination.name]: e.target.value || '',
                             }))}
-                            isDisabled={medical_record.patient_leaving_date || loadingData || (data && data.filled_by_id && user.id != data.filled_by_id && user.role == 'nurse')}
+                            isDisabled={medical_record.patient_leaving_date || loadingData || (data && data.filled_by_id && user.id != data.filled_by_id && user.role == 'nurse') || !data}
                         />
                     )}
                 </FormControl>
@@ -465,7 +467,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     </Text>
                 </Box> */}
 
-                {data && data.treatments  && (
+                {data && data.treatments && (
                     <Box>
                         <Divider my={3} />
                         <Heading size='md' mb={3}>
