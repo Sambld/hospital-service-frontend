@@ -10,12 +10,15 @@ import {
     GridItem,
 } from "@chakra-ui/react";
 import { BsChevronUp, BsChevronDown } from "react-icons/bs";
+import { useTranslation } from "react-i18next";
 
 const Calendar = ({ startDate, setSelectedDate }) => {
     const [type, setType] = useState("month");
 
     const [currentDate, setCurrentDate] = useState(startDate || new Date());
     const [focusedDate, setFocusedDate] = useState(startDate || new Date());
+
+    const {t, i18n} = useTranslation();
 
     const daysOfWeek = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
@@ -124,6 +127,7 @@ const Calendar = ({ startDate, setSelectedDate }) => {
                 <Text
                     fontWeight="semibold"
                     textTransform="capitalize"
+                    cursor="pointer"
                     onClick={
                         () => {
                             type === "month" ? setType("year") : setType("years")
@@ -141,13 +145,9 @@ const Calendar = ({ startDate, setSelectedDate }) => {
                         boxShadow='md'
                         cursor='pointer'
                         textAlign='center'
-                        onClick={() => {
-                            setCurrentDate(new Date());
-                            setFocusedDate(new Date());
-                            setSelectedDate(new Date());
-                        }}
+                        onClick={() => {handleSelectDate(new Date())}}
                     >
-                        Today
+                        {t('medicalRecord.today')}
                     </Box>
                     <IconButton
                         icon={<BsChevronUp fontSize={25} color='blue.700' />}

@@ -136,14 +136,14 @@ const Statistics = () => {
 
     const changeFormat = (date) => {
         let date_ = new Date(date)
-        return date_.getUTCFullYear() + '-' + (date_.getUTCMonth() + 1) + '-' + date_.getUTCDate();
+        return date_.getUTCFullYear() + '-' + (date_.getUTCMonth() + 1) + '-' + date_.getDate();
     }
 
     const formatDate = (date, separator) => {
         let date_ = new Date(date);
         const year = date_.getUTCFullYear();
         const month = (date_.getUTCMonth() + 1).toString().padStart(2, '0'); // pad month with leading zero if less than 10
-        const day = date_.getUTCDate().toString().padStart(2, '0'); // pad day with leading zero if less than 10
+        const day = date_.getDate().toString().padStart(2, '0'); // pad day with leading zero if less than 10
         // const hours = date_.getUTCHours().toString().padStart(2, '0'); // pad hours with leading zero if less than 10
         // const minutes = date_.getUTCMinutes().toString().padStart(2, '0'); // pad minutes with leading zero if less than 10
         // const seconds = date_.getUTCSeconds().toString().padStart(2, '0'); // pad seconds with leading zero if less than 10
@@ -300,11 +300,8 @@ const Statistics = () => {
             default:
                 throw new Error(`Invalid type: ${type}`);
         }
-
-        let tomorrow = new Date(choosenDate);
-
         const allDates = [];
-        let currentDate = new Date(tomorrow);
+        let currentDate = new Date(changeFormat(choosenDate));
 
         for (let i = 0; i < stepSize; i++) {
             if (unit == "FullYear") {
@@ -891,18 +888,10 @@ const Statistics = () => {
                 <ModalOverlay />
                 <ModalContent>
                     <Calendar
-                        startDate={
-                            ()=>{
-                                let date = new Date(selectedDate);
-                                date.setDate(date.getDate() - 1);
-                                return date
-                            }
-                        }
+                        startDate={selectedDate}
                         setSelectedDate={
                             (date) => {
-                                let choosenDate = new Date(date);
-                                choosenDate.setDate(choosenDate.getDate() + 1);
-                                changeSelectedDate('date', choosenDate)
+                                changeSelectedDate('date', date)
                                 onClose()
                             }
                         } />
