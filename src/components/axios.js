@@ -1,5 +1,6 @@
 import axios from 'axios';
-const instance = axios.create({ baseURL: 'http://134.122.75.238:8000/api' });
+import env from '../assets/env';
+const instance = axios.create({ baseURL: env.API_URL + '/api' });
 const tokenCookie = document.cookie.split(';').find(cookie => cookie.trim().startsWith('token='));
 if (tokenCookie) {
     const token = tokenCookie.split('=')[1];

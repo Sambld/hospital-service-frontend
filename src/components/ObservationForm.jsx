@@ -137,7 +137,6 @@ const ObservationForm = ({ medical_record, closeModal, closeAndRefresh }) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log(ImageSorted.length == 0)
         if (formData.name == '' || ImageSorted.length == 0) {
             toast({
                 title: "Error",
