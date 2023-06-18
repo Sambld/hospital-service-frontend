@@ -60,6 +60,11 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
     const [uploadProgress, setUploadProgress] = useState(0);
     const [loading, setLoading] = useState(false);
 
+    const colorModeValue1 = useColorModeValue('white', 'green')
+    const colorModeValue2 = useColorModeValue('black', 'white')
+    const colorModeValue3 = useColorModeValue('white', '#2d3748')
+    const colorModeValue4 = useColorModeValue('gray.50', 'gray.700')
+
     const formatDate = (date, separator) => {
         let date_ = new Date(date);
         const year = date_.getUTCFullYear();
@@ -288,13 +293,13 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                             styles={{
                                 control: (provided, state) => ({
                                     ...provided,
-                                    background: useColorModeValue('white', 'white'),
-                                    color: useColorModeValue('white', 'green'),
+                                    background: 'white',
+                                    color: colorModeValue1,
                                 }),
                                 option: (provided, state) => ({
                                     ...provided,
-                                    color: useColorModeValue('black', 'white'),
-                                    background: useColorModeValue('white', '#2d3748'),
+                                    color: colorModeValue2,
+                                    background: colorModeValue3,
                                 }),
                             }}
                             loadOptions={loadOptions}
@@ -313,7 +318,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                     <Box mt={3} display='flex' gap={3}>
                         <Select
                             name='type'
-                            bg={useColorModeValue('gray.50', 'gray.700')}
+                            bg={colorModeValue4}
                             value={type}
                             onChange={(e) => setType(e.target.value)}
                         >
@@ -347,7 +352,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                         }))}
                         placeholder={t('medicalRecord.report')}
                         size='sm'
-                        bg={useColorModeValue('gray.50', 'gray.700')}
+                        bg={colorModeValue4}
                         borderRadius={5}
                         boxShadow='md'
                     />
@@ -363,8 +368,8 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                     bg='gray.50'
                     p={2}
                 >
-                    <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}> {t('medicalRecord.name')}: {selectedMedicine ? selectedMedicine.label : ''}</Text>
-                    <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}> {t('medicalRecord.quantity')}: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
+                    <Text color={'gray.700'} fontSize={13}> {t('medicalRecord.name')}: {selectedMedicine ? selectedMedicine.label : ''}</Text>
+                    <Text color={'gray.700'} fontSize={13}> {t('medicalRecord.quantity')}: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
                 </Box>
             )}
             {loading && (

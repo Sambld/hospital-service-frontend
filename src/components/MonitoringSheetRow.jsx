@@ -84,6 +84,11 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
 
     const toast = useToast();
 
+    const colorModeValue1 = useColorModeValue('gray.50', 'gray.700')
+    const colorModeValue2 = useColorModeValue('#fafafa', 'gray.800')
+    const colorModeValue3 = useColorModeValue('black', 'white')
+    const colorModeValue4 = useColorModeValue('white', '#2d3748')
+
     useEffect(() => {
         console.log(t('medicalRecord.monitoringSheetInfo.updated'));
         if (data) {
@@ -389,7 +394,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                 </Text>
             </Center>
 
-            {user && (user?.role == 'nurse' || (user?.role == 'doctor' && data)) && examinations.map((examination, index) => (
+            {user && (user?.role == 'nurse' || (user?.role == 'doctor' && data?.filled_by_id)) && examinations.map((examination, index) => (
                 <FormControl key={index} mb={3} id='type' gap={3} display='flex' justifyContent='space-between'>
                     <FormLabel m={0} alignItems='center' display='flex'>
                         <Text verticalAlign='middle' fontSize='xl'>
@@ -408,7 +413,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                                 ...prevFormData,
                                 [examination.name]: e.target.value || '',
                             }))}
-                            isDisabled={loadingData || (data && data.filled_by_id && user.id != data.filled_by_id && user.role == 'nurse') || !data}
+                            isDisabled={medical_record.patient_leaving_date || loadingData || (data && data.filled_by_id && user.id != data.filled_by_id && user.role == 'nurse') || !data}
                         />
 
                     ) : (
@@ -421,7 +426,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                                 ...prevFormData,
                                 [examination.name]: e.target.value || '',
                             }))}
-                            isDisabled={loadingData || (data && data.filled_by_id && user.id != data.filled_by_id && user.role == 'nurse')}
+                            isDisabled={medical_record.patient_leaving_date || loadingData || (data && data.filled_by_id && user.id != data.filled_by_id && user.role == 'nurse')}
                         />
                     )}
                 </FormControl>
@@ -442,7 +447,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                         }))}
                         placeholder={t('medicalRecord.report')}
                         size='sm'
-                        bg={useColorModeValue('gray.50', 'gray.700')}
+                        bg={colorModeValue1}
                         borderRadius={5}
                         boxShadow='md'
                         isDisabled={user && data && data.filled_by_id && user.id != data.filled_by_id && user.role == 'nurse'}
@@ -460,7 +465,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                     </Text>
                 </Box> */}
 
-                {data && data.treatments && data.treatments.length > 0 && (
+                {data && data.treatments  && (
                     <Box>
                         <Divider my={3} />
                         <Heading size='md' mb={3}>
@@ -478,7 +483,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                             >
                                 <Thead
                                     borderTop='1px solid'
-                                    bg={useColorModeValue('#fafafa', 'gray.800')}
+                                    bg={colorModeValue2}
                                     color='white'
                                     position="sticky"
                                     top={0}
@@ -621,13 +626,13 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                                     styles={{
                                         control: (provided, state) => ({
                                             ...provided,
-                                            background: useColorModeValue('white', 'white'),
-                                            color: useColorModeValue('white', 'white'),
+                                            background: 'white',
+                                            color: 'white',
                                         }),
                                         option: (provided, state) => ({
                                             ...provided,
-                                            color: useColorModeValue('black', 'white'),
-                                            background: useColorModeValue('white', '#2d3748'),
+                                            color: colorModeValue3,
+                                            background: colorModeValue4,
                                         }),
                                     }}
                                     loadOptions={loadOptions}

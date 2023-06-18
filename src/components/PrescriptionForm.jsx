@@ -79,6 +79,12 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
 
     const { t, i18n } = useTranslation();
 
+    const colorModeValue1 = useColorModeValue('white', 'green')
+    const colorModeValue2 = useColorModeValue('black', 'white')
+    const colorModeValue3 = useColorModeValue('white', '#2d3748')
+    const colorModeValue4 = useColorModeValue('green.500', 'green.300')
+    const colorModeValue5 = useColorModeValue('red.500', 'red.300')
+
     const formatDate = (date) => {
         let date_ = new Date(date);
         const year = date_.getUTCFullYear();
@@ -403,7 +409,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                                             <IconButton
                                                 aria-label="Edit"
                                                 icon={<EditIcon />}
-                                                color={useColorModeValue('green.500', 'green.300')}
+                                                color={colorModeValue4}
                                                 colorScheme='green'
                                                 borderRadius={5}
                                                 isDisabled={!medicine.editable}
@@ -420,7 +426,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                                         <IconButton
                                             aria-label="Remove"
                                             icon={<CloseIcon />}
-                                            color={useColorModeValue('red.500', 'red.300')}
+                                            color={colorModeValue5}
                                             colorScheme='red'
                                             isDisabled={!medicine.editable}
                                             borderRadius={5}
@@ -443,13 +449,13 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                             styles={{
                                 control: (provided, state) => ({
                                     ...provided,
-                                    background: useColorModeValue('white', 'white'),
-                                    color: useColorModeValue('white', 'green'),
+                                    background: 'white',
+                                    color: colorModeValue1,
                                 }),
                                 option: (provided, state) => ({
                                     ...provided,
-                                    color: useColorModeValue('black', 'white'),
-                                    background: useColorModeValue('white', '#2d3748'),
+                                    color: colorModeValue2,
+                                    background: colorModeValue3,
                                 }),
                             }}
                             loadOptions={loadOptions}
@@ -496,8 +502,8 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                     bg='gray.50'
                     p={2}
                 >
-                    <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}> {t('medicine.name')}: {selectedMedicine ? selectedMedicine.label : ''}</Text>
-                    <Text color={useColorModeValue('gray.700', 'gray.700')} fontSize={13}> {t('medicine.quantity')}: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
+                    <Text color={'gray.700'} fontSize={13}> {t('medicine.name')}: {selectedMedicine ? selectedMedicine.label : ''}</Text>
+                    <Text color={'gray.700'} fontSize={13}> {t('medicine.quantity')}: {selectedMedicine ? selectedMedicine.old_quantity : 0}</Text>
                 </Box>
             )}
             {loading && (

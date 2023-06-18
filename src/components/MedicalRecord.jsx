@@ -574,7 +574,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       })
 
   }
-  
+
   const handlePrintPrescription = async (prescription) => {
     try {
       setLoadingPrescriptionDownload(true);
@@ -1104,149 +1104,147 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
               </TabPanel>
 
               {/* Prescription */}
-              {user.role == 'doctor' && (
-                <TabPanel p={0}>
-                  {user.role == 'doctor' && !medical_record.patient_leaving_date && (
+              <TabPanel p={0}>
+                {user.role == 'doctor' && !medical_record.patient_leaving_date && (
+                  <Box>
+                    <Flex justify='flex-end' mb='15px'>
+                      <Button colorScheme='green' onClick={onOpenPrescriptionForm} mr={3}>
+                        <Text>
+                          {t('medicalRecord.addPrescription')}
+                        </Text>
+                      </Button>
+                    </Flex>
+                  </Box>
+                )}
+                <Box p={0} bg={colorModeValue7} boxShadow='lg' border='1px' borderColor='gray.300' borderRadius='lg' overflow='hidden'>
+
+                  {loadingPrescription ? (
+                    <Center p='10px'>
+                      <Spinner thickness='5px'
+                        speed='0.65s'
+                        emptyColor='gray.200'
+                        color='gray.500'
+                        size='md' />
+                    </Center>
+                  ) : Prescriptions.length > 0 ? (
+
+                    <Accordion border='4px' borderColor='gray.300' allowMultiple>
+                      {Prescriptions && Prescriptions.map((pres, index) => (
+                        <AccordionItem key={index} >
+                          <AccordionButton _hover={{ bg: colorModeValue8 }}>
+                            <Box flex="1" textAlign="left">
+                              <Text fontWeight='bold' fontSize='xl'>
+                                {`${pres.doctor.first_name} ${pres.doctor.last_name} ${t('prescription.prescription')} #${pres.id}`}
+                              </Text>
+                            </Box>
+                            <AccordionIcon />
+                          </AccordionButton>
+                          <AccordionPanel pb={4}>
+                            <Box display='flex' justifyContent='flex-end' mb={2} gap='10px'>
+                              {user.role === 'doctor' && user.id === pres.doctor.id && !medical_record.patient_leaving_date && (
+                                <>
+                                  <Button colorScheme='green' onClick={() => handlePrescriptionEdit(pres)}>
+                                    <EditIcon fontSize='20px' />
+                                    <Text ml={2}>
+                                      {t('global.edit')}
+                                    </Text>
+                                  </Button>
+                                  <Button colorScheme='red' onClick={() => {
+                                    setPrescriptionDeleted(pres.id)
+                                    onPrescriptionDeleteOpen()
+                                  }}>
+                                    <DeleteIcon fontSize='20px' />
+                                    <Text ml={2}>
+                                      {t('global.delete')}
+                                    </Text>
+                                  </Button>
+                                </>
+
+                              )}
+                              <Button w='150px' colorScheme='teal' onClick={() => handlePrintPrescription(pres)} isLoading={loadingPrescriptionDownload && PrescriptionDownloaded == pres.id}>
+                                <AiFillPrinter fontSize='20px' />
+                                <Text ml={2}>
+                                  {t('global.print')}
+                                </Text>
+                              </Button>
+                            </Box>
+
+                            <Table variant="simple" colorScheme='blackAlpha' className={PrescriptionStyles.table} border='2px' borderColor='gray.300'>
+                              <Thead bg={colorModeValue6}>
+                                <Tr>
+                                  <Th>
+                                    {t('medicalRecord.medicine')}
+                                  </Th>
+                                  <Th>
+                                    {t('medicalRecord.quantity')}
+                                  </Th>
+                                  <Th>
+                                    {t('medicalRecord.dateOfPrescription')}
+                                  </Th>
+                                  <Th>
+                                    <Text textAlign='center'>
+                                      {t('medicalRecord.status')}
+                                    </Text>
+                                  </Th>
+                                  <Th>
+                                    <Text>
+                                      {t('medicalRecord.review')}
+                                    </Text>
+                                  </Th>
+                                </Tr>
+                              </Thead>
+                              <Tbody>
+                                {pres.medicine_requests && pres.medicine_requests.map((med, index) => (
+                                  <Tr key={index}>
+                                    <Td>{med.medicine.name}</Td>
+                                    <Td>{med.quantity}</Td>
+                                    <Td>{changeFormat(med.created_at)}</Td>
+                                    <Td>
+                                      {med.status === 'Pending' && (
+                                        <Badge colorScheme="yellow">
+                                          {t('medicalRecord.pending')}
+                                        </Badge>
+                                      )}
+                                      {med.status === 'Approved' && (
+                                        <Badge colorScheme="green">
+                                          {t('medicalRecord.approved')}
+                                        </Badge>
+                                      )}
+                                      {med.status === 'Rejected' && (
+                                        <Badge colorScheme="red">
+                                          {t('medicalRecord.rejected')}
+                                        </Badge>
+                                      )}
+                                    </Td>
+                                    <Td>
+                                      {med.review && (
+                                        <Text>{med.review}</Text>
+                                      )}
+                                      {!med.review && (
+                                        <Badge colorScheme="yellow">
+                                          {t('medicalRecord.notReviewed')}
+                                        </Badge>
+                                      )}
+                                    </Td>
+                                  </Tr>
+                                ))}
+                              </Tbody>
+                            </Table>
+
+                          </AccordionPanel>
+                        </AccordionItem>
+                      ))}
+
+                    </Accordion>
+                  ) : (
                     <Box>
-                      <Flex justify='flex-end' mb='15px'>
-                        <Button colorScheme='green' onClick={onOpenPrescriptionForm} mr={3}>
-                          <Text>
-                            {t('medicalRecord.addPrescription')}
-                          </Text>
-                        </Button>
-                      </Flex>
+                      <Text p={5} fontSize='xl' fontWeight='bold' textAlign='center'>
+                        {t('medicalRecord.noPrescriptionFound')}
+                      </Text>
                     </Box>
                   )}
-                  <Box p={0} bg={colorModeValue7} boxShadow='lg' border='1px' borderColor='gray.300' borderRadius='lg' overflow='hidden'>
-
-                    {loadingPrescription ? (
-                      <Center p='10px'>
-                        <Spinner thickness='5px'
-                          speed='0.65s'
-                          emptyColor='gray.200'
-                          color='gray.500'
-                          size='md' />
-                      </Center>
-                    ) : Prescriptions.length > 0 ? (
-
-                      <Accordion border='4px' borderColor='gray.300' allowMultiple>
-                        {Prescriptions && Prescriptions.map((pres, index) => (
-                          <AccordionItem key={index} >
-                            <AccordionButton _hover={{ bg: colorModeValue8 }}>
-                              <Box flex="1" textAlign="left">
-                                <Text fontWeight='bold' fontSize='xl'>
-                                  {`${pres.doctor.first_name} ${pres.doctor.last_name} ${t('prescription.prescription')} #${pres.id}`}
-                                </Text>
-                              </Box>
-                              <AccordionIcon />
-                            </AccordionButton>
-                            <AccordionPanel pb={4}>
-                              <Box display='flex' justifyContent='flex-end' mb={2} gap='10px'>
-                                {user.role === 'doctor' && user.id === pres.doctor.id && !medical_record.patient_leaving_date && (
-                                  <>
-                                    <Button colorScheme='green' onClick={() => handlePrescriptionEdit(pres)}>
-                                      <EditIcon fontSize='20px' />
-                                      <Text ml={2}>
-                                        {t('global.edit')}
-                                      </Text>
-                                    </Button>
-                                    <Button colorScheme='red' onClick={() => {
-                                      setPrescriptionDeleted(pres.id)
-                                      onPrescriptionDeleteOpen()
-                                    }}>
-                                      <DeleteIcon fontSize='20px' />
-                                      <Text ml={2}>
-                                        {t('global.delete')}
-                                      </Text>
-                                    </Button>
-                                  </>
-
-                                )}
-                                <Button w='150px' colorScheme='teal' onClick={() => handlePrintPrescription(pres)} isLoading={loadingPrescriptionDownload && PrescriptionDownloaded == pres.id}>
-                                  <AiFillPrinter fontSize='20px' />
-                                  <Text ml={2}>
-                                    {t('global.print')}
-                                  </Text>
-                                </Button>
-                              </Box>
-
-                              <Table variant="simple" colorScheme='blackAlpha' className={PrescriptionStyles.table} border='2px' borderColor='gray.300'>
-                                <Thead bg={colorModeValue6}>
-                                  <Tr>
-                                    <Th>
-                                      {t('medicalRecord.medicine')}
-                                    </Th>
-                                    <Th>
-                                      {t('medicalRecord.quantity')}
-                                    </Th>
-                                    <Th>
-                                      {t('medicalRecord.dateOfPrescription')}
-                                    </Th>
-                                    <Th>
-                                      <Text textAlign='center'>
-                                        {t('medicalRecord.status')}
-                                      </Text>
-                                    </Th>
-                                    <Th>
-                                      <Text>
-                                        {t('medicalRecord.review')}
-                                      </Text>
-                                    </Th>
-                                  </Tr>
-                                </Thead>
-                                <Tbody>
-                                  {pres.medicine_requests && pres.medicine_requests.map((med, index) => (
-                                    <Tr key={index}>
-                                      <Td>{med.medicine.name}</Td>
-                                      <Td>{med.quantity}</Td>
-                                      <Td>{changeFormat(med.created_at)}</Td>
-                                      <Td>
-                                        {med.status === 'Pending' && (
-                                          <Badge colorScheme="yellow">
-                                            {t('medicalRecord.pending')}
-                                          </Badge>
-                                        )}
-                                        {med.status === 'Approved' && (
-                                          <Badge colorScheme="green">
-                                            {t('medicalRecord.approved')}
-                                          </Badge>
-                                        )}
-                                        {med.status === 'Rejected' && (
-                                          <Badge colorScheme="red">
-                                            {t('medicalRecord.rejected')}
-                                          </Badge>
-                                        )}
-                                      </Td>
-                                      <Td>
-                                        {med.review && (
-                                          <Text>{med.review}</Text>
-                                        )}
-                                        {!med.review && (
-                                          <Badge colorScheme="yellow">
-                                            {t('medicalRecord.notReviewed')}
-                                          </Badge>
-                                        )}
-                                      </Td>
-                                    </Tr>
-                                  ))}
-                                </Tbody>
-                              </Table>
-
-                            </AccordionPanel>
-                          </AccordionItem>
-                        ))}
-
-                      </Accordion>
-                    ) : (
-                      <Box>
-                        <Text p={5} fontSize='xl' fontWeight='bold' textAlign='center'>
-                          {t('medicalRecord.noPrescriptionFound')}
-                        </Text>
-                      </Box>
-                    )}
-                  </Box>
-                </TabPanel>
-              )}
+                </Box>
+              </TabPanel>
             </TabPanels>
           </Tabs>
           <Divider />
