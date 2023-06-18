@@ -214,7 +214,8 @@
             "updated": "Ligne de la feuille de surveillance mise à jour",
             "added": "Ligne de la feuille de surveillance ajoutée",
             "deleted": "Ligne de la feuille de surveillance supprimée",
-            "deleteFirstFromTreatments": "Veuillez d'abord supprimer la medicine des traitements."
+            "deleteFirstFromTreatments": "Veuillez d'abord supprimer la medicine des traitements.",
+            "fillAtLeastOne": "Veuillez remplir au moins une colonne."
         },
         "observationInfo": {
             "created": "Observation créée avec succès.",
@@ -325,7 +326,8 @@
     "chatAi": {
         "title": "Assistant de recherche IA",
         "placeholder": "Tapez votre message",
-        "noResponse": "Aucune réponse"
+        "noResponse": "Aucune réponse",
+        "error": "Erreur"
     },
     "statistics": {
         "statistics": "Statistiques",

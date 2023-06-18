@@ -215,7 +215,8 @@
             "updated": "Monitoring Sheet Row Updated",
             "added": "Monitoring Sheet Row Added",
             "deleted": "Monitoring Sheet Row Deleted",
-            "deleteFirstFromTreatments": "Please delete the medicine from the treatments first."
+            "deleteFirstFromTreatments": "Please delete the medicine from the treatments first.",
+            "fillAtLeastOne": "Please fill at least one field."
         },
         "observationInfo": {
             "created": "Observation created successfully.",
@@ -326,7 +327,8 @@
     "chatAi": {
         "title": "Ai Search Assistant",
         "placeholder": "Type your message",
-        "noResponse": "No Response"
+        "noResponse": "No Response",
+        "error": "Error"
     },
     "statistics": {
         "statistics": "Statistics",

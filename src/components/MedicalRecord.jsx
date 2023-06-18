@@ -334,7 +334,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       })
       .catch((err) => {
         toast({
-          title: err.response.data.message,
+          title: err?.response?.data?.message || err?.message,
           status: 'error',
           duration: 9000,
           isClosable: true,
@@ -363,7 +363,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
     }).catch((err) => {
       handleExaminationActions(
         {
-          title: err.response.data.message,
+          title: err?.response?.data?.message || err,
           status: 'error',
         }
       )
@@ -402,7 +402,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       })
       .catch((err) => {
         toast({
-          title: err.response.data.message,
+          title: err?.response?.data?.message || err,
           status: 'error',
           duration: 9000,
           isClosable: true,
@@ -449,7 +449,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       })
       .catch((err) => {
         toast({
-          title: err.response.data.message,
+          title: err?.response?.data?.message || err,
           status: 'error',
           duration: 9000,
           isClosable: true,
@@ -490,7 +490,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       })
       .catch((err) => {
         toast({
-          title: err.response.data.message,
+          title: err?.response?.data?.message || err,
           status: 'error',
           duration: 9000,
           isClosable: true,
@@ -519,7 +519,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       })
       .catch((err) => {
         toast({
-          title: err.response.data.message,
+          title: err?.response?.data?.message || err,
           status: 'error',
           duration: 9000,
           isClosable: true,
@@ -562,7 +562,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
       })
       .catch((err) => {
         toast({
-          title: err.response.data.message,
+          title: err?.response?.data?.message || err,
           status: 'error',
           duration: 9000,
           isClosable: true,

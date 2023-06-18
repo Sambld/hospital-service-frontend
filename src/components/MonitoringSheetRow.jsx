@@ -57,7 +57,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
     const [examinations, setExaminations] = useState([
         { name: 'urine', label: 'Urine', suffix: 'ml', type: 'number' },
         { name: 'blood_pressure', label: 'Blood Pressure', suffix: 'mmHg', type: 'text', placeholder: '.../...' },
-        { name: 'temperature', label: 'Temperature', suffix: '°C', type: 'text', placeholder: '' },
+        { name: 'temperature', label: 'Temperature', suffix: '°C', type: 'number', placeholder: '' },
         { name: 'weight', label: 'Weight', suffix: 'kg', type: 'number' },
     ]);
     const [formData, setFormData] = useState({
@@ -109,60 +109,28 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
         }
     };
 
-    const handleAdd = () => {
+    const handleAdd = async () => {
         setLoading(true);
         try {
-            // GET DATS OF NEXT TIMEFIELD DAYS
-            const { medicines, ...rest } = formData;
-
-            // make rest string
-            let allZero = true;
-            Object.keys(rest).forEach((key) => {
-                if (rest[key] != 0) {
-                    allZero = false;
-                    rest[key] = rest[key].toString();
-                }
-            });
-
-            // check if there is an error
-            if (!allZero) {
-                if (rest['blood_pressure'] != "" && rest['blood_pressure'].split('/').length != 2) {
-                    throw new Error('blood pressure must be in format of x/y');
-                }
-                usePut('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + data.id, rest).then((res) => {
-                    setLoading(false);
+            await handleEditVitalMeasurement()
+                .then(() => {
                     closeAndRefresh(
                         {
                             title: t('medicalRecord.monitoringSheetInfo.updated'),
                             status: 'success',
                         }
                     )
-                }).catch((err) => {
-                    setLoading(false);
-                    toast(
-                        {
-                            title: 'Error',
-                            description: err?.response?.data?.message || err.message,
-                            status: 'error',
-                            duration: 9000,
-                            isClosable: true,
-                        }
-                    )
                 })
-            } else {
-                setLoading(false);
-                toast(
-                    {
-                        title: "make at least one change",
-                        status: 'error',
-                        duration: 9000,
-                        isClosable: true,
-                    }
-                )
-            }
+                .catch((err) => {
+                    throw new Error(err?.response?.data?.message || err.message);
+                })
+                .finally(() => {
+                    setLoading(false);
+                })
+
         } catch (err) {
             toast({
-                title: err.message,
+                title: err?.message || err,
                 status: 'error',
             })
             setLoading(false);
@@ -174,7 +142,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
         const progressUnit = 100 / deletedTreatments.length;
         try {
             setLoading(true);
-            if (report != formData.progress_report){
+            if (report != formData.progress_report) {
                 await MonitoringSheetReportEdit()
             }
 
@@ -190,6 +158,14 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                         throw new Error(err?.response?.data?.message || err.message);
                     })
             }
+
+            await handleEditVitalMeasurement()
+                .catch((err) => {
+                    throw new Error(err?.response?.data?.message || err.message);
+                })
+                .finally(() => {
+                })
+
             setLoading(false);
             closeAndRefresh(
                 {
@@ -199,7 +175,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
             )
         } catch (err) {
             toast({
-                title: err.message,
+                title: err?.message || err,
                 status: 'error',
                 duration: 9000,
                 isClosable: true,
@@ -232,6 +208,46 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
         }
     }
 
+    const handleEditVitalMeasurement = async () => {
+        try {
+            const { medicines, ...rest } = formData;
+
+            // check if rest is changed or not, if not, don't send th
+            for (let key in rest) {
+                if (rest[key] == data[key] || "") {
+                    delete rest[key];
+                }
+            }
+            if(Object.keys(rest).length == 0) return true;
+
+            // make rest string
+            let allZero = true;
+            Object.keys(rest).forEach((key) => {
+                if (rest[key] != 0) {
+                    allZero = false;
+                    rest[key] = rest[key];
+                }
+            });
+            if (rest['blood_pressure'] && rest['blood_pressure'] != "" && rest['blood_pressure'].split('/').length != 2) {
+                throw new Error('blood pressure must be in format of x/y');
+            }
+
+            if (!allZero) {
+                const promise = usePut('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + data.id, rest)
+                    .catch((err) => {
+                        throw new Error(err?.response?.data?.message || err.message);
+                    })
+                await Promise.all([promise]);
+                return true
+            } else {
+                throw new Error(t('medicalRecord.monitoringSheetInfo.fillAtLeastOne'));
+            }
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }
+
+
     const handleDeleteAllTreatments = async (pu) => {
         try {
             const promises = [];
@@ -251,15 +267,15 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
             return Promise.reject(err);
         }
     }
-    
+
     const MonitoringSheetReportEdit = async () => {
-        try{
+        try {
             const promise = usePut('/patients/' + medical_record.patient_id + '/medical-records/' + medical_record.id + '/monitoring-sheets/' + data.id, {
                 progress_report: report
             })
             Promise.all(promises)
             return true
-        }catch (err){
+        } catch (err) {
             console.log(err)
         }
     }
@@ -373,7 +389,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                 </Text>
             </Center>
 
-            {user && user?.role == 'nurse' && examinations.map((examination, index) => (
+            {user && (user?.role == 'nurse' || (user?.role == 'doctor' && data)) && examinations.map((examination, index) => (
                 <FormControl key={index} mb={3} id='type' gap={3} display='flex' justifyContent='space-between'>
                     <FormLabel m={0} alignItems='center' display='flex'>
                         <Text verticalAlign='middle' fontSize='xl'>
@@ -392,7 +408,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                                 ...prevFormData,
                                 [examination.name]: e.target.value || '',
                             }))}
-                            isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id)}
+                            isDisabled={loadingData || (data && data.filled_by_id && user.id != data.filled_by_id && user.role == 'nurse') || !data}
                         />
 
                     ) : (
@@ -405,7 +421,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                                 ...prevFormData,
                                 [examination.name]: e.target.value || '',
                             }))}
-                            isDisabled={loadingData || user.role != 'nurse' || (data && data.filled_by_id && user.id != data.filled_by_id)}
+                            isDisabled={loadingData || (data && data.filled_by_id && user.id != data.filled_by_id && user.role == 'nurse')}
                         />
                     )}
                 </FormControl>
@@ -413,11 +429,11 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
             }
             <Divider my={3} />
             <Box>
-
-                <Heading size='md' mb={3}>
-                    {t('medicalRecord.report')}
-                </Heading>
-                <Textarea
+                <>
+                    <Heading size='md' mb={3}>
+                        {t('medicalRecord.report')}
+                    </Heading>
+                    <Textarea
                         name='report'
                         value={formData.progress_report}
                         onChange={(e) => setFormData((prevFormData) => ({
@@ -429,7 +445,10 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                         bg={useColorModeValue('gray.50', 'gray.700')}
                         borderRadius={5}
                         boxShadow='md'
+                        isDisabled={user && data && data.filled_by_id && user.id != data.filled_by_id && user.role == 'nurse'}
                     />
+                </>
+
                 {/* <Box
                     p={2}
                     border='1px'
@@ -493,7 +512,7 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                                             <Td>{medicine.dose}</Td>
                                             <Td>{medicine.type}</Td>
                                             <Td>
-                                                {user && user?.role == 'doctor' && user?.id == data?.user_id && (
+                                                {user && user?.role == 'doctor' && (
                                                     <Button
                                                         size='sm'
                                                         colorScheme='red'

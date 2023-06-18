@@ -215,7 +215,8 @@
             "updated": "تم تحديث صف ورقة المتابعة",
             "added": "تمت إضافة صف ورقة المتابعة",
             "deleted": "تم حذف صف ورقة المتابعة",
-            "deleteFirstFromTreatments": "يرجى حذف الدواء من العلاجات أولاً."
+            "deleteFirstFromTreatments": "يرجى حذف الدواء من العلاجات أولاً.",
+            "fillAtLeastOneRow": "يرجى على الأقل ملأ قيمة واحدة على أقل"
         },
         "observationInfo": {
             "created": "تم إنشاء الملاحظة بنجاح.",
@@ -325,7 +326,8 @@
     "chatAi": {
         "title": "مساعد البحث الذكي",
         "placeholder": "اكتب رسالتك",
-        "noResponse": "لا يوجد رد"
+        "noResponse": "لا يوجد رد",
+        "error": "حدث خطأ ما"
     },
     "statistics": {
         "statistics": "الإحصائيات",

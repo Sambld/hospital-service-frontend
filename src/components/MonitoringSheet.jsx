@@ -177,7 +177,7 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                             borderColor={colorModeValue3}
                                             textAlign='center'
                                             onClick={() => {
-                                                if (user.role === 'nurse' || (user.role === 'doctor' && user.id == item.user_id) ) {
+                                                if (user.role === 'nurse' || user.role === 'doctor') {
                                                     openMonitoringRow(item.id);
                                                 }
                                             }}
@@ -188,9 +188,8 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                             {formatDate(item.filling_date) == formatDate(new Date()) && ' (today)'}
 
                                             <Text fontSize='xs' color='green.600' fontWeight='bold'>
-                                                {user.role === 'nurse' && item?.filled_by?.id && !medical_record.patient_leaving_date == user.id && `[${t('global.edit')}]`}
+                                                {user.role === 'nurse' && item?.filled_by?.id == user.id && !medical_record.patient_leaving_date && `[${t('global.edit')}]`}
                                                 {user.role === 'nurse' && !item?.filled_by?.id && !medical_record.patient_leaving_date && `[${t('global.fill')}]`}
-                                                {user.role === 'doctor' && user.id == item.user_id && !medical_record.patient_leaving_date && `[${t('global.edit')}]`}
                                             </Text>
 
                                         </Th>

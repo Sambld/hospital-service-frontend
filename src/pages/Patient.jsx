@@ -155,7 +155,7 @@ const Patient = () => {
             setNotFound(true)
             toast({
                 title: "Error",
-                description: err.response.data.error,
+                description: err?.response?.data?.message || err.message,
                 status: "error",
                 duration: 9000,
                 isClosable: true,
@@ -183,7 +183,7 @@ const Patient = () => {
             .catch(err => {
                 toast({
                     title: "Error",
-                    description: err.message,
+                    description: err?.response?.data?.message || err.message,
                     status: "error",
                     duration: 9000,
                     isClosable: true,
@@ -209,7 +209,7 @@ const Patient = () => {
         }).catch(err => {
             toast({
                 title: "Error",
-                description: err.response.data.message,
+                description: err?.response?.data?.message || err.message,
                 status: "error",
                 duration: 9000,
                 isClosable: true,

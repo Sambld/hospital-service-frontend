@@ -78,7 +78,7 @@ const StaffForm = ({ closeModal, closeAndRefresh, editMode, selectedStaff }) => 
             closeAndRefresh(
                 {
                     title: 'Error',
-                    description: err.message,
+                    description: err?.response?.data?.message || err?.message,
                     status: 'error',
                 }
             )
@@ -98,7 +98,7 @@ const StaffForm = ({ closeModal, closeAndRefresh, editMode, selectedStaff }) => 
             closeAndRefresh(
                 {
                     title: 'Error',
-                    description: err.message,
+                    description: err?.response?.data?.message || err?.message,
                     status: 'error',
                 }
             )

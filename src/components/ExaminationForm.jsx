@@ -63,7 +63,7 @@ const ExaminationForm = ({ medical_record, closeModal, closeAndRefresh, editMode
             setLoading(false);
             closeAndRefresh(
                 {
-                    title: err.response.data.message,
+                    title: err?.response?.data?.message || err?.message,
                     status: 'error',
                 }
             )
@@ -84,7 +84,7 @@ const ExaminationForm = ({ medical_record, closeModal, closeAndRefresh, editMode
             setLoading(false);
             closeAndRefresh(
                 {
-                    title: err.response.data.message,
+                    title: err?.response?.data?.message || err?.message,
                     status: 'error',
                 }
             )
@@ -114,7 +114,7 @@ const ExaminationForm = ({ medical_record, closeModal, closeAndRefresh, editMode
             setDeleteLoading(false);
             closeAndRefresh(
                 {
-                    title: err.response.data.message,
+                    title: err?.response?.data?.message || err?.message,
                     status: 'error',
                 }
             )

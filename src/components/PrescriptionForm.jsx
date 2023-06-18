@@ -173,7 +173,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                     }).catch((err) => {
                         toast({
                             title: 'Error',
-                            description: err.response.data.message,
+                            description: err?.response?.data?.message || err?.message,
                             status: 'error',
                             duration: 5000,
                             isClosable: true,
@@ -191,7 +191,7 @@ const PrescriptionForm = ({ medical_record, closeModal, closeAndRefresh, EditMod
                     }).catch((err) => {
                         toast({
                             title: 'Error',
-                            description: err.response.data.message,
+                            description: err?.response?.data?.message || err?.message,
                             status: 'error',
                             duration: 5000,
                             isClosable: true,

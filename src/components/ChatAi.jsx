@@ -13,6 +13,7 @@ import {
   Thead,
   Tr,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 
 import { useState } from "react";
@@ -32,6 +33,7 @@ const ChatAi = (user) => {
   const [chatLoading, setChatLoading] = useState(false)
 
   const { t, i18n } = useTranslation();
+  const toast = useToast();
 
   const getAiChat = () => {
     setChatLoading(true)
@@ -43,6 +45,13 @@ const ChatAi = (user) => {
       .catch(err => {
         setChatLoading(false)
         setChatData([])
+        toast({
+          title: t('chatAi.error'),
+          description: err?.response?.data?.message || err?.message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        })
       })
   }
   return (
