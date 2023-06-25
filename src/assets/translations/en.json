@@ -249,7 +249,8 @@
         "tablet": "Tablet",
         "syrup": "Syrup",
         "createdBy": "Created By",
-        "report": "Report"
+        "report": "Report",
+        "notOwned": "Not Yours"
     },
 
     "medicine": {

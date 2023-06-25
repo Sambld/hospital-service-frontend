@@ -240,7 +240,7 @@ const MedicineForm = ({ closeModal, closeAndRefresh, editMode, medicine }) => {
                 />
             </FormControl>
 
-            <Flex justifyContent='center' mt='10px'>
+            <Flex justifyContent='center' mt='10px' gap={3}>
                 <Button colorScheme='blue' mr={3} onClick={closeModal}>
                     {t('global.cancel')}
                 </Button>

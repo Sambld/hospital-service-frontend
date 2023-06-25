@@ -248,7 +248,8 @@
         "tablet": "Comprimé",
         "syrup": "Sirop",
         "createdBy": "Créé par",
-        "report": "Rapport"
+        "report": "Rapport",
+        "notOwned": "pas à toi"
     },
     "medicine": {
         "name": "Nom",

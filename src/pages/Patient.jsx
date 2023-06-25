@@ -484,7 +484,7 @@ const Patient = () => {
                         {!patient && (
                             <Box mt={5}>
                                 <Grid maxW='100%' templateColumns={{ base: '1fr', xl: 'repeat(2, 1fr)' }} gap={4}>
-                                    <Box ml={5} display='flex' flexDirection='column' justifyContent='center' gap={4}>
+                                    <Box ml={5} mb={5} display='flex' flexDirection='column' justifyContent='center' gap={4}>
                                         <Skeleton w='100%' h='450px' borderRadius='md'>
                                             <Text>Loading...</Text>
                                         </Skeleton>

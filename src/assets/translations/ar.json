@@ -249,7 +249,8 @@
         "tablet": "قرص",
         "syrup": "شراب",
         "createdBy": "تم الإنشاء بواسطة",
-        "report": "تقرير"
+        "report": "تقرير",
+        "notOwned": "ليست ملكك"
     },
     "medicine": {
         "name": "اسم",

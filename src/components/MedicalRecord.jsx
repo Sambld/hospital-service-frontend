@@ -942,7 +942,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                               </>
                             ) : (
                               <Box>
-                                [not owned]
+                                [{t('medicalRecord.notOwned')}]
                               </Box>
                             )}
                           </Td>
