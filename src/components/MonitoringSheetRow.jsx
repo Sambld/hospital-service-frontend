@@ -656,18 +656,9 @@ const MonitoringSheetRow = ({ user, medical_record, data, closeModal, closeAndRe
                                     value={type}
                                     onChange={(e) => setType(e.target.value)}
                                 >
-                                    <option value="SC">
-                                        {t('medicalRecord.sc')}
-                                    </option>
-                                    <option value="IM">
-                                        {t('medicalRecord.im')}
-                                    </option>
-                                    <option value="IV">
-                                        {t('medicalRecord.iv')}
-                                    </option>
-                                    <option value="PO">
-                                        {t('medicalRecord.po')}
-                                    </option>
+                                    <option value="Injection">{t('medicalRecord.injection')}</option>
+                                    <option value="Tablet">{t('medicalRecord.tablet')}</option>
+                                    <option value="Syrup">{t('medicalRecord.syrup')}</option>
                                 </Select>
                                 <IconButton
                                     aria-label="Add"

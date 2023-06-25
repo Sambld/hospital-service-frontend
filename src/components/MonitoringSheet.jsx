@@ -312,9 +312,8 @@ const MonitoringSheet = ({ data, treatments, medical_record, openMonitoringForm,
                                         <Td
                                             key={index}
                                         >
-                                            {item.progress_report || <Badge colorScheme='blue'>
-                                                {t('global.empty')}
-                                            </Badge>}
+                                            {item.progress_report || 
+                                            <Badge colorScheme='blue'>{t('global.empty')}</Badge>}
                                         </Td>
                                     ))}
                                 </Tr>

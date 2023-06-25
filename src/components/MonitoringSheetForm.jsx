@@ -288,7 +288,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                 <FormControl id='type' gap={3}>
                     <Box display='flex' flexDir='column' gap={3}>
                         <AsyncSelect
-                            placeholder="Select Medicines"
+                            placeholder={t('medicalRecord.selectMedicines')}
                             name='medicineSearch'
                             styles={{
                                 control: (provided, state) => ({
@@ -312,7 +312,7 @@ const MonitoringSheetForm = ({ medical_record, closeModal, closeAndRefresh, Edit
                             name="Dose"
                             value={Dose}
                             onChange={(e) => setDose(e.target.value)}
-                            placeholder="Dose"
+                            placeholder={t('medicalRecord.dose')}
                         />
                     </Box>
                     <Box mt={3} display='flex' gap={3}>
