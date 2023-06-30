@@ -20,6 +20,7 @@ import { useState } from "react";
 import { AiOutlineSend } from "react-icons/ai";
 import { HiOutlineEmojiSad } from "react-icons/hi";
 import { MdOutlineMarkUnreadChatAlt } from "react-icons/md";
+import { FiInfo } from "react-icons/fi";
 import { Form } from "react-router-dom";
 import useLoader from "../hooks/useLoader";
 
@@ -80,6 +81,14 @@ const ChatAi = (user) => {
           <Text color={useColorModeValue('#374083', 'gray.200')} fontSize={25} size="md">
             {t('chatAi.title')}
           </Text>
+          <FiInfo
+            size={25}
+            color={useColorModeValue('#374083', 'gray.200')}
+            cursor='pointer'
+            onClick={() => {
+              setChatText('get the latest patients added')
+            }}
+          />
         </Box>
 
         <Form onSubmit={(e) => {
@@ -133,7 +142,7 @@ const ChatAi = (user) => {
             p={2}
             m={2}
             borderRadius='md'
-            maxH='70vh'
+            maxH='60vh'
           >
             <Table variant='simple' boxShadow='md' bg='white' color='gray.700' borderRadius='md'>
               <Thead bg='blue.700'>

@@ -218,6 +218,7 @@ const Login = ({ setUser }) => {
                   width="full"
                   borderRadius='md'
                   isLoading={loading}
+                  isDisabled={username === '' || password === '' || username.length < 3 || password.length < 3}
                 >
                   Login
                 </Button>

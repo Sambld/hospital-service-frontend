@@ -223,7 +223,7 @@ const RootLayout = () => {
             }
             <Drawer onClose={onClose} isOpen={isOpen} placement='bottom' size='full'>
                 <DrawerOverlay />
-                <DrawerContent height="80% !important" bg='transparent'>
+                <DrawerContent height="90vh !important" bg='transparent'>
                     <DrawerBody>
                         <ChatAi />
                     </DrawerBody>
