@@ -4,6 +4,11 @@ import {
   Center,
   FormControl,
   Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   Spinner,
   Table,
   Tbody,
@@ -13,6 +18,7 @@ import {
   Thead,
   Tr,
   useColorModeValue,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 
@@ -32,6 +38,18 @@ const ChatAi = (user) => {
   const [chatText, setChatText] = useState('')
   const [chatData, setChatData] = useState(null)
   const [chatLoading, setChatLoading] = useState(false)
+
+  const { isOpen: isHelpOpen, onOpen: onHelpOpen, onClose: onHelpClose } = useDisclosure()
+  const [suggestionsData, setSuggestionsData] = useState([
+    'get the latest patients added',
+    'get patients  that has a temperator greater than 40 in the last month including the date . without repetition',
+    'Obtain a list of patients whose names start with the letter "R."',
+    'Retrieve patients who have undergone a specific medical procedure in the last six months.',
+    'Retrieve all medicines that are currently in stock',
+    'Retrieve all medicines that are out of stock',
+    'get the number of patients with age greater than 50'
+
+  ])
 
   const { t, i18n } = useTranslation();
   const toast = useToast();
@@ -85,9 +103,7 @@ const ChatAi = (user) => {
             size={25}
             color={useColorModeValue('#374083', 'gray.200')}
             cursor='pointer'
-            onClick={() => {
-              setChatText('get the latest patients added')
-            }}
+            onClick={() => onHelpOpen()}
           />
         </Box>
 
@@ -166,6 +182,37 @@ const ChatAi = (user) => {
           </Box>
         )}
       </Box>
+      <Modal closeOnOverlayClick={true} isOpen={isHelpOpen} onClose={onHelpClose}>
+        <ModalOverlay />
+        <ModalContent maxW="56rem" pb={4}>
+          <ModalHeader>List Of Suggestions</ModalHeader>
+          <ModalBody maxH='60vh' overflowY='auto'>
+            {suggestionsData.map((item, index) => (
+              <Box
+                key={index}
+                p={2}
+                shadow="md"
+                borderWidth="1px"
+                bg={useColorModeValue('blue.600', 'gray.800')}
+                color={useColorModeValue('white', 'gray.200')}
+                onClick={() => {
+                  setChatText(item)
+                  onHelpClose()
+                }}
+                cursor='pointer'
+                borderRadius='md'
+                position='relative'
+                w='100%'
+                mb={2}
+              >
+                <Text fontSize='lg' fontWeight='normal'>
+                  {item}
+                </Text>
+              </Box>
+            ))}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 }
