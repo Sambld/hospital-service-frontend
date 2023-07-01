@@ -328,7 +328,8 @@
         "title": "Assistant de recherche IA",
         "placeholder": "Tapez votre message",
         "noResponse": "Aucune réponse",
-        "error": "Erreur"
+        "error": "Erreur",
+        "suggestions": "liste de suggestions"
     },
     "statistics": {
         "statistics": "Statistiques",

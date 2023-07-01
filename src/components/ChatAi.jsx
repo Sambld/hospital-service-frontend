@@ -44,10 +44,10 @@ const ChatAi = (user) => {
     'get the latest patients added',
     'get patients  that has a temperator greater than 40 in the last month including the date . without repetition',
     'Obtain a list of patients whose names start with the letter "R."',
-    'Retrieve patients who have undergone a specific medical procedure in the last six months.',
-    'Retrieve all medicines that are currently in stock',
-    'Retrieve all medicines that are out of stock',
-    'get the number of patients with age greater than 50'
+    'Retrieve all medicines that are less than 10 in stock',
+    'get the patients with age greater than 50',
+    'Get the list of medicines that have expired',
+    'get  medicines that used last month'
 
   ])
 
@@ -128,7 +128,6 @@ const ChatAi = (user) => {
             <Button
               type="submit"
               variant='ghost'
-              onClick={getAiChat}
               isLoading={chatLoading}
             >
               <AiOutlineSend size={30} color={useColorModeValue('#374083', 'gray.200')} />
@@ -185,7 +184,9 @@ const ChatAi = (user) => {
       <Modal closeOnOverlayClick={true} isOpen={isHelpOpen} onClose={onHelpClose}>
         <ModalOverlay />
         <ModalContent maxW="56rem" pb={4}>
-          <ModalHeader>List Of Suggestions</ModalHeader>
+          <ModalHeader>
+            {t('chatAi.suggestions')}
+          </ModalHeader>
           <ModalBody maxH='60vh' overflowY='auto'>
             {suggestionsData.map((item, index) => (
               <Box
@@ -197,6 +198,7 @@ const ChatAi = (user) => {
                 color={useColorModeValue('white', 'gray.200')}
                 onClick={() => {
                   setChatText(item)
+                  getAiChat()
                   onHelpClose()
                 }}
                 cursor='pointer'

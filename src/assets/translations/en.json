@@ -329,7 +329,8 @@
         "title": "Ai Search Assistant",
         "placeholder": "Type your message",
         "noResponse": "No Response",
-        "error": "Error"
+        "error": "Error",
+        "suggestions": "List Of Suggestions"
     },
     "statistics": {
         "statistics": "Statistics",

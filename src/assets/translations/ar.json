@@ -328,7 +328,8 @@
         "title": "مساعد البحث الذكي",
         "placeholder": "اكتب رسالتك",
         "noResponse": "لا يوجد رد",
-        "error": "حدث خطأ ما"
+        "error": "حدث خطأ ما",
+        "suggestions": "قائمة الاقتراحات"
     },
     "statistics": {
         "statistics": "الإحصائيات",
