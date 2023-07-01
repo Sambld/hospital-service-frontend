@@ -45,7 +45,7 @@ const ChatAi = (user) => {
     'get patients  that has a temperator greater than 40 in the last month including the date . without repetition',
     'Obtain a list of patients whose names start with the letter "R."',
     'Retrieve all medicines that are less than 10 in stock',
-    'get the patients with age greater than 50',
+    'get the patients with age older than 50',
     'Get the list of medicines that have expired',
     'get  medicines that used last month'
 
@@ -198,7 +198,6 @@ const ChatAi = (user) => {
                 color={useColorModeValue('white', 'gray.200')}
                 onClick={() => {
                   setChatText(item)
-                  getAiChat()
                   onHelpClose()
                 }}
                 cursor='pointer'
