@@ -1053,7 +1053,7 @@ const MedicalRecord = ({ medical_record, user, editRecord }) => {
                               <Box
                                 key={index}
                                 p={2}
-                                bgImage={'http://134.122.75.238:8000/storage/images/' + img.path}
+                                bgImage={'http://localhost:8000/storage/images/' + img.path}
                                 bgSize='cover'
                                 bgPosition='center'
                                 boxSize='150px'

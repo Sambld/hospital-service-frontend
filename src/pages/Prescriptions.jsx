@@ -448,9 +448,9 @@ const Prescriptions = () => {
                                     </Text>
                                 </Flex>
                             }
-                            {(tabIndex == 0 ? PendingPrescriptions : PastPrescriptions) && (tabIndex == 0 ? PendingPrescriptions : PastPrescriptions).last_page > 1 &&
+                            {(tabIndex == 0 ? PendingPrescriptions : PastPrescriptions) && (tabIndex == 0 ? PendingPagination : PastPagination)?.last_page > 1 &&
                                 <Flex justifyContent='center' alignItems='center' h='100px'>
-                                    <Pagination pagination={(tabIndex == 0 ? PendingPrescriptions : PastPrescriptions)} action={handlePagination} />
+                                    <Pagination pagination={(tabIndex == 0 ? PendingPagination : PastPagination)} action={handlePagination} />
                                 </Flex>
                             }
                         </>
