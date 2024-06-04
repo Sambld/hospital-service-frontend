@@ -1,4 +1,4 @@
 // make .env variables and export them
 export default {
-    API_URL: "http://localhost:8000"
+    API_URL: "http://hospital-service-backend.kesug.com/"
 };
